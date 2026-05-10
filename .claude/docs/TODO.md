@@ -13,7 +13,7 @@ Tags: `#schema`, `#mobile`, `#backend`, `#sync`, `#auth`, `#export`, `#ux`, `#de
 - [x] (#docs) Konzept-Docs in `.claude/docs/` anlegen
 - [x] (#docs) Subagent-Definitionen in `.claude/agents/`
 - [x] (#docs) CLAUDE.md erweitern um Verweise auf WORKFLOW.md
-- [ ] (#schema) Workspace-Struktur einrichten: `pnpm-workspace.yaml` oder `npm`-Workspaces, `packages/schema`, `packages/server`, Mobile bleibt in `project-tracker/`
+- [x] (#schema) Workspace-Struktur einrichten: `pnpm-workspace.yaml` oder `npm`-Workspaces, `packages/schema`, `packages/server`, Mobile bleibt in `project-tracker/`
 - [ ] (#schema) Drizzle + drizzle-kit installieren in `packages/schema`
 - [ ] (#ci) Root-Skripte: `lint`, `typecheck`, `test`
 - [ ] (#docs) `.gitignore`-Eintrag für `com.facebook.react.devsupport.BundleDownloader`

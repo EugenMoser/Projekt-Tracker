@@ -63,3 +63,37 @@ Format pro Eintrag:
 4. Erste Migration generieren + im App-Boot ausführen
 
 **Offene Punkte**: keine Blocker für Phase 1.
+
+---
+
+## 2026-05-10 — Phase 1A-T1: Root workspace setup abgeschlossen
+
+**Erledigt**:
+- `pnpm-workspace.yaml` mit `packages/*` und `project-tracker` konfiguriert
+- Root `package.json` erstellt mit `lint` und `typecheck` Scripts
+- `pnpm install` erfolgreich durchgeführt — Workspace wird korrekt erkannt
+- Alle Workspace-Filter funktionieren (`pnpm --filter=project-tracker lint`)
+- Commit erstellt: `chore(workspace): add pnpm monorepo workspace root`
+
+**Nächste Schritte**:
+1. Task 1A-T2: `packages/schema` und `packages/server` Verzeichnisse anlegen
+2. Task 1A-T3: Drizzle + drizzle-kit in `packages/schema` initialisieren
+
+**Offene Punkte**: keine.
+
+---
+
+## 2026-05-10 — Phase 1A-T2: `packages/schema` scaffold abgeschlossen
+
+**Erledigt**:
+- `packages/schema/package.json` mit Drizzle, TypeScript, Vitest als Dependencies erstellt
+- `packages/schema/tsconfig.json` mit ES2020 target, strict mode, declaration=true
+- `packages/schema/src/index.ts` mit Exports aus `./sqlite` und `./migrations` (Stub-Exporte, Dateien folgen in T3/T4)
+- `pnpm install` erfolgreich — Package wird im Workspace erkannt (`@projekt-tracker/schema@0.0.1`)
+- Workspace-Verzeichnis komplett verfügbar für Phase 1 Schema-Entwicklung
+
+**Nächste Schritte**:
+1. Task 1A-T3: Drizzle + drizzle-kit installieren, `sqlite.ts` mit SQLite-Schema laut DATA_MODEL.md
+2. Task 1A-T4: Initial-Migration generieren
+
+**Offene Punkte**: keine.
