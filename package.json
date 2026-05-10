@@ -1,0 +1,11 @@
+{
+  "name": "projekt-tracker-root",
+  "private": true,
+  "scripts": {
+    "lint": "pnpm -r --filter='./packages/*' lint; pnpm --filter project-tracker lint",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
