@@ -96,4 +96,27 @@ Format pro Eintrag:
 1. Task 1A-T3: Drizzle + drizzle-kit installieren, `sqlite.ts` mit SQLite-Schema laut DATA_MODEL.md
 2. Task 1A-T4: Initial-Migration generieren
 
-**Offene Punkte**: keine.
+**Offene Punkte**: keine Blocker.
+
+---
+
+## 2026-05-10 — Phase 1 gestartet, Plans + T1+T2 abgeschlossen (Session-Break)
+
+**Erledigt**:
+- Phase 1A + 1B Implementierungspläne erstellt unter `.claude/docs/plans/`
+- Branch `feat/phase1` angelegt
+- 1A-T1 ✅ Root workspace setup (pnpm-workspace.yaml, root package.json, pnpm install)
+- 1A-T2 ✅ `packages/schema` scaffold (package.json, tsconfig.json, src/index.ts, deps installiert)
+- Beide Tasks spec-reviewed + code-quality-reviewed und approved
+
+**Nächste Schritte (nächste Session)**:
+- 1A-T3: SQLite-Schema in `packages/schema/src/sqlite.ts` (alle 11 Tabellen)
+- 1A-T4: Migration SQL in `packages/schema/src/migrations.ts`
+- 1A-T5: Schema Roundtrip-Tests (vitest + better-sqlite3)
+- 1A-T6–T9: Expo DB Client, Migrations-Runner, Customer Number + Tariff Snapshot Helpers
+- Danach: Phase 1B (Mobile UI, 12 Tasks)
+
+**So weitermachen**:
+Lies PROGRESS.md + `.claude/docs/plans/`. Branch: `feat/phase1`. Commits: bfa11da (T1) + 725bfce (T2) + 7ab12c2 (Plans). Weiter mit 1A-T3 per Subagent-Driven Development.
+
+**Offene Punkte**: keine Blocker.
