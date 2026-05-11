@@ -39,3 +39,5 @@ android/
 
 # Coverage
 coverage/
+
+node_modules
