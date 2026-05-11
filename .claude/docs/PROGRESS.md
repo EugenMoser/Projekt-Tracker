@@ -140,3 +140,20 @@ Lies PROGRESS.md + `.claude/docs/plans/`. Branch: `feat/phase1`. Commits: bfa11d
 - 1A-T9: Customer-Number-Helper + Tariff-Snapshot-Helper
 
 **Offene Punkte**: keine Blocker.
+
+---
+
+## 2026-05-11 — Phase 1A-T7: App-Boot-Integration (_layout.tsx)
+
+**Erledigt**:
+- `project-tracker/app/_layout.tsx` erweitert: ruft `sqlite.execSync('PRAGMA foreign_keys = ON')` auf, dann `runMigrations(sqlite)` vor dem ersten Render
+- `isDbReady`-State blockiert Render bis DB bereit (verhindert Race Conditions bei DB-Zugriff aus Screen-Komponenten)
+- PRAGMA foreign_keys ON wird per Connection gesetzt (nicht nur im Migration-SQL, da SQLite das connection-level braucht)
+- `tsc --noEmit` ohne Fehler in `app/_layout.tsx` bestaetigt
+
+**Nächste Schritte**:
+- 1A-T5/T8: Schema-Roundtrip-Tests (vitest + better-sqlite3 in packages/schema)
+- 1A-T9: Customer-Number-Helper + Tariff-Snapshot-Helper
+- Phase 1B: Mobile UI-Screens (Projekt-Liste, Timer-Banner, Stop-Modal etc.)
+
+**Offene Punkte**: keine Blocker.

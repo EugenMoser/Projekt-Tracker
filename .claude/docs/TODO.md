@@ -23,7 +23,7 @@ Tags: `#schema`, `#mobile`, `#backend`, `#sync`, `#auth`, `#export`, `#ux`, `#de
 
 ### Schema
 - [ ] (#schema) SQLite-Schema laut DATA_MODEL.md in `packages/schema/sqlite.ts` definieren
-- [ ] (#schema) Initial-Migration generieren + im App-Boot ausführen — DB client + migration runner fertig (T6 ✓); App-Boot-Verdrahtung ausstehend (T7)
+- [x] (#schema) Initial-Migration generieren + im App-Boot ausführen — DB client + migration runner fertig (T6 ✓); App-Boot-Verdrahtung abgeschlossen (T7 ✓)
 - [ ] (#schema) Test: Schema-Roundtrip (insert/select/update) für jede Tabelle
 - [ ] (#schema) Tarif-Snapshot-Logik: Helper, der beim Time-Entry-Insert den aktuellen Projekt-Stundensatz übernimmt
 
