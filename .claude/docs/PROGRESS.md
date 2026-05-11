@@ -157,3 +157,34 @@ Lies PROGRESS.md + `.claude/docs/plans/`. Branch: `feat/phase1`. Commits: bfa11d
 - Phase 1B: Mobile UI-Screens (Projekt-Liste, Timer-Banner, Stop-Modal etc.)
 
 **Offene Punkte**: keine Blocker.
+
+---
+
+## 2026-05-11 — Phase 1A-T8: Customer Number Generator
+
+**Erledigt**:
+- `project-tracker/src/repositories/customerNumber.ts`: `generateCustomerNumber(db, { userId, orderTypeDigit, year })` — zählt bestehende Kunden mit `LIKE YY+A%` Prefix (inkl. soft-deleted, damit Nummern nie recycelt werden), gibt `YY+A+LL` zurück (LL 2-stellig bis 99, dann 3-stellig; ADR-010)
+- `project-tracker/src/__tests__/customerNumber.test.ts`: 6 TDD-Tests (first/second customer, anderer Digit, anderes Jahr, 99./100. Kunde) — alle 6 bestanden
+- Testdatenbank: echter In-Memory-SQLite via better-sqlite3, kein Mocking
+
+**Nächste Schritte**:
+- 1A-T9: Tariff-Snapshot-Helper + Tests (`tariffSnapshot.ts` + `tariffSnapshot.test.ts`)
+- Dann Phase 1B: Mobile UI-Screens
+
+**Offene Punkte**: keine Blocker.
+
+---
+
+## 2026-05-11 — Phase 1A-T9: Tariff Snapshot Helper (letzter 1A-Task)
+
+**Erledigt**:
+- `project-tracker/src/repositories/tariffSnapshot.ts`: `buildTimeEntrySnapshot(db, { projectId, userId })` — liest `pricingMode` + `hourlyRateCents` vom Projekt (inkl. userId-Filter für Tenant-Isolation), gibt `TariffSnapshot` zurück (ADR-008); für `fixed`-Projekte ist `rateSnapshotCents: null`
+- `project-tracker/src/__tests__/tariffSnapshot.test.ts`: 4 TDD-Tests (hourly-Snapshot, fixed-Snapshot mit null-Rate, Not-Found, Wrong-User) — alle 4 bestanden
+- Alle Tests gesamt: 10 jest (project-tracker) + 7 vitest (packages/schema) — alle grün
+- `tsc --noEmit`: keine neuen Fehler (nur pre-existing Boilerplate-Fehler)
+- Phase 1A damit **vollständig abgeschlossen** ✅
+
+**Nächste Schritte**:
+- Phase 1B: Mobile UI-Screens (12 Tasks laut `.claude/docs/plans/2026-05-10-phase1b-mobile-ui.md`)
+
+**Offene Punkte**: keine Blocker. Phase 1A fertig.

@@ -16,6 +16,7 @@ interface TariffSnapshot {
 }
 
 export function buildTimeEntrySnapshot(db: AnyDb, { projectId, userId }: SnapshotParams): TariffSnapshot {
+  // ExpoSQLiteDatabase shares the sync .get() surface; revisit if async Expo driver is adopted
   const project = (db as BetterSQLite3Database<typeof schema>)
     .select({
       pricingMode: schema.projects.pricingMode,

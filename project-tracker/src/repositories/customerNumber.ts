@@ -22,6 +22,7 @@ export function generateCustomerNumber(db: AnyDb, { userId, orderTypeDigit, year
     .where(
       and(
         eq(schema.customers.userId, userId),
+        // include soft-deleted: customer numbers must never be recycled
         like(schema.customers.customerNumber, `${prefix}%`),
       )
     )
