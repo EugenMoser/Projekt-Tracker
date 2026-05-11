@@ -5,6 +5,7 @@ export const migrations: Migration[] = [
     version: 1,
     sql: `
 PRAGMA journal_mode = WAL;
+-- NOTE: foreign_keys must also be set per-connection in the DB client
 PRAGMA foreign_keys = ON;
 
 CREATE TABLE IF NOT EXISTS users (
@@ -58,7 +59,13 @@ CREATE TABLE IF NOT EXISTS projects (
   status TEXT NOT NULL DEFAULT 'active',
   created_at INTEGER NOT NULL,
   updated_at INTEGER NOT NULL,
-  deleted_at INTEGER
+  deleted_at INTEGER,
+  CHECK (pricing_mode IN ('hourly', 'fixed')),
+  CHECK (status IN ('active', 'archived')),
+  CHECK (
+    (pricing_mode = 'hourly' AND hourly_rate_cents IS NOT NULL AND fixed_price_cents IS NULL) OR
+    (pricing_mode = 'fixed' AND fixed_price_cents IS NOT NULL AND hourly_rate_cents IS NULL)
+  )
 );
 CREATE INDEX IF NOT EXISTS projects_user_status_updated_idx ON projects(user_id, status, updated_at);
 
@@ -136,6 +143,6 @@ CREATE TABLE IF NOT EXISTS app_settings (
   last_export_period TEXT,
   updated_at INTEGER NOT NULL
 );
-    `,
+`,
   },
 ]
