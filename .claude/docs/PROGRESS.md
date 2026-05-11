@@ -120,3 +120,23 @@ Format pro Eintrag:
 Lies PROGRESS.md + `.claude/docs/plans/`. Branch: `feat/phase1`. Commits: bfa11da (T1) + 725bfce (T2) + 7ab12c2 (Plans). Weiter mit 1A-T3 per Subagent-Driven Development.
 
 **Offene Punkte**: keine Blocker.
+
+---
+
+## 2026-05-11 — Phase 1A-T6: Expo DB client + migration runner
+
+**Erledigt**:
+- `project-tracker/package.json` erweitert um: `@projekt-tracker/schema` (workspace:*), `drizzle-orm`, `expo-sqlite`, `uuidv7`, `better-sqlite3`, `@types/better-sqlite3`, `jest-expo`
+- `test` script + Jest-Konfiguration (preset: jest-expo, moduleNameMapper fuer Schema-Paket) hinzugefuegt
+- `project-tracker/src/db/client.ts` erstellt: oeffnet SQLite via `expo-sqlite`, baut Drizzle-Client mit vollem Schema
+- `project-tracker/src/db/migrate.ts` erstellt: versionsbasierter Migration-Runner via `_meta`-Tabelle
+- `pnpm install` erfolgreich, `@projekt-tracker/schema` korrekt als Symlink vorhanden
+- `tsc --noEmit` zeigt keine Fehler in `src/` (app-example-Boilerplate-Fehler sind vorher schon vorhanden)
+- `npm test` besteht mit --passWithNoTests
+
+**Nächste Schritte**:
+- 1A-T7: App-Boot-Integration (runMigrations + PRAGMA foreign_keys beim App-Start verdrahten)
+- 1A-T5/T8: Schema-Roundtrip-Tests (vitest + better-sqlite3 in packages/schema)
+- 1A-T9: Customer-Number-Helper + Tariff-Snapshot-Helper
+
+**Offene Punkte**: keine Blocker.
