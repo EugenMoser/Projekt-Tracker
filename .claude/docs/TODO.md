@@ -67,13 +67,14 @@ Tags: `#schema`, `#mobile`, `#backend`, `#sync`, `#auth`, `#export`, `#ux`, `#de
 ## Phase 2 — Backend + Sync
 
 ### Backend-Skelett
-- [ ] (#backend) `packages/server` mit Hono, Zod, pino aufsetzen
-- [ ] (#backend) Drizzle-PG-Schema in `packages/schema/pg.ts`
-- [ ] (#backend) Migrations-Pipeline (drizzle-kit migrate beim Container-Start)
-- [ ] (#backend) Health-Check `/v1/healthz`
-- [ ] (#auth) JWT-Auth-Middleware (`ctx.userId`)
-- [ ] (#auth) Device-Bootstrap-Endpoint: erstes Mobile-Pairing
-- [ ] (#backend) Repository-Layer mit Pflicht-`userId`-Argument (verhindert ungescopte Queries)
+- [x] (#backend) `packages/server` mit Hono, Zod, pino aufsetzen — Scaffold inkl. env.ts + logger.ts (2026-05-15)
+- [x] (#backend) DB connection + Drizzle config: `packages/server/src/db.ts` + `drizzle.config.ts` (2026-05-15)
+- [x] (#backend) Drizzle-PG-Schema in `packages/schema/pg.ts` — alle 11 Tabellen, PG-Typen, generated column (2026-05-15)
+- [x] (#backend) Migrations-Pipeline (drizzle-kit migrate beim Container-Start) — `runMigrations()` in db.ts + 0000_*.sql generiert (2026-05-15)
+- [x] (#backend) Health-Check `/v1/healthz` — Hono app factory + healthRoute + unit test (2026-05-15)
+- [x] (#auth) JWT-Auth-Middleware (`ctx.userId`) — `createAuthMiddleware(secret)` Factory, 6 Tests grün (2026-05-15)
+- [x] (#auth) Device-Bootstrap-Endpoint: erstes Mobile-Pairing — POST /v1/auth/bootstrap, users-Repository, Integration-Test (2026-05-15)
+- [x] (#backend) Repository-Layer mit Pflicht-`userId`-Argument — `createUser(db, displayName)` als Muster etabliert (2026-05-15)
 
 ### Endpoints
 - [ ] (#backend) `/v1/sync/push` (Batch-Upserts mit `updated_at`)

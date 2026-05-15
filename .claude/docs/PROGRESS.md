@@ -369,3 +369,96 @@ Lies PROGRESS.md + `.claude/docs/plans/`. Branch: `feat/phase1`. Commits: bfa11d
 - Phase 2 starten: Backend-Skelett (`packages/server`, Hono, Drizzle-PG, Health-Check, JWT-Middleware)
 
 **Offene Punkte**: keine Blocker. Bereit für Phase 2.
+
+---
+
+## 2026-05-15 — Phase 2 Task 2: packages/server scaffold
+
+**Erledigt**:
+- `packages/server/package.json`: `@projekt-tracker/server@0.0.1`, Hono + Zod + pino + drizzle-orm + postgres Dependencies, vitest/tsx/drizzle-kit/pino-pretty DevDeps
+- `packages/server/tsconfig.json`: NodeNext module resolution, ES2022 target, strict mode
+- `packages/server/vitest.config.ts`: node environment
+- `packages/server/src/env.ts`: Zod-Schema für DATABASE_URL, JWT_SECRET (min 32 chars), PORT, NODE_ENV — fail-fast on startup
+- `packages/server/src/logger.ts`: pino mit pino-pretty in non-production, LOG_LEVEL via env
+- `pnpm install` erfolgreich — `@projekt-tracker/server` korrekt als Workspace-Package registriert (+41 neue Packages)
+- `tsc --noEmit` auf `env.ts` + `logger.ts`: keine Fehler
+
+**Nächste Schritte**:
+- Phase 2 Task 3: `packages/schema/src/pg.ts` — Drizzle-PG-Schema für alle Tabellen laut DATA_MODEL.md
+- Phase 2 Task 4: Migrations-Pipeline (drizzle-kit migrate beim Container-Start)
+- Phase 2 Task 5: Hono-App + Health-Check `/v1/healthz`
+
+**Offene Punkte**: keine Blocker.
+
+---
+
+## 2026-05-15 — Phase 2 Task 3: DB connection + Drizzle config for packages/server
+
+**Erledigt**:
+- `packages/server/src/db.ts`: postgres query client + drizzle instance mit vollem pg-Schema, `Db` Typ-Export, `runMigrations()` mit eigenem Single-Connection-Client (max: 1) + always-closing finally block
+- `packages/server/drizzle.config.ts`: drizzle-kit Config zeigt auf `../schema/src/pg.ts`, Output nach `./migrations`, dialect postgresql
+- `pnpm typecheck` in `packages/server`: null Fehler — NodeNext module resolution loest `@projekt-tracker/schema/pg` via exports-Feld in schema/package.json korrekt auf
+
+**Nächste Schritte**:
+- Phase 2: Hono-App-Einstiegspunkt + Health-Check `/v1/healthz`
+- Phase 2: JWT-Auth-Middleware (`ctx.userId`)
+- Phase 2: Erste Migration via `drizzle-kit generate` + `runMigrations()` beim Server-Start verdrahten
+
+**Offene Punkte**: `migrations/` Verzeichnis noch leer — `drizzle-kit generate` benoetigt laufende PG-Instanz (kein Blocker fuer weitere Backend-Tasks).
+
+---
+
+## 2026-05-15 — Phase 2 Task 6: JWT-Auth-Middleware
+
+**Erledigt**:
+- `packages/server/src/__tests__/auth-middleware.test.ts`: 6 TDD-Tests fuer `createAuthMiddleware` (fehlender Header, falsches Format, ungültiger Token, falsches Secret, gültiger Token → userId gesetzt, fehlendes sub-Claim) — zuerst rot, dann grün
+- `packages/server/src/middleware/auth.ts`: `createAuthMiddleware(secret: string)` Factory via `hono/factory` `createMiddleware`, verifiziert Bearer-Token mit `verify(token, secret, 'HS256')` (expliziter Algorithmus required in Hono 4.7), setzt `c.set('userId', payload.sub)`, gibt `{ error: 'Unauthorized' }` 401 bei jedem Fehlerfall zurück
+- Anmerkung: `verify()` in Hono 4.7 erfordert expliziten `alg`-Parameter ('HS256') — ohne ihn schlägt Verifikation mit "JWT verification requires 'alg' option" fehl
+- 7/7 Tests grün (1 health + 6 auth-middleware), `pnpm typecheck` 0 Fehler
+
+**Nächste Schritte**:
+- Phase 2 Task 7: Device-Bootstrap-Endpoint (erstes Mobile-Pairing)
+- Phase 2: `createAuthMiddleware` in `app.ts` auf geschützte Routen mounten
+
+**Offene Punkte**: keine Blocker.
+
+---
+
+## 2026-05-15 — Phase 2 Task 5: Hono app factory, health-check route, unit test
+
+**Erledigt**:
+- `packages/server/src/__tests__/health.test.ts`: TDD-Test fuer GET /v1/healthz (Vitest, importiert healthRoute direkt — kein env.ts/db.ts-Seiteneffekt im Test)
+- `packages/server/src/middleware/auth.ts`: `AppVariables`-Typ-Stub fuer spatere JWT-Auth-Middleware (T6)
+- `packages/server/src/routes/health.ts`: `healthRoute = new Hono()`, GET /healthz gibt `{ status: "ok" }` zurueck
+- `packages/server/src/app.ts`: `createApp()` Factory — montiert `healthRoute` unter `/v1`, kein db.ts/env.ts-Import auf Modul-Ebene (bleibt testbar ohne DATABASE_URL)
+- `packages/server/src/index.ts`: Einstiegspunkt — `runMigrations()`, `createApp()`, `@hono/node-server` serve auf env.PORT
+- TDD bestaetigt: Test zuerst geschrieben (Fehler: module-not-found), dann Implementierung, Test gruen (1/1 bestanden)
+- `pnpm typecheck`: 0 Fehler
+
+**Nächste Schritte**:
+- Phase 2 Task 6: JWT-Auth-Middleware (ersetzt auth.ts-Stub, liest Bearer-Token, setzt `ctx.userId`)
+- Phase 2 Task 7: Device-Bootstrap-Endpoint (erstes Mobile-Pairing)
+- Phase 2: Drizzle-PG-Schema in `packages/schema/pg.ts`
+
+**Offene Punkte**: keine Blocker.
+
+---
+
+## 2026-05-15 — Phase 2A vollständig: PG-Schema, Migration, Bootstrap-Endpoint
+
+**Erledigt**:
+- `packages/schema/src/pg.ts`: Drizzle PG-Dialect-Schema, alle 11 Tabellen, PG-native Typen (uuid, timestamptz, smallint, boolean, varchar), `duration_seconds` als `GENERATED ALWAYS AS (...) STORED`, alle Check-Constraints und Indizes laut DATA_MODEL.md, Multi-Tenant-ready (`user_id` auf jeder mandantenbezogenen Tabelle)
+- `packages/schema/package.json`: `exports`-Feld mit `./pg` Sub-Path, `drizzle-kit` devDep, `type: module`
+- `packages/server/migrations/0000_simple_ted_forrester.sql`: erste PG-Migration generiert via `drizzle-kit generate`, alle 11 Tabellen + Constraints + Indizes
+- `packages/server/src/repositories/users.ts`: `createUser(db, displayName)` — Repository-Muster mit Pflicht-`db`-Argument
+- `packages/server/src/routes/auth.ts`: `createBootstrapRoute(db, jwtSecret)` — POST /v1/auth/bootstrap, Zod-Validierung, `sign({ sub, tier }, secret, 'HS256')`, 201-Response mit `{ token, userId }`
+- `packages/server/src/app.ts`: Bootstrap-Route unter `/v1/auth` gemountet
+- `packages/server/src/__tests__/bootstrap.test.ts`: 2 Integration-Tests (skipIf !DATABASE_URL), testet JWT-Payload und 400-Validation
+- Alle Tests: 7/7 Unit-Tests grün, 2 Integration-Tests korrekt gegated
+- Phase 2A **vollständig abgeschlossen** ✅
+
+**Nächste Schritte**:
+- Phase 2B: Sync-Endpoints (POST /v1/sync/push, GET /v1/sync/pull)
+- Phase 2C: Mobile Sync-Worker
+
+**Offene Punkte**: Integration-Tests (bootstrap.test.ts) benötigen laufende PostgreSQL-Instanz mit `DATABASE_URL` — kein Blocker für Phase 2B.
