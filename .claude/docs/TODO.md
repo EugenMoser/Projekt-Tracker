@@ -77,8 +77,10 @@ Tags: `#schema`, `#mobile`, `#backend`, `#sync`, `#auth`, `#export`, `#ux`, `#de
 - [x] (#backend) Repository-Layer mit Pflicht-`userId`-Argument — `createUser(db, displayName)` als Muster etabliert (2026-05-15)
 
 ### Endpoints
-- [ ] (#backend) `/v1/sync/push` (Batch-Upserts mit `updated_at`)
-- [ ] (#backend) `/v1/sync/pull?since=<ts>` (Inkrementelles Pull)
+- [x] (#backend) Zod-Schemas + Stub-Repository für Sync-Endpoints — `pushBodySchema`, `PushBody`, `createSyncRoute`, Stub `pullSince`/`pushChanges` (2026-05-15)
+- [x] (#backend) `/v1/sync/push` — `pushChanges` Implementierung (Batch-Upserts mit LWW `updated_at >`) (2026-05-15)
+- [x] (#backend) `/v1/sync/pull?since=<ts>` — `pullSince` Implementierung (Inkrementelles Pull) (2026-05-15)
+- [x] (#backend) `createSyncRoute` in `app.ts` unter `/v1/sync` gemountet (2026-05-15)
 - [ ] (#backend) CRUD-Endpoints (im MVP via Sync abgedeckt — separate CRUD nur, wenn nötig)
 
 ### Sync-Worker (Mobile)

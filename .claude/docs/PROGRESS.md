@@ -462,3 +462,38 @@ Lies PROGRESS.md + `.claude/docs/plans/`. Branch: `feat/phase1`. Commits: bfa11d
 - Phase 2C: Mobile Sync-Worker
 
 **Offene Punkte**: Integration-Tests (bootstrap.test.ts) benötigen laufende PostgreSQL-Instanz mit `DATABASE_URL` — kein Blocker für Phase 2B.
+
+---
+
+## 2026-05-15 — Phase 2B vollständig: Sync-Endpoints push + pull
+
+**Erledigt**:
+- `packages/server/src/routes/sync.ts`: Zod-Schemas für alle 10 Entitätstypen, `pushBodySchema` + `PushBody`-Typ-Export, `createSyncRoute(db, jwtSecret)` — POST /v1/sync/push (LWW-Upserts) + GET /v1/sync/pull?since=&lt;ts&gt; (inkrementelles Pull); JWT-Auth auf allen Routen via `createAuthMiddleware`
+- `packages/server/src/repositories/sync.ts`: `pullSince(db, userId, since)` — parallele `Promise.all`-Abfragen aller 10 Tabellen, `since`-Filter auf Tabellen mit `updated_at`; `pushChanges(db, userId, body)` — transaktionale LWW-Upserts (`setWhere: excluded.updated_at > table.updated_at`), korrekte FK-Reihenfolge, `durationSeconds` aus `timeEntries`-INSERT ausgeschlossen (PG Generated Column), Full-Replace für `timers`/`taskTags`/`projectTasks` (keine `updated_at`-Spalte)
+- `packages/server/src/app.ts`: `createSyncRoute` unter `/v1/sync` gemountet
+- `packages/server/src/__tests__/sync.test.ts`: 8 Unit-Tests (Zod-Schema-Validierung) + 8 Integration-Tests (skipIf !DATABASE_URL): 401-Auth, leerer Pull, Push→Pull-Roundtrip, LWW-Korrektheit, Timer-Clear, `since`-Filter
+- Alle Tests: 15/15 Unit-Tests grün, 10 Integration-Tests korrekt gegated (skipIf !DATABASE_URL)
+- Phase 2B **vollständig abgeschlossen** ✅
+
+**Nächste Schritte**:
+- Phase 2C: Mobile Sync-Worker (Push-Pull-Loop mit Exponential Backoff, Sync-Trigger, Konfliktbehandlung)
+
+**Offene Punkte**: Integration-Tests benötigen laufende PostgreSQL-Instanz mit `DATABASE_URL` — kein Blocker für Phase 2C.
+
+---
+
+## 2026-05-15 — Phase 2B Task 1: Zod-Schemas + Stub-Repository für Sync-Endpoints
+
+**Erledigt**:
+- `packages/server/src/__tests__/sync.test.ts`: 8 TDD-Unit-Tests für `pushBodySchema` (leeres Body, gültiger orderType, digit=0 rejected, digit=10 rejected, ungültiger pricingMode, ungültiger pricingModeSnapshot, taskTags undefined vs [], appSettings vollständig) — alle 8 grün
+- `packages/server/src/repositories/sync.ts`: Stub-Repository mit `pullSince` und `pushChanges` — werfen `new Error('not implemented')`, Typen korrekt importiert aus `routes/sync.js`
+- `packages/server/src/routes/sync.ts`: Vollständige Zod-Schemas für alle 10 Entity-Typen (orderType, customer, project, task, tag, taskTag, projectTask, timeEntry, timer, appSettings), `pushBodySchema` mit `.default([])` für Pflicht-Arrays und `.optional()` für optionale Arrays, `createSyncRoute(db, jwtSecret)` Factory mit POST /push + GET /pull (beide JWT-geschützt), `PushBody`-Typ-Export
+- TDD-Zyklus korrekt durchgeführt: Test FAIL → Stub → Implementation → Test PASS
+- `pnpm typecheck`: 0 Fehler (Spread-Problem mit `never`-Return gelöst via `as Record<string, unknown>` Cast)
+
+**Nächste Schritte**:
+- Phase 2B Task 2: `pushChanges`-Implementierung in `repositories/sync.ts` (Batch-Upserts per entity-Typ)
+- Phase 2B Task 3: `pullSince`-Implementierung (Inkrementelles Pull via `updated_at >= since`)
+- Phase 2B Task 4: `createSyncRoute` in `app.ts` mounten
+
+**Offene Punkte**: keine Blocker.
