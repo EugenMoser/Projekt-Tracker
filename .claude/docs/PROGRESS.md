@@ -188,3 +188,80 @@ Lies PROGRESS.md + `.claude/docs/plans/`. Branch: `feat/phase1`. Commits: bfa11d
 - Phase 1B: Mobile UI-Screens (12 Tasks laut `.claude/docs/plans/2026-05-10-phase1b-mobile-ui.md`)
 
 **Offene Punkte**: keine Blocker. Phase 1A fertig.
+
+---
+
+## 2026-05-11 — Phase 1B-T1: Navigation Shell (Tabs + Stack Routes)
+
+**Erledigt**:
+- `@shopify/flash-list@^2.0.2` (expo install, SDK-54-kompatibel) + `zustand@^5.0.3` in `project-tracker/package.json` hinzugefuegt; `pnpm install` + `expo install` erfolgreich
+- `project-tracker/src/utils/uuid.ts`: `newId()` via uuidv7 exportiert
+- `project-tracker/src/utils/time.ts`: `formatDuration(totalSeconds)` (HH:MM:SS) + `durationSeconds(startedAt, endedAt)` exportiert
+- `project-tracker/app/_layout.tsx` neu geschrieben: `GestureHandlerRootView` als Root-Wrapper, alle Stack-Routes (tabs, projects, customers, order-types, time-entries) deklariert, PRAGMA foreign_keys entfernt (nur noch async runMigrations)
+- `project-tracker/app/(tabs)/_layout.tsx`: Tab-Bar mit 3 Tabs (Projekte, Aufgaben, Einstellungen) + Ionicons
+- `project-tracker/app/(tabs)/index.tsx`, `tasks.tsx`, `settings.tsx`: Platzhalter-Screens
+- `project-tracker/app/index.tsx` (Root) entfernt — Konflikt mit `(tabs)/index.tsx`
+- `tsc --noEmit`: keine neuen Fehler in den erstellten/geaenderten Dateien (nur pre-existing Boilerplate-Fehler)
+
+**Nächste Schritte**:
+- Phase 1B-T2: Auftragsarten-CRUD-Screen
+- Phase 1B-T3: Kunden-Anlegen-Form + Kundennummer-Anzeige
+- Phase 1B-T4: Kunden-Liste-Screen
+
+**Offene Punkte**: keine Blocker.
+
+---
+
+## 2026-05-11 — Phase 1B-T4: Shared UI Components (ColorPicker, TimerBanner, ProjectTile)
+
+**Erledigt**:
+- `project-tracker/src/components/ColorPicker.tsx`: 6 Preset-Farben, Tap-to-Select, selected-State mit Border-Ring, a11y-Labels (accessibilityRole="radio", accessibilityState.selected), Touch-Targets 44x44 pt
+- `project-tracker/src/components/TimerBanner.tsx`: zeigt projectTitle + Live-HH:MM:SS Counter (setInterval 1s), liest `startedAt` aus `useTimerStore`, Pressable mit a11y-Label inklusive formatierter Zeit, minHeight 44
+- `project-tracker/src/components/ProjectTile.tsx`: farbige Kachel mit `backgroundColor: color`, Tap-to-Press mit `expo-haptics` (ImpactFeedbackStyle.Medium), LongPress-Handler, zeigt Titel + Kundenname + Aktiv-Icon (▶/⏸), a11y-State
+- `tsc --noEmit`: keine Fehler in `src/components/` (nur pre-existing Boilerplate-Fehler in `app-example/`)
+- Alle 3 Dateien gestaged (`git add project-tracker/src/components/`)
+
+**Nächste Schritte**:
+- Phase 1B-T5: Projekt-Anlegen-Form (nutzt ColorPicker + ProjectTile)
+- Phase 1B-T6: Projekt-Liste-Screen mit FlashList + TimerBanner
+- Phase 1B-T7: Stop-Modal (Aufgabe wählen, Pflicht-Validation)
+
+**Offene Punkte**: keine Blocker.
+
+---
+
+## 2026-05-11 — Phase 1B-T2: Repository-Layer fuer alle Domain-Entitaeten
+
+**Erledigt**:
+- `project-tracker/src/repositories/orderTypes.ts`: `listOrderTypes`, `createOrderType`, `deleteOrderType` (Soft-Delete)
+- `project-tracker/src/repositories/customers.ts`: `listCustomers`, `createCustomer` (mit Kundennummer-Generierung), `updateCustomer`
+- `project-tracker/src/repositories/projects.ts`: `listActiveProjects`, `getProject`, `createProject` (inkl. projectTasks-Verknuepfung), `updateProject`, `archiveProject`, `getProjectTotalSeconds`
+- `project-tracker/src/repositories/tasks.ts`: `listTasks`, `listTasksForProject` (via JOIN), `createTask`, `listTags`, `upsertTag`, `setTaskTags`, `getTagsForTask`
+- `project-tracker/src/repositories/timers.ts`: `getActiveTimer`, `startTimer`, `stopTimer` (erstellt TimeEntry mit Tariff-Snapshot, loescht Timer)
+- `project-tracker/src/repositories/timeEntries.ts`: `listTimeEntriesForProject`, `updateTimeEntry` (berechnet durationSeconds), `softDeleteTimeEntry`
+- Alle 6 Dateien: userId-Filter auf jeder Query (Tenant-Isolation), Geld als Integer-Cent, kein direktes db.select() ausserhalb dieser Layer
+- `tsc --noEmit`: keine Fehler in den neuen Dateien
+- `npm test`: 10/10 Tests bestanden (bestehende Tests unveraendert)
+
+**Nächste Schritte**:
+- Phase 1B-T3: Auftragsarten-CRUD-Screen (nutzt `orderTypes`-Repository)
+- Phase 1B-T4: Kunden-Anlegen-Form + Kundennummer-Anzeige (nutzt `customers`-Repository)
+- Phase 1B-T5: Projekt-Anlegen-Form (nutzt `projects`-, `customers`-, `tasks`-Repository)
+
+**Offene Punkte**: keine Blocker.
+
+---
+
+## 2026-05-11 — Phase 1B-T7: OrderTypes-Screen + Settings-Navigation
+
+**Erledigt**:
+- `project-tracker/app/order-types/index.tsx`: Auftragsart-Liste-Screen mit FlatList, digit+name pro Zeile, LongPress-to-delete (Alert-Confirm), inline-Modal zum Anlegen (Name + Ziffer 1–9, Validierung), useFocusEffect (expo-router) fuer automatisches Nachladen
+- `project-tracker/app/(tabs)/settings.tsx`: Placeholder durch funktionale Settings-Liste ersetzt — zwei navigierbare Zeilen (Auftragsarten → /order-types, Kunden → /customers), chevron-Style
+- `project-tracker/app/customers/index.tsx`: Placeholder-Screen angelegt damit `/customers`-Route TypeScript-valide ist (TS2345 behoben)
+- `tsc --noEmit`: keine Fehler in settings.tsx, order-types/index.tsx, customers/index.tsx
+
+**Nächste Schritte**:
+- Phase 1B-T8: Kunden-Anlegen-Form + Kundennummer-Anzeige (ersetzt customers/index.tsx-Placeholder)
+- Phase 1B-T5: Projekt-Anlegen-Form
+
+**Offene Punkte**: keine Blocker.

@@ -27,13 +27,25 @@ Tags: `#schema`, `#mobile`, `#backend`, `#sync`, `#auth`, `#export`, `#ux`, `#de
 - [ ] (#schema) Test: Schema-Roundtrip (insert/select/update) für jede Tabelle
 - [ ] (#schema) Tarif-Snapshot-Logik: Helper, der beim Time-Entry-Insert den aktuellen Projekt-Stundensatz übernimmt
 
+### Repository-Layer (Phase 1B-T2) ✓
+- [x] (#mobile) Repository-Layer: `orderTypes.ts` (list, create, softDelete)
+- [x] (#mobile) Repository-Layer: `customers.ts` (list, create, update) mit Kundennummer-Generierung
+- [x] (#mobile) Repository-Layer: `projects.ts` (listActive, get, create, update, archive, getTotalSeconds)
+- [x] (#mobile) Repository-Layer: `tasks.ts` (list, listForProject, create, listTags, upsertTag, setTaskTags, getTagsForTask)
+- [x] (#mobile) Repository-Layer: `timers.ts` (getActive, start, stop mit Tariff-Snapshot)
+- [x] (#mobile) Repository-Layer: `timeEntries.ts` (listForProject, update, softDelete)
+
+### Shared UI Components (Phase 1B-T4) ✓
+- [x] (#ux) `ColorPicker.tsx`: 6 Presets, Tap-to-Select, a11y, Touch-Target 44pt
+- [x] (#ux) `TimerBanner.tsx`: Live-Counter HH:MM:SS, reads from timerStore, Pressable mit a11y
+- [x] (#ux) `ProjectTile.tsx`: farbige Kachel, expo-haptics auf Press, LongPress, ▶/⏸ Icon, a11y-State
+
 ### Kunden + Auftragsarten
-- [ ] (#mobile) Auftragsart-Liste verwalten (CRUD)
-- [ ] (#mobile) Kundennummern-Generator (siehe Algorithmus in CONCEPT.md), getestet
-- [ ] (#mobile) Kunden anlegen/editieren/listen
+- [x] (#mobile) Auftragsart-Liste verwalten (CRUD-Screen) — `app/order-types/index.tsx` (1B-T7)
+- [ ] (#mobile) Kunden anlegen/editieren/listen (Screen)
 
 ### Aufgaben + Stichworte
-- [ ] (#mobile) Aufgaben CRUD inkl. m:n Stichwort-Verknüpfung
+- [ ] (#mobile) Aufgaben CRUD inkl. m:n Stichwort-Verknüpfung (Screen)
 - [ ] (#mobile) Stichwort-Picker (anlegen oder auswählen)
 
 ### Projekte
