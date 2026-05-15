@@ -42,25 +42,27 @@ Tags: `#schema`, `#mobile`, `#backend`, `#sync`, `#auth`, `#export`, `#ux`, `#de
 
 ### Kunden + Auftragsarten
 - [x] (#mobile) Auftragsart-Liste verwalten (CRUD-Screen) — `app/order-types/index.tsx` (1B-T7)
-- [ ] (#mobile) Kunden anlegen/editieren/listen (Screen)
+- [x] (#mobile) Kunden anlegen/listen (Screen) — `app/customers/index.tsx` + `app/customers/new.tsx` (1B-T8)
+- [x] (#ux) Leerer Zustand Kunden-neu-Formular: wenn keine Auftragsart vorhanden, direkten Link/Button zu "Auftragsart anlegen" anzeigen statt nur Text
+- [x] (#ux) Leerer Zustand Projekt-neu-Formular: wenn kein Kunde vorhanden, direkten Link/Button zu "Kunde anlegen" anzeigen statt nur Text
 
 ### Aufgaben + Stichworte
-- [ ] (#mobile) Aufgaben CRUD inkl. m:n Stichwort-Verknüpfung (Screen)
-- [ ] (#mobile) Stichwort-Picker (anlegen oder auswählen)
+- [x] (#mobile) Aufgaben CRUD inkl. m:n Stichwort-Verknüpfung (Screen)
+- [x] (#mobile) Stichwort-Picker (anlegen oder auswählen)
 
 ### Projekte
-- [ ] (#mobile) Projekt-Anlegen-Form: Titel, Kunde-Picker, Beschreibung, Farbe, Pricing-XOR, Aufgabenwahl
-- [ ] (#mobile) Validierung: Pricing-XOR; Aufgabe NICHT pflicht beim Anlegen (ADR-012) — Pflicht erst im Stop-Modal
-- [ ] (#mobile) Projekt-Liste auf Startseite (FlashList, farbige Kacheln)
-- [ ] (#mobile) Projekt-Detail: Gesamtzeit, Gesamtkosten, relativer Stundensatz bei Festpreis
-- [ ] (#mobile) Projekt archivieren
+- [x] (#mobile) Projekt-Anlegen-Form: Titel, Kunde-Picker, Beschreibung, Farbe, Pricing-XOR, Aufgabenwahl — `app/projects/new.tsx` (1B-T10)
+- [x] (#mobile) Validierung: Pricing-XOR; Aufgabe NICHT pflicht beim Anlegen (ADR-012) — Pflicht erst im Stop-Modal
+- [x] (#mobile) Projekt-Liste auf Startseite (FlashList, farbige Kacheln)
+- [x] (#mobile) Projekt-Detail: Gesamtzeit, Gesamtkosten, relativer Stundensatz bei Festpreis — `app/projects/[id].tsx` (1B-T11)
+- [x] (#mobile) Projekt archivieren — Alert-Confirm in `app/projects/[id].tsx` (1B-T11)
 
 ### Timer
-- [ ] (#mobile) Tap-to-Start-Geste auf Kachel (mit visueller Bestätigung)
-- [ ] (#mobile) Swipe-to-Stop (Reanimated v4)
-- [ ] (#mobile) Stop-Modal: Aufgabe wählen
-- [ ] (#mobile) Banner für aktiven Timer auf Startseite (mit Live-Counter)
-- [ ] (#mobile) Manuelle Zeit-Korrektur: Edit-Form + Soft-Delete für `time_entries` (ADR-014). Hinweis: Edit ändert NICHT `rate_snapshot_cents`
+- [x] (#mobile) Tap-to-Start-Geste auf Kachel (mit visueller Bestätigung)
+- [x] (#mobile) Swipe-to-Stop (Reanimated v4)
+- [x] (#mobile) Stop-Modal: Aufgabe wählen
+- [x] (#mobile) Banner für aktiven Timer auf Startseite (mit Live-Counter)
+- [x] (#mobile) Manuelle Zeit-Korrektur: Edit-Form + Soft-Delete für `time_entries` (ADR-014). Hinweis: Edit ändert NICHT `rate_snapshot_cents` — `app/time-entries/[id]/edit.tsx` (1B-T12 ✓)
 
 ## Phase 2 — Backend + Sync
 

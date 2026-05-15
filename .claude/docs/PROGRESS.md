@@ -265,3 +265,107 @@ Lies PROGRESS.md + `.claude/docs/plans/`. Branch: `feat/phase1`. Commits: bfa11d
 - Phase 1B-T5: Projekt-Anlegen-Form
 
 **Offene Punkte**: keine Blocker.
+
+---
+
+## 2026-05-11 — Phase 1B-T10: Projekt-Anlegen-Form
+
+**Erledigt**:
+- `project-tracker/app/projects/new.tsx`: Vollstaendige Projekt-Anlegen-Form
+  - Titel (Pflicht, TextInput)
+  - Kunde (Pflicht, tappable Radio-Rows mit Kundennummer + Name, highlighted bei Selektion; `accessibilityRole="radio"`)
+  - Beschreibung (optional, multiline TextInput)
+  - Farbe (ColorPicker-Komponente)
+  - Pricing-Toggle (XOR: Stundensatz / Festpreis als Pressable-Buttons mit `accessibilityRole="radio"`)
+  - Stundensatz / Festpreis (decimal TextInput, parseEurosToCents: "80,00" -> 8000)
+  - Aufgaben (multi-select Checkboxen, nur wenn Aufgaben vorhanden; `accessibilityRole="checkbox"`)
+  - Keine Aufgaben-Pflicht beim Anlegen (ADR-012)
+  - Fallback wenn keine Kunden vorhanden: "Erst einen Kunden anlegen (Einstellungen → Kunden)."
+  - Alle Touch-Targets >= 44pt (minHeight: 44 auf selectRow und pricingBtn, 52 auf Anlegen-Button)
+  - Alle a11y-Labels gesetzt (accessibilityLabel, accessibilityRole, accessibilityState)
+  - `tsc --noEmit`: keine Fehler in projects/new.tsx
+  - Gestaged: `git add project-tracker/app/projects/new.tsx`
+
+**Nächste Schritte**:
+- Phase 1B: Projekt-Liste-Screen auf Startseite (FlashList, farbige Kacheln, TimerBanner)
+- Phase 1B: Stop-Modal (Aufgabenpflicht beim Stop)
+
+**Offene Punkte**: keine Blocker.
+
+---
+
+## 2026-05-11 — Phase 1B-T11: Projekt-Detail-Screen
+
+**Erledigt**:
+- `project-tracker/app/projects/[id].tsx`: Vollstaendiger Projekt-Detail-Screen
+  - Header-Kachel mit project.color als linker Akzentrand, Titel + Pricing-Meta
+  - Stats-Leiste: Gesamtzeit (formatDuration), Gesamtbetrag (nur bei hourly-Projekten), Relativer Stundensatz (nur bei fixed + Zeit > 0), Platzhalter "—" bei fixed + Zeit = 0
+  - FlatList aller Zeiteintraege (absteigend nach startedAt), LongPress-Alert mit "Bearbeiten" (navigiert zu `/time-entries/${id}/edit`) und "Loeschen" (softDeleteTimeEntry + reload)
+  - Archivieren-Button (destructive, Alert-Bestaetigung, router.back() nach Archivierung)
+  - useFocusEffect reload bei Screen-Focus (auch nach Rueckkehr vom Edit-Screen)
+  - `tsc --noEmit`: keine Fehler in `projects/[id].tsx`
+  - Gestaged: `git add project-tracker/app/projects/[id].tsx`
+
+**Nächste Schritte**:
+- Phase 1B: Projekt-Liste-Screen auf Startseite (FlashList, farbige Kacheln, TimerBanner)
+- Phase 1B: Stop-Modal + Timer-Gesten (Tap-to-Start, Swipe-to-Stop)
+
+**Offene Punkte**: keine Blocker.
+
+---
+
+## 2026-05-11 — Phase 1B-T8: Kunden-Liste + Kunden-Anlegen-Form
+
+**Erledigt**:
+- `project-tracker/app/customers/index.tsx`: Echter Kunden-Listen-Screen ersetzt Placeholder — FlatList mit Name + Kundennummer pro Zeile, useFocusEffect fuer automatisches Nachladen, FAB (+) navigiert zu `/customers/new`, a11y-Label auf FAB
+- `project-tracker/app/customers/new.tsx`: Kunden-Anlegen-Form mit Name (Pflicht), Auftragsart-Auswahl via tappable FlatList-Rows (highlighted bei Selektion, Radio-Circle), optionale Adressfelder (Strasse, PLZ, Stadt), Validierung Name + orderTypeId, `createCustomer`-Aufruf mit Tariff-Snapshot-Daten, `router.back()` nach Erfolg, Hinweismeldung wenn keine Auftragsarten vorhanden ("Einstellungen → Auftragsarten"), KeyboardAvoidingView + ScrollView, Dark-Mode-ready
+- Kein `@react-native-picker/picker` verwendet — eigene Radio-Row-Liste
+- `tsc --noEmit`: keine Fehler in `app/customers/` (nur pre-existing Test-Datei-Fehler ohne Bezug zu diesen Screens)
+- `git add project-tracker/app/customers/` gestaged
+
+**Nächste Schritte**:
+- Phase 1B-T5: Projekt-Anlegen-Form (Titel, Kunde-Picker, Farbe, Pricing-XOR, Aufgabenwahl)
+- Phase 1B-T6: Projekt-Liste-Screen auf Startseite mit FlashList + TimerBanner
+
+**Offene Punkte**: keine Blocker.
+
+---
+
+## 2026-05-11 — Phase 1B-T12: Zeiteintrag-Edit-Screen (Phase 1B abgeschlossen)
+
+**Erledigt**:
+- `project-tracker/app/time-entries/[id]/edit.tsx`: Vollstaendiger Edit-Screen fuer Zeiteintraege
+  - Laedt Eintrag via direktem Drizzle-Select (`db.select().from(schema.timeEntries).where(eq(...)).get()`)
+  - Felder: Datum (YYYY-MM-DD), Startzeit (HH:MM), Endzeit (HH:MM), Aufgabe (tappable Radio-Rows aus `listTasksForProject`), Notiz (multiline)
+  - Validierung: ungueltige Datum/Zeit, endedAt <= startedAt, fehlende Aufgabe
+  - `updateTimeEntry` aendert NICHT `rateSnapshotCents` (ADR-008: Snapshot immutable)
+  - Loeschen via `softDeleteTimeEntry` mit Alert-Bestaetigung (destructive style)
+  - a11y-Labels auf taskRow (accessibilityRole="radio", accessibilityState.selected, accessibilityLabel), Save-Button, Delete-Button
+  - Touch-Targets: taskRow + Buttons minHeight 44
+  - `tsc --noEmit`: keine Fehler in `app/time-entries/`
+  - `npm test`: 10/10 Tests bestanden
+  - `git add project-tracker/app/time-entries/` gestaged
+
+**Phase 1B vollstaendig abgeschlossen** — alle 12 Tasks erledigt.
+
+**Nächste Schritte**:
+- Phase 1B abschliessen: Commit vorbereiten (User commitet selbst)
+- Phase 2: Backend + Sync (Hono, Drizzle-PG, Sync-Worker)
+
+**Offene Punkte**: keine Blocker. Phase 1B fertig.
+
+---
+
+## 2026-05-11 — Phase 1B UX-Finish: leere Zustände mit direkten Links
+
+**Erledigt**:
+- `project-tracker/app/customers/new.tsx`: leerer Zustand "Auftragsart" zeigt jetzt Button "Auftragsart anlegen →" (navigiert zu `/order-types`) statt nur Text
+- `project-tracker/app/projects/new.tsx`: leerer Zustand "kein Kunde" zeigt jetzt Button "Kunden anlegen →" (navigiert zu `/customers/new`) statt nur Text
+- TODO.md: alle erledigten Phase-1B-Items abgehakt (Aufgaben, Timer, Swipe, Stop-Modal, Projekt-Liste)
+- Phase 1B damit vollständig abgeschlossen ✅
+
+**Nächste Schritte**:
+- Commit: alle Phase-1B-Files (User commitet selbst)
+- Phase 2 starten: Backend-Skelett (`packages/server`, Hono, Drizzle-PG, Health-Check, JWT-Middleware)
+
+**Offene Punkte**: keine Blocker. Bereit für Phase 2.

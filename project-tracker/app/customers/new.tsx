@@ -70,8 +70,16 @@ export default function NewCustomerScreen() {
         {orderTypes.length === 0 ? (
           <View style={styles.emptyHint}>
             <Text style={styles.emptyHintText}>
-              Erst eine Auftragsart anlegen (Einstellungen → Auftragsarten).
+              Noch keine Auftragsart vorhanden.
             </Text>
+            <Pressable
+              style={styles.emptyHintBtn}
+              onPress={() => router.push('/order-types')}
+              accessibilityRole="button"
+              accessibilityLabel="Auftragsart anlegen"
+            >
+              <Text style={styles.emptyHintBtnText}>Auftragsart anlegen →</Text>
+            </Pressable>
           </View>
         ) : (
           <FlatList
@@ -170,7 +178,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF8E7', borderRadius: 8, padding: 14,
     borderWidth: 1, borderColor: '#F0D070',
   },
-  emptyHintText: { fontSize: 14, color: '#7A6000', lineHeight: 20 },
+  emptyHintText: { fontSize: 14, color: '#7A6000', lineHeight: 20, marginBottom: 10 },
+  emptyHintBtn: {
+    backgroundColor: '#F0D070', borderRadius: 8,
+    padding: 12, alignItems: 'center', minHeight: 44, justifyContent: 'center',
+  },
+  emptyHintBtnText: { fontSize: 14, fontWeight: '600', color: '#7A6000' },
   orderTypeRow: {
     flexDirection: 'row', alignItems: 'center',
     padding: 14, backgroundColor: '#FFF',

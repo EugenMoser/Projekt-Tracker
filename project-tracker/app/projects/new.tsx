@@ -52,7 +52,15 @@ export default function NewProjectScreen() {
   if (customers.length === 0) {
     return (
       <View style={styles.empty}>
-        <Text>Erst einen Kunden anlegen (Einstellungen → Kunden).</Text>
+        <Text style={styles.emptyText}>Noch kein Kunde vorhanden.</Text>
+        <Pressable
+          style={styles.emptyBtn}
+          onPress={() => router.push('/customers/new')}
+          accessibilityRole="button"
+          accessibilityLabel="Kunden anlegen"
+        >
+          <Text style={styles.emptyBtnText}>Kunden anlegen →</Text>
+        </Pressable>
       </View>
     )
   }
@@ -167,7 +175,14 @@ export default function NewProjectScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
-  empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
+  empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24, gap: 16 },
+  emptyText: { fontSize: 16, color: '#555', textAlign: 'center' },
+  emptyBtn: {
+    backgroundColor: '#4A90D9', borderRadius: 8,
+    paddingHorizontal: 24, paddingVertical: 14,
+    minHeight: 44, alignItems: 'center', justifyContent: 'center',
+  },
+  emptyBtnText: { color: '#FFF', fontWeight: '600', fontSize: 15 },
   label: { fontSize: 13, color: '#666' },
   input: { borderWidth: 1, borderColor: '#DDD', borderRadius: 8, padding: 12 },
   selectRow: { padding: 10, borderRadius: 6, backgroundColor: '#F5F5F5', marginBottom: 4, minHeight: 44, justifyContent: 'center' },
