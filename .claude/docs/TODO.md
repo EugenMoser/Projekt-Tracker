@@ -84,11 +84,11 @@ Tags: `#schema`, `#mobile`, `#backend`, `#sync`, `#auth`, `#export`, `#ux`, `#de
 - [ ] (#backend) CRUD-Endpoints (im MVP via Sync abgedeckt — separate CRUD nur, wenn nötig)
 
 ### Sync-Worker (Mobile)
-- [ ] (#sync) Push-Pull-Loop mit Exponential Backoff
-- [ ] (#sync) Sync-Trigger (App-Resume, Pull-to-Refresh, periodisch)
-- [ ] (#sync) Konfliktbehandlung (Server-Wins bei `server.updated_at > local.updated_at`)
-- [ ] (#sync) Soft-Delete-Sync
-- [ ] (#sync) Sync-Indicator in UI
+- [x] (#sync) Push-Pull-Loop mit Exponential Backoff — `src/sync/service.ts` `runSync` + `BACKOFF_DELAYS` (2026-05-19)
+- [x] (#sync) Sync-Trigger (App-Resume, periodisch 60s) — `AppState.addEventListener` + `scheduleNextSync(SYNC_INTERVAL_MS)` (2026-05-19)
+- [x] (#sync) Konfliktbehandlung (Server-Wins bei `server.updated_at > local.updated_at`) — `applyPull` `setWhere: excluded.updated_at > ...` (2026-05-19)
+- [x] (#sync) Soft-Delete-Sync — `deletedAt` in `collectPushPayload` + `applyPull` (2026-05-19)
+- [x] (#sync) Sync-Indicator in UI — `SyncIndicator.tsx` in Settings-Tab (2026-05-19)
 
 ### Tests
 - [ ] (#sync) Integrationstest: 2-Geräte-Szenario (kann via 2 SQLite-Instanzen simuliert werden)

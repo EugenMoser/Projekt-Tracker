@@ -482,6 +482,32 @@ Lies PROGRESS.md + `.claude/docs/plans/`. Branch: `feat/phase1`. Commits: bfa11d
 
 ---
 
+## 2026-05-19 — Phase 2C vollständig: Mobile Sync-Worker
+
+**Erledigt**:
+- `project-tracker/src/store/syncStore.ts`: Zustand-Store (`SyncStatus`, `status`, `token`, `lastSyncedAt`, `consecutiveErrors`) — installiert `expo-secure-store@~15.0.8`
+- `project-tracker/src/sync/types.ts`: `PushPayload`, `PullResponse`, 8 per-Entitäts-Interfaces (alle Timestamps als ISO-Strings)
+- `project-tracker/src/sync/config.ts`: `API_BASE_URL` (dev/prod), `LOCAL_USER_ID`, `SYNC_INTERVAL_MS = 60_000`, `SECURE_KEYS`
+- `project-tracker/src/sync/api.ts`: `ApiError`, `apiBootstrap`, `apiPush`, `apiPull` — pure fetch-Wrapper
+- `project-tracker/src/sync/syncRepository.ts`: `collectPushPayload(db, userId, since)` — sammelt alle lokalen Entitäten, seit-Filter auf JS-Ebene, Join-Tables immer voll; `applyPull(db, data)` — LWW via `onConflictDoUpdate` mit `setWhere: excluded.updated_at > table.updated_at`, Full-Replace für `timers`/`taskTags`/`projectTasks`
+- `project-tracker/src/sync/service.ts`: `runSync` (Guard auf `isSyncing` + Token, push→pull→persist, backoff bei Fehler), `startSyncLoop` (sofortiger erster Sync + AppState-Listener), `stopSyncLoop` (Cleanup)
+- `project-tracker/app/_layout.tsx`: `initSync()` — lädt/erstellt JWT via `apiBootstrap`, persistiert in SecureStore, restauriert `lastSyncedAt`, startet `startSyncLoop()` nach Migrations-Abschluss
+- `project-tracker/src/components/SyncIndicator.tsx`: idle/syncing/error-Zustände mit farbigem Dot (grün/grau/rot), de-DE Uhrzeit
+- `project-tracker/app/(tabs)/settings.tsx`: `SyncIndicator` in `syncSection` am oberen Rand eingebaut
+- `project-tracker/src/__tests__/syncRepository.test.ts`: 12 TDD-Tests — 6 `collectPushPayload` (full-sync, inkrementell, nothing-to-push, join-tables-immer, soft-delete, ISO-Timestamps) + 6 `applyPull` (insert-neu, LWW-update, LWW-preserve, deletedAt-propagation, timers-full-replace, taskTags-full-replace) — alle 12 grün
+- Alle 22 Tests gesamt grün (3 Suites)
+- Phase 2C **vollständig abgeschlossen** ✅
+
+**Nächste Schritte**:
+- Phase 3: Excel-Export (`/v1/exports/excel`, ExcelJS, Export-Modal in der App)
+- Optionale Follow-ups Phase 2: Integrationstest 2-Geräte-Szenario, Pull-to-Refresh in Screens
+
+**Offene Punkte**:
+- `config.ts` enthält Platzhalter-Produktions-URL — vor Phase-5-Deploy auf echte URL aktualisieren
+- Integration-Tests (2-Geräte) benötigen laufende PG-Instanz — kein Blocker für Phase 3
+
+---
+
 ## 2026-05-15 — Phase 2B Task 1: Zod-Schemas + Stub-Repository für Sync-Endpoints
 
 **Erledigt**:
