@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import {
   View, Text, TextInput, Pressable,
   StyleSheet, Alert, ActivityIndicator, ScrollView,
 } from 'react-native'
 import * as FileSystem from 'expo-file-system'
 import * as Sharing from 'expo-sharing'
+import { useFocusEffect } from 'expo-router'
 import { listCustomers } from '../../src/repositories/customers'
 import { useSyncStore } from '../../src/store/syncStore'
 import { apiExportExcel } from '../../src/sync/api'
@@ -37,9 +38,12 @@ export default function ExportScreen() {
 
   const token = useSyncStore(s => s.token)
 
-  useEffect(() => {
-    setCustomers(listCustomers(LOCAL_USER_ID) as Customer[])
-  }, [])
+  useFocusEffect(
+    React.useCallback(() => {
+      const all = listCustomers(LOCAL_USER_ID)
+      setCustomers(all.map(c => ({ id: c.id, name: c.name, customerNumber: c.customerNumber })))
+    }, [])
+  )
 
   async function handleExport() {
     if (!YYYYMM.test(from) || !YYYYMM.test(to)) {
@@ -80,7 +84,8 @@ export default function ExportScreen() {
         Alert.alert('Datei bereit', `Gespeichert unter: ${uri}`)
       }
     } catch (e) {
-      Alert.alert('Fehler beim Export', String(e))
+      const msg = e instanceof Error ? e.message : 'Unbekannter Fehler'
+      Alert.alert('Fehler beim Export', msg)
     } finally {
       setLoading(false)
     }
