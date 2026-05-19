@@ -4,6 +4,7 @@ import { drizzle } from 'drizzle-orm/postgres-js'
 import * as schema from '@projekt-tracker/schema/pg'
 import type { Db } from '../db.js'
 import { queryExportData } from '../repositories/export.js'
+import { exportQuerySchema } from '../routes/export.js'
 
 const DATABASE_URL = process.env.DATABASE_URL
 const skipIf = !DATABASE_URL
@@ -89,5 +90,33 @@ describe.skipIf(skipIf)('queryExportData', () => {
   it('tagMap is empty when no tags exist', async () => {
     const { tagMap } = await queryExportData(db, userId, new Date('2026-05-01Z'), new Date('2026-06-01Z'))
     expect(Object.keys(tagMap)).toHaveLength(0)
+  })
+})
+
+describe('exportQuerySchema', () => {
+  it('accepts valid from + to', () => {
+    expect(exportQuerySchema.safeParse({ from: '2026-05', to: '2026-05' }).success).toBe(true)
+  })
+
+  it('rejects from without leading zero on month', () => {
+    expect(exportQuerySchema.safeParse({ from: '2026-5', to: '2026-05' }).success).toBe(false)
+  })
+
+  it('rejects missing to', () => {
+    expect(exportQuerySchema.safeParse({ from: '2026-05' }).success).toBe(false)
+  })
+
+  it('accepts optional valid customerId UUID', () => {
+    expect(exportQuerySchema.safeParse({
+      from: '2026-05', to: '2026-05',
+      customerId: 'ffffffff-ffff-ffff-ffff-ffffffffffff',
+    }).success).toBe(true)
+  })
+
+  it('rejects non-UUID customerId', () => {
+    expect(exportQuerySchema.safeParse({
+      from: '2026-05', to: '2026-05',
+      customerId: 'not-a-uuid',
+    }).success).toBe(false)
   })
 })
