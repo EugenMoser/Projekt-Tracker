@@ -96,11 +96,11 @@ Tags: `#schema`, `#mobile`, `#backend`, `#sync`, `#auth`, `#export`, `#ux`, `#de
 
 ## Phase 3 — Excel-Export
 
-- [ ] (#export) Server-Endpoint `/v1/exports/excel` mit Zeitraum-Filter
-- [ ] (#export) ExcelJS-Renderer (Spalten laut CONCEPT.md)
-- [ ] (#export) Festpreis-Export: Festpreis-Position + Zeit-Info-Spalte ohne Geld (ADR-013)
-- [ ] (#mobile) Export-Modal (Zeitraum-Picker, Kunden-Filter optional)
-- [ ] (#mobile) Download via System-Sharesheet (`expo-sharing` oder `expo-file-system`)
+- [x] (#export) Server-Endpoint `/v1/exports/excel` mit Zeitraum-Filter — `createExportRoute` in `packages/server` (2026-05-19)
+- [x] (#export) ExcelJS-Renderer (Spalten laut CONCEPT.md) — `excelRenderer.ts` + 6 Unit-Tests (2026-05-19)
+- [x] (#export) Festpreis-Export: Festpreis-Position + Zeit-Info-Spalte ohne Geld (ADR-013) — `fixedPriceShown`-Set (2026-05-19)
+- [x] (#mobile) Export-Modal (Zeitraum-Picker, Kunden-Filter optional) — `app/export/index.tsx` (2026-05-19)
+- [x] (#mobile) Download via System-Sharesheet (`expo-sharing` oder `expo-file-system`) — `expo-sharing` + Base64-FileSystem (2026-05-19)
 - [ ] (#export) Test mit synthetischem Datensatz: Datei öffnet in Excel + Numbers + LibreOffice
 
 ## Phase 4 — App-PIN & Biometrie

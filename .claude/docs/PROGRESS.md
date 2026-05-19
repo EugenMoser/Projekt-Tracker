@@ -508,6 +508,30 @@ Lies PROGRESS.md + `.claude/docs/plans/`. Branch: `feat/phase1`. Commits: bfa11d
 
 ---
 
+## 2026-05-19 — Phase 3 vollständig: Excel-Export
+
+**Erledigt**:
+- `packages/server/src/repositories/export.ts`: `queryExportData(db, userId, from, to, customerId?)` — Drizzle JOIN über time_entries+projects+customers+tasks, GROUP BY (customer.id, project.id, task.id), aggregiert totalSeconds + totalAmountCents (rate_snapshot × duration / 3600), separater Tag-Query via inArray
+- `packages/server/src/services/excelRenderer.ts`: `renderExcel(rows, tagMap)` — ExcelJS Workbook, 11 Spalten (Kundennr., Name, Adresse, Projekt, Aufgabe, Stichworte, Zeit, Stundensatz, Betrag), Festpreis einmalig pro Projekt (fixedPriceShown-Set), Stundensatz leer bei Festpreis (ADR-013)
+- `packages/server/src/routes/export.ts`: `createExportRoute(db, jwtSecret)` — GET /v1/exports/excel?from=YYYY-MM&to=YYYY-MM&customerId=, JWT-Auth, Zod-Validation, try/catch Error-Handling
+- `packages/server/src/app.ts`: Export-Route unter /v1/exports gemountet
+- `project-tracker/src/sync/api.ts`: `apiExportExcel` — fetch → ArrayBuffer (binary)
+- `project-tracker/app/export/index.tsx`: Export-Screen — Von/Bis TextInputs (YYYY-MM), Kunden-Picker (optional), ArrayBuffer→Base64→FileSystem→expo-sharing, useFocusEffect für Kundenliste
+- `project-tracker/app/(tabs)/settings.tsx`: "Export erstellen" Row ganz oben
+- `project-tracker/app/_layout.tsx`: export/index Stack-Screen als Modal
+- Tests: 6 Renderer-Unit-Tests (excelRenderer.test.ts), 6 Repo-Integration-Tests (export.test.ts, skip ohne DATABASE_URL), 5 Zod-Unit-Tests
+- Alle 27 Tests grün, 16 korrekt geskippt, Typecheck sauber
+
+**Nächste Schritte**:
+- Phase 4: App-PIN & Biometrie (expo-local-authentication, Lock-Screen, Auto-Lock)
+- Optionale Phase-3-Ergänzungen: Pull-to-Refresh in Screens nach Sync, Integrations-Zwei-Geräte-Test
+
+**Offene Punkte**:
+- config.ts enthält Platzhalter-Produktions-URL — vor Phase-5-Deploy auf echte URL aktualisieren
+- Integration-Tests (export.test.ts) benötigen laufende PG-Instanz mit DATABASE_URL
+
+---
+
 ## 2026-05-15 — Phase 2B Task 1: Zod-Schemas + Stub-Repository für Sync-Endpoints
 
 **Erledigt**:
