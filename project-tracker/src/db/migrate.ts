@@ -20,4 +20,9 @@ export async function runMigrations(sqlite: SQLite.SQLiteDatabase): Promise<void
       )
     }
   }
+
+  await sqlite.runAsync(
+    `INSERT OR IGNORE INTO users (id, display_name, tier, created_at, updated_at) VALUES (?, 'Owner', 'pro', ?, ?)`,
+    ['00000000-0000-0000-0000-000000000001', Date.now(), Date.now()]
+  )
 }
