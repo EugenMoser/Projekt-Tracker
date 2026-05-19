@@ -65,6 +65,7 @@ export default function RootLayout() {
         <Stack.Screen name="customers/new" options={{ title: 'Neuer Kunde', presentation: 'modal' }} />
         <Stack.Screen name="order-types" options={{ title: 'Auftragsarten' }} />
         <Stack.Screen name="time-entries/[id]/edit" options={{ title: 'Zeiteintrag bearbeiten', presentation: 'modal' }} />
+        <Stack.Screen name="export/index" options={{ title: 'Export', presentation: 'modal' }} />
       </Stack>
     </GestureHandlerRootView>
   )
