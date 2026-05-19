@@ -51,3 +51,23 @@ export async function apiPull(
     headers: { Authorization: `Bearer ${token}` },
   })
 }
+
+export async function apiExportExcel(
+  baseUrl: string,
+  token: string,
+  from: string,
+  to: string,
+  customerId?: string,
+): Promise<ArrayBuffer> {
+  const params = new URLSearchParams({ from, to })
+  if (customerId) params.set('customerId', customerId)
+
+  const res = await fetch(`${baseUrl}/v1/exports/excel?${params}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  if (!res.ok) {
+    const text = await res.text().catch(() => res.statusText)
+    throw new ApiError(res.status, text)
+  }
+  return res.arrayBuffer()
+}
