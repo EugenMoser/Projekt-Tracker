@@ -17,6 +17,7 @@
     "@hono/zod-validator": "^0.4.3",
     "@projekt-tracker/schema": "workspace:*",
     "drizzle-orm": "^0.43.0",
+    "exceljs": "^4.4.0",
     "hono": "^4.7.0",
     "pino": "^9.6.0",
     "postgres": "^3.4.5",
