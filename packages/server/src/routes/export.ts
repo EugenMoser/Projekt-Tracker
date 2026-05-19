@@ -31,13 +31,17 @@ export function createExportRoute(db: Db, jwtSecret: string) {
     const userId = c.get('userId')
     const { from, to, customerId } = c.req.valid('query')
 
-    const { rows, tagMap } = await queryExportData(db, userId, monthStart(from), monthEnd(to), customerId)
-    const buffer = await renderExcel(rows, tagMap)
+    try {
+      const { rows, tagMap } = await queryExportData(db, userId, monthStart(from), monthEnd(to), customerId)
+      const buffer = await renderExcel(rows, tagMap)
 
-    return c.body(new Uint8Array(buffer), 200, {
-      'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'Content-Disposition': `attachment; filename="export-${from}-${to}.xlsx"`,
-    })
+      return c.body(new Uint8Array(buffer) as Uint8Array<ArrayBuffer>, 200, {
+        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'Content-Disposition': `attachment; filename="export-${from}-${to}.xlsx"`,
+      })
+    } catch (err) {
+      return c.json({ error: 'Export failed' }, 500)
+    }
   })
 
   return app
