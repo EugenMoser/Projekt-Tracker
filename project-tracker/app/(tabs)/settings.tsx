@@ -8,6 +8,15 @@ export default function SettingsScreen() {
       <View style={styles.syncSection}>
         <SyncIndicator />
       </View>
+      <Pressable
+        style={styles.row}
+        onPress={() => router.push('/export' as any)}
+        accessibilityRole="button"
+        accessibilityLabel="Export erstellen"
+      >
+        <Text style={styles.label}>Export erstellen</Text>
+        <Text>›</Text>
+      </Pressable>
       <Pressable style={styles.row} onPress={() => router.push('/order-types')}>
         <Text style={styles.label}>Auftragsarten</Text>
         <Text>›</Text>
@@ -27,7 +36,8 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#DDD',
+    marginBottom: 16,
   },
-  row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, backgroundColor: '#FFF', borderRadius: 8, marginBottom: 8 },
+  row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, backgroundColor: '#FFF', borderRadius: 8, marginBottom: 8, minHeight: 44 },
   label: { fontSize: 16 },
 })
