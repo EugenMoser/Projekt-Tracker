@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach } from '@jest/globals'
 import { useLockStore } from '../lockStore'
 
-const INITIAL: Parameters<typeof useLockStore.setState>[0] = {
-  isLocked: false,
+const INITIAL = {
+  isLocked: false as boolean,
   failedAttempts: 0,
-  lockoutUntil: null,
+  lockoutUntil: null as number | null,
 }
 
 beforeEach(() => {
