@@ -13,6 +13,7 @@ function bytesToHex(bytes: Uint8Array): string {
     .join('')
 }
 
+// expo-crypto only exposes SHA-256; PBKDF2/Argon2 unavailable in Expo SDK — offline brute-force risk if device is compromised
 async function hashPin(pin: string, salt: string): Promise<string> {
   return Crypto.digestStringAsync(
     Crypto.CryptoDigestAlgorithm.SHA256,

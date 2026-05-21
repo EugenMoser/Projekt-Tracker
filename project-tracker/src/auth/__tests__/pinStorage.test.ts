@@ -81,8 +81,15 @@ describe('pinStorage', () => {
 
   it('verifyPin returns true for correct PIN', async () => {
     await savePin('1234')
-    // digestStringAsync beim verify gibt denselben MOCK_HASH zurück
+    const Crypto = require('expo-crypto') as { digestStringAsync: jest.Mock }
+    Crypto.digestStringAsync.mockClear()
     expect(await verifyPin('1234')).toBe(true)
+    // Verify salt was actually passed to the hash function
+    expect(Crypto.digestStringAsync).toHaveBeenCalledWith(
+      'SHA-256',
+      MOCK_SALT_HEX + '1234',
+      { encoding: 'hex' }
+    )
   })
 
   it('verifyPin returns false for wrong PIN (different hash)', async () => {
