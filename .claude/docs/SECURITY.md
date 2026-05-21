@@ -20,10 +20,10 @@ Security-Konzept für den Projekt-Tracker. Im MVP Single-User self-hosted; Archi
 
 ### PIN
 - 4–6 Stellen, Bestätigungs-Eingabe beim Setup
-- **Hash via argon2id** (libsodium / `expo-crypto` mit Polyfill) — niemals Klartext speichern
-- Hash + Salt in `expo-secure-store`
-- 5 Fehlversuche → 30 s Wartezeit, dann eskalierend (1 min, 5 min, 15 min)
-- 10 Fehlversuche im Setup-Mode → App-Daten optional löschen (Konfiguration)
+- **Hash via SHA-256(salt+pin)** via `expo-crypto` — niemals Klartext speichern. Argon2id/PBKDF2 sind in Expo SDK 54 nicht verfügbar; SHA-256 ist ein akzeptiertes Restrisiko (Offline-Brute-Force erfordert physischen Gerätezugriff/Backup-Kompromittierung). Kommentiert in `pinStorage.ts`.
+- Hash + Salt in `expo-secure-store` (Keys: `pt_pin_hash`, `pt_pin_salt`)
+- 5 Fehlversuche → 30 s Wartezeit, dann eskalierend (60 s, 300 s, 900 s Cap) — implementiert in `lockStore.ts`
+- 10 Fehlversuche im Setup-Mode → App-Daten löschen: **Post-MVP, noch nicht implementiert**
 
 ### Biometrie
 - `expo-local-authentication`

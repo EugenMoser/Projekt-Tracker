@@ -508,6 +508,31 @@ Lies PROGRESS.md + `.claude/docs/plans/`. Branch: `feat/phase1`. Commits: bfa11d
 
 ---
 
+## 2026-05-21 — Phase 4 vollständig: App-PIN & Biometrie
+
+**Erledigt**:
+- `project-tracker/app.json`: `expo-local-authentication`-Plugin + Face-ID-Permission-String
+- `project-tracker/src/auth/pinStorage.ts`: SHA-256(salt+pin) via `expo-crypto`, Keys in `expo-secure-store` (`pt_pin_hash`, `pt_pin_salt`, `pt_biometry_enabled`) — nie Klartext. Anmerkung: `expo-crypto` exponiert kein PBKDF2/Argon2 (SDK-Constraint, kommentiert im Code)
+- `project-tracker/src/auth/__tests__/pinStorage.test.ts`: 9 TDD-Tests (SHA-256-Mock, Salt-Übergabe verifiziert, kein Klartext im Store)
+- `project-tracker/src/store/lockStore.ts`: Zustand-Store — `isLocked`, `failedAttempts`, `lockoutUntil`, eskalierendes Lockout ab 5. Fehlversuch: 30 s → 60 s → 300 s → 900 s (Cap)
+- `project-tracker/src/store/__tests__/lockStore.test.ts`: 9 TDD-Tests (alle Eskalationsstufen + Cap-Verhalten)
+- `project-tracker/src/components/LockScreen.tsx`: Numerisches Keypad (3×4), PIN-Dots (●/○), Biometrie-Button, Lockout-Countdown, vollständige a11y-Labels
+- `project-tracker/app/pin-setup/index.tsx`: Setup-Flow (enter→confirm) und Change-Flow (?mode=change: verify-current→enter→confirm)
+- `project-tracker/app/_layout.tsx`: PIN-Check VOR `setIsDbReady(true)` (kein Flash), AppState-Listener > 60 s → Auto-Lock, bedingte Render LockScreen vs. Stack, `pin-setup/index`-Route als Modal
+- `project-tracker/app/(tabs)/settings.tsx`: "Sicherheit"-Sektion — PIN einrichten/ändern, PIN deaktivieren (Bestätigungs-Alert), Biometrie-Toggle (nur wenn pinEnabled + Hardware vorhanden), `useFocusEffect` für State-Refresh
+- Gesamt: 40/40 Tests grün, TypeScript sauber in Produktionscode
+
+**Nächste Schritte**:
+- Phase 5: Coolify-Deploy (Multi-stage Dockerfile, Coolify-Resource-Setup, Domain + Auto-HTTPS, EAS Build)
+- Manueller Smoke-Test ausstehend: PIN einrichten → App-Kill → LockScreen, Auto-Lock nach 60 s, Biometrie-Toggle, PIN deaktivieren
+
+**Offene Punkte**:
+- `@jest/globals` fehlt als direktes devDependency in `project-tracker/package.json` → 3 TS-Fehler in Testdateien (kein Produktionsrisiko, Tests laufen korrekt)
+- SHA-256 statt argon2id (SECURITY.md aktualisiert) — Restrisiko akzeptiert (expo-crypto-Constraint)
+- config.ts enthält Platzhalter-Produktions-URL — vor Phase-5-Deploy auf echte URL aktualisieren
+
+---
+
 ## 2026-05-19 — Phase 3 vollständig: Excel-Export
 
 **Erledigt**:

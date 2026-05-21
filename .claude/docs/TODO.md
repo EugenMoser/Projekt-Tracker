@@ -105,12 +105,12 @@ Tags: `#schema`, `#mobile`, `#backend`, `#sync`, `#auth`, `#export`, `#ux`, `#de
 
 ## Phase 4 — App-PIN & Biometrie
 
-- [ ] (#auth) `expo-local-authentication` integrieren
-- [ ] (#auth) PIN-Setup-Flow (4–6 Stellen, Bestätigung)
-- [ ] (#auth) Lock-Screen bei App-Start
-- [ ] (#auth) Auto-Lock nach Hintergrund-Zeit > 1 min
-- [ ] (#auth) Settings: PIN ändern, Biometrie an/aus, PIN deaktivieren
-- [ ] (#auth) Tests: kein Klartext-PIN persistiert; 5 Fehlversuche → Wartezeit
+- [x] (#auth) `expo-local-authentication` integrieren — 2026-05-21 ✓
+- [x] (#auth) PIN-Setup-Flow (4–6 Stellen, Bestätigung) — 2026-05-21 ✓
+- [x] (#auth) Lock-Screen bei App-Start — 2026-05-21 ✓
+- [x] (#auth) Auto-Lock nach Hintergrund-Zeit > 1 min — 2026-05-21 ✓
+- [x] (#auth) Settings: PIN ändern, Biometrie an/aus, PIN deaktivieren — 2026-05-21 ✓
+- [x] (#auth) Tests: kein Klartext-PIN persistiert; 5 Fehlversuche → Wartezeit — 2026-05-21 ✓ (18 Tests)
 
 ## Phase 5 — Coolify-Deploy
 
