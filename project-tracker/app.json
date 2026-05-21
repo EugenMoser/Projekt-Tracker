@@ -39,7 +39,13 @@
           }
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "$(PRODUCT_NAME) verwendet Face ID, um die App zu entsperren."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
