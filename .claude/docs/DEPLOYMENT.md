@@ -144,9 +144,88 @@ node dist/migrate.js && node dist/index.js
 | Zertifikat abgelaufen | Coolify auto-renewt; manuelle Force-Renewal möglich |
 | JWT-Secret kompromittiert | Secret rotieren → alle Sessions invalidiert → User re-auth |
 
-## Open Punkte (Phase 5)
+## Phase 5 Runbook (manual steps)
 
-- [ ] Welche Domain genau (vom User wählen)
-- [ ] Off-Site-Backup-Ziel (S3/B2/eigener Storage)
-- [ ] App-Store-Bundle-IDs für iOS/Android (für Phase 6)
-- [ ] Status-Page / Uptime-Monitoring (optional)
+### 1. Merge feature branch to main
+
+```bash
+git checkout main && git merge feat/phase1 && git push origin main
+```
+
+Coolify auto-deploy watches `main`.
+
+### 2. Add PostgreSQL service in Coolify
+
+1. Open Coolify → **New Resource** → **Database** → **PostgreSQL 16**.
+2. Set name: `projekt-tracker-db`.
+3. Set **Volume**: enabled (persistent).
+4. Under **Backups**: enable daily backups, retention 14 days.
+5. **Do NOT** enable a public port — only internal access for the backend.
+6. Note the internal **Database URL** Coolify generates (format: `postgresql://user:pass@service-name:5432/db`).
+
+### 3. Add backend application in Coolify
+
+1. **New Resource** → **Application** → **Git** → select your repo.
+2. Branch: `main`. Build Pack: **Dockerfile** (Coolify auto-detects the `Dockerfile` at repo root).
+3. Port: `3000`.
+4. Health check path: `/v1/healthz`.
+5. **Environment variables** (set all before first deploy):
+
+| Variable | Value |
+|---|---|
+| `DATABASE_URL` | Internal DB URL from step 2 |
+| `JWT_SECRET` | `openssl rand -hex 32` (run this once, copy result) |
+| `NODE_ENV` | `production` |
+| `LOG_LEVEL` | `info` |
+| `ALLOWED_ORIGINS` | leave empty unless you add a web client |
+| `PORT` | `3000` |
+
+### 4. Map domain + enable TLS
+
+1. In the backend application settings → **Domains**: add your domain (e.g., `api.example.com`).
+2. Point a DNS A record at the VPS IP.
+3. Coolify provisions Let's Encrypt automatically once DNS propagates.
+4. Test: `curl https://api.example.com/v1/healthz` → `{"ok":true}`.
+
+### 5. Trigger first deploy
+
+1. Coolify → backend app → **Deploy**.
+2. Watch the build log — first build is slowest (installing pnpm deps).
+3. Health check turns green when server is listening and migrations passed.
+
+### 6. Update EAS config with production domain
+
+In `project-tracker/eas.json`, change:
+
+```json
+"EXPO_PUBLIC_API_URL": "https://api.example.com"
+```
+
+to your actual domain. Commit + push.
+
+### 7. Produce production mobile build
+
+```bash
+cd project-tracker
+eas build --platform all --profile production
+```
+
+This submits the build to EAS cloud. When done, download the `.ipa` / `.apk` and install on device for final smoke test.
+
+### 8. Verify backup + restore
+
+1. Coolify → `projekt-tracker-db` → **Backups**: confirm a backup ran.
+2. Test restore: create a new Coolify DB service, restore the backup dump, run a `SELECT` to verify data integrity.
+3. Delete the test restore service.
+
+### 9. Health-check monitoring (optional)
+
+Coolify's built-in health check pings `/v1/healthz` every 30 s and restarts the container on failure. For external uptime monitoring, services like BetterStack Uptime (free tier) or UptimeRobot can be pointed at the same endpoint.
+
+---
+
+## Open Questions (post-Phase 5)
+
+- [ ] Off-site backup target (S3/B2/Hetzner Object Storage)
+- [ ] iOS/Android Bundle IDs for App Store submission (Phase 6)
+- [ ] Status page / public uptime URL (optional)
