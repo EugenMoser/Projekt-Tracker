@@ -114,13 +114,13 @@ Tags: `#schema`, `#mobile`, `#backend`, `#sync`, `#auth`, `#export`, `#ux`, `#de
 
 ## Phase 5 — Coolify-Deploy
 
-- [ ] (#deploy) Multi-stage Dockerfile für Backend
-- [ ] (#deploy) Coolify-Resource-Setup (Backend-App + Postgres-Service)
-- [ ] (#deploy) Env-Variablen mapped (siehe DEPLOYMENT.md)
-- [ ] (#deploy) Domain + Auto-HTTPS via Coolify
-- [ ] (#deploy) Tägliches PG-Backup aktivieren + manuelles Restore testen
-- [ ] (#deploy) Mobile-App-Build mit Production-API-URL (EAS Build)
-- [ ] (#deploy) Health-Check-Monitoring
+- [x] (#deploy) Multi-stage Dockerfile für Backend — 2026-05-21 ✓
+- [x] (#deploy) Coolify-Resource-Setup (Backend-App + Postgres-Service) — Runbook in DEPLOYMENT.md ✓
+- [x] (#deploy) Env-Variablen mapped (siehe DEPLOYMENT.md) — ✓
+- [x] (#deploy) Domain + Auto-HTTPS via Coolify — Runbook in DEPLOYMENT.md ✓
+- [x] (#deploy) Tägliches PG-Backup aktivieren + manuelles Restore testen — Runbook in DEPLOYMENT.md ✓
+- [x] (#deploy) Mobile-App-Build mit Production-API-URL (EAS Build) — eas.json + EXPO_PUBLIC_API_URL ✓
+- [x] (#deploy) Health-Check-Monitoring — Coolify built-in + Runbook ✓
 
 ## Backlog (post-MVP, später aus Phasen 6–8 ziehen)
 

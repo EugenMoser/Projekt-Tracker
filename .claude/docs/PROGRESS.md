@@ -12,6 +12,23 @@ Format pro Eintrag:
 
 ---
 
+## Phase 5 — Coolify Deploy (2026-05-21)
+
+**Erledigt**:
+- Multi-stage Dockerfile (build: schema → server → `pnpm deploy`; runtime: node:22-alpine, `packageManager: pnpm@10.28.0`, `ENV NODE_ENV=production`)
+- Schema package compiled to `dist/` with NodeNext module; exports updated; vitest alias in server; test files excluded from build output
+- CORS (`hono/cors`) + `secureHeaders` (prod-only) middleware; `ALLOWED_ORIGINS` env var; middleware integration test added
+- `sync/config.ts` uses `EXPO_PUBLIC_API_URL` (EAS-injected at build time)
+- `eas.json` with development / preview / production profiles
+- Coolify runbook documented in DEPLOYMENT.md (manual steps: Postgres service, env vars, domain, TLS, backup, EAS build)
+
+**Nächste Schritte**:
+- Phase 6: Apple Sign-In + App-Store-Listing
+
+**Offene Punkte**: keine Blocker. Phase 5 fertig.
+
+---
+
 ## 2026-05-10 — Konzept- & Doc-Setup (Phase 0 angefangen)
 
 **Erledigt**:
