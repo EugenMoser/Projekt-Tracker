@@ -2,8 +2,8 @@ import { describe, it, expect } from 'vitest'
 import BetterSQLite from 'better-sqlite3'
 import { drizzle } from 'drizzle-orm/better-sqlite3'
 import { eq } from 'drizzle-orm'
-import * as schema from '../sqlite'
-import { migrations } from '../migrations'
+import * as schema from '../sqlite.js'
+import { migrations } from '../migrations.js'
 
 function makeTestDb() {
   const sqlite = new BetterSQLite(':memory:')

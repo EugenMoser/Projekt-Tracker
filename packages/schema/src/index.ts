@@ -1,2 +1,2 @@
-export * from './sqlite'
-export * from './migrations'
+export * from './sqlite.js'
+export * from './migrations.js'
