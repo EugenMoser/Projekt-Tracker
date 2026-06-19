@@ -85,8 +85,7 @@ export default function HomeScreen() {
             color={item.color}
             isActive={item.id === activeProjectId}
             onPress={() => handleTilePress(item)}
-            // routes /projects/[id] and /projects/new are added in a later phase
-            onLongPress={() => router.push(`/projects/${item.id}` as never)}
+            onEditPress={() => router.push(`/projects/${item.id}` as never)}
           />
         )}
         contentContainerStyle={styles.list}
