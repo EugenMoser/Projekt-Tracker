@@ -98,6 +98,7 @@ export default function HomeScreen() {
         projectId={pendingStopProjectId ?? ''}
         onDone={() => { setPendingStop(null); load() }}
         onCancel={() => setPendingStop(null)}
+        onDiscard={() => { setPendingStop(null); load() }}
       />
     </View>
   )

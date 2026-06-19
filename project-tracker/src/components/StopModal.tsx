@@ -1,7 +1,7 @@
 import React from 'react'
 import { Modal, View, Text, FlatList, Pressable, TextInput, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { stopTimer } from '../repositories/timers'
+import { stopTimer, discardTimer } from '../repositories/timers'
 import { listTasksForProject, createTask, listTasks } from '../repositories/tasks'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
@@ -11,11 +11,12 @@ interface Props {
   projectId: string
   onDone: () => void
   onCancel: () => void
+  onDiscard: () => void
 }
 
 type Task = { id: string; description: string }
 
-export function StopModal({ visible, projectId, onDone, onCancel }: Props) {
+export function StopModal({ visible, projectId, onDone, onCancel, onDiscard }: Props) {
   const insets = useSafeAreaInsets()
   const [tasks, setTasks] = React.useState<Task[]>([])
   const [selectedId, setSelectedId] = React.useState<string | null>(null)
@@ -44,6 +45,28 @@ export function StopModal({ visible, projectId, onDone, onCancel }: Props) {
     } catch (e) {
       Alert.alert('Fehler', String(e))
     }
+  }
+
+  const handleDiscard = () => {
+    Alert.alert(
+      'Timer verwerfen?',
+      'Die erfasste Zeit wird gelöscht und nicht gespeichert.',
+      [
+        { text: 'Abbrechen', style: 'cancel' },
+        {
+          text: 'Ja, verwerfen',
+          style: 'destructive',
+          onPress: () => {
+            try {
+              discardTimer(OWNER_ID)
+              onDiscard()
+            } catch (e) {
+              Alert.alert('Fehler', String(e))
+            }
+          },
+        },
+      ]
+    )
   }
 
   return (
@@ -103,6 +126,14 @@ export function StopModal({ visible, projectId, onDone, onCancel }: Props) {
               <Text style={{ color: '#FFF', fontWeight: '600' }}>Speichern</Text>
             </Pressable>
           </View>
+          <Pressable
+            style={styles.btnDiscard}
+            onPress={handleDiscard}
+            accessibilityRole="button"
+            accessibilityLabel="Zeit verwerfen"
+          >
+            <Text style={styles.btnDiscardText}>Zeit verwerfen</Text>
+          </Pressable>
         </View>
       </KeyboardAvoidingView>
     </Modal>
@@ -119,4 +150,16 @@ const styles = StyleSheet.create({
   actions: { flexDirection: 'row', gap: 12, marginTop: 24 },
   btnCancel: { flex: 1, padding: 14, alignItems: 'center', borderRadius: 8, backgroundColor: '#EEE', minHeight: 44, justifyContent: 'center' },
   btnSave: { flex: 1, padding: 14, alignItems: 'center', borderRadius: 8, backgroundColor: '#4A90D9', minHeight: 44, justifyContent: 'center' },
+  btnDiscard: {
+    marginTop: 8,
+    padding: 14,
+    alignItems: 'center',
+    borderRadius: 8,
+    minHeight: 44,
+    justifyContent: 'center',
+  },
+  btnDiscardText: {
+    color: '#D32F2F',
+    fontWeight: '500',
+  },
 })
