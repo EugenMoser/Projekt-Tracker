@@ -42,6 +42,8 @@ coverage/
 
 node_modules
 
-.claude
 CLAUDE.md
-.firecrawler
+.claude/
+.firecrawl/
+.superpowers/
+docs

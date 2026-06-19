@@ -1,4 +1,4 @@
-import { eq, and, isNull } from 'drizzle-orm'
+import { eq, and, isNull, inArray } from 'drizzle-orm'
 import { db } from '../db/client'
 import * as schema from '@projekt-tracker/schema'
 import { newId } from '../utils/uuid'
@@ -6,6 +6,13 @@ import { newId } from '../utils/uuid'
 export function listTasks(userId: string) {
   return db.select().from(schema.tasks)
     .where(and(eq(schema.tasks.userId, userId), isNull(schema.tasks.deletedAt)))
+    .all()
+}
+
+export function listTasksByIds(userId: string, ids: string[]) {
+  if (ids.length === 0) return []
+  return db.select().from(schema.tasks)
+    .where(and(eq(schema.tasks.userId, userId), inArray(schema.tasks.id, ids)))
     .all()
 }
 
