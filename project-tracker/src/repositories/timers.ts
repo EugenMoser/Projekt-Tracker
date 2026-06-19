@@ -39,3 +39,9 @@ export function stopTimer(userId: string, taskId: string, notes?: string): void 
 
   db.delete(schema.timers).where(and(eq(schema.timers.id, timer.id), eq(schema.timers.userId, userId))).run()
 }
+
+export function discardTimer(userId: string): void {
+  const timer = getActiveTimer(userId)
+  if (!timer) throw new Error('No active timer')
+  db.delete(schema.timers).where(and(eq(schema.timers.id, timer.id), eq(schema.timers.userId, userId))).run()
+}
