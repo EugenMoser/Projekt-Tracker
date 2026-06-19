@@ -41,3 +41,7 @@ android/
 coverage/
 
 node_modules
+
+.claude
+CLAUDE.md
+.firecrawler

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import {
   View, Text, TextInput, Pressable,
   StyleSheet, Alert, ActivityIndicator, ScrollView,
+  KeyboardAvoidingView, Platform,
 } from 'react-native'
 import * as FileSystem from 'expo-file-system'
 import * as Sharing from 'expo-sharing'
@@ -92,6 +93,7 @@ export default function ExportScreen() {
   }
 
   return (
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text style={styles.label}>Von (YYYY-MM)</Text>
       <TextInput
@@ -153,6 +155,7 @@ export default function ExportScreen() {
           : <Text style={styles.btnText}>Export erstellen</Text>}
       </Pressable>
     </ScrollView>
+    </KeyboardAvoidingView>
   )
 }
 

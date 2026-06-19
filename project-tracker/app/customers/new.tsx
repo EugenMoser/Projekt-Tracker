@@ -60,6 +60,7 @@ export default function NewCustomerScreen() {
         <TextInput
           style={styles.input}
           placeholder="z.B. Müller GmbH"
+          placeholderTextColor="#999"
           value={name}
           onChangeText={setName}
           accessibilityLabel="Kundenname"
@@ -112,6 +113,7 @@ export default function NewCustomerScreen() {
         <TextInput
           style={styles.input}
           placeholder="Straße und Hausnummer"
+          placeholderTextColor="#999"
           value={street}
           onChangeText={setStreet}
           accessibilityLabel="Straße"
@@ -121,6 +123,7 @@ export default function NewCustomerScreen() {
           <TextInput
             style={[styles.input, styles.zipInput]}
             placeholder="PLZ"
+            placeholderTextColor="#999"
             value={zip}
             onChangeText={setZip}
             accessibilityLabel="Postleitzahl"
@@ -130,6 +133,7 @@ export default function NewCustomerScreen() {
           <TextInput
             style={[styles.input, styles.cityInput]}
             placeholder="Stadt"
+            placeholderTextColor="#999"
             value={city}
             onChangeText={setCity}
             accessibilityLabel="Stadt"
@@ -168,7 +172,7 @@ const styles = StyleSheet.create({
   sectionGap: { marginTop: 24 },
   input: {
     borderWidth: 1, borderColor: '#DDD', borderRadius: 8,
-    padding: 12, fontSize: 15, backgroundColor: '#FFF',
+    padding: 12, fontSize: 15, backgroundColor: '#FFF', color: '#000',
     marginBottom: 4,
   },
   row: { flexDirection: 'row', gap: 8 },

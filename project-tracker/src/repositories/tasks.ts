@@ -29,6 +29,20 @@ export function createTask(userId: string, description: string) {
   return id
 }
 
+export function updateTask(userId: string, id: string, description: string) {
+  db.update(schema.tasks)
+    .set({ description, updatedAt: new Date() })
+    .where(and(eq(schema.tasks.id, id), eq(schema.tasks.userId, userId)))
+    .run()
+}
+
+export function deleteTask(userId: string, id: string) {
+  db.update(schema.tasks)
+    .set({ deletedAt: new Date(), updatedAt: new Date() })
+    .where(and(eq(schema.tasks.id, id), eq(schema.tasks.userId, userId)))
+    .run()
+}
+
 export function listTags(userId: string) {
   return db.select().from(schema.tags)
     .where(and(eq(schema.tags.userId, userId), isNull(schema.tags.deletedAt)))

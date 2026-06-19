@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, TextInput, ScrollView, Pressable, StyleSheet, Alert } from 'react-native'
+import { View, Text, TextInput, ScrollView, Pressable, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native'
 import { useLocalSearchParams, router } from 'expo-router'
 import { listTasksForProject } from '../../../src/repositories/tasks'
 import { getTimeEntry, updateTimeEntry, softDeleteTimeEntry } from '../../../src/repositories/timeEntries'
@@ -51,6 +51,7 @@ export default function EditTimeEntryScreen() {
   }
 
   return (
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
     <ScrollView style={s.c} contentContainerStyle={{ gap: 12, paddingBottom: 40 }}>
       <Text style={s.label}>Datum (YYYY-MM-DD)</Text>
       <TextInput style={s.input} value={dateStr} onChangeText={setDateStr} placeholder="2026-01-15" />
@@ -90,6 +91,7 @@ export default function EditTimeEntryScreen() {
         <Text style={{ color: '#E74C3C', fontWeight: '600' }}>Zeiteintrag löschen</Text>
       </Pressable>
     </ScrollView>
+    </KeyboardAvoidingView>
   )
 }
 

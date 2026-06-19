@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, TextInput, ScrollView, Pressable, StyleSheet, Alert } from 'react-native'
+import { View, Text, TextInput, ScrollView, Pressable, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native'
 import { router } from 'expo-router'
 import { ColorPicker } from '../../src/components/ColorPicker'
 import { listCustomers } from '../../src/repositories/customers'
@@ -66,6 +66,7 @@ export default function NewProjectScreen() {
   }
 
   return (
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
     <ScrollView style={styles.container} contentContainerStyle={{ gap: 12, paddingBottom: 40 }}>
       <Text style={styles.label}>Titel *</Text>
       <TextInput
@@ -73,6 +74,7 @@ export default function NewProjectScreen() {
         value={title}
         onChangeText={setTitle}
         placeholder="Hochzeit Müller"
+        placeholderTextColor="#999"
         accessibilityLabel="Projekttitel"
       />
 
@@ -99,6 +101,7 @@ export default function NewProjectScreen() {
         onChangeText={setDescription}
         multiline
         placeholder="Optional..."
+        placeholderTextColor="#999"
         accessibilityLabel="Projektbeschreibung"
       />
 
@@ -128,6 +131,7 @@ export default function NewProjectScreen() {
           value={hourlyRate}
           onChangeText={setHourlyRate}
           placeholder="80,00 €/h"
+          placeholderTextColor="#999"
           keyboardType="decimal-pad"
           accessibilityLabel="Stundensatz in Euro"
         />
@@ -138,6 +142,7 @@ export default function NewProjectScreen() {
           value={fixedPrice}
           onChangeText={setFixedPrice}
           placeholder="1.500,00 €"
+          placeholderTextColor="#999"
           keyboardType="decimal-pad"
           accessibilityLabel="Festpreis in Euro"
         />
@@ -170,6 +175,7 @@ export default function NewProjectScreen() {
         <Text style={{ color: '#FFF', fontWeight: '600', fontSize: 16 }}>Anlegen</Text>
       </Pressable>
     </ScrollView>
+    </KeyboardAvoidingView>
   )
 }
 
@@ -184,7 +190,7 @@ const styles = StyleSheet.create({
   },
   emptyBtnText: { color: '#FFF', fontWeight: '600', fontSize: 15 },
   label: { fontSize: 13, color: '#666' },
-  input: { borderWidth: 1, borderColor: '#DDD', borderRadius: 8, padding: 12 },
+  input: { borderWidth: 1, borderColor: '#DDD', borderRadius: 8, padding: 12, backgroundColor: '#FFF', color: '#000' },
   selectRow: { padding: 10, borderRadius: 6, backgroundColor: '#F5F5F5', marginBottom: 4, minHeight: 44, justifyContent: 'center' },
   selectRowActive: { backgroundColor: '#D0E8FF' },
   selectTextActive: { fontWeight: '600', color: '#4A90D9' },
