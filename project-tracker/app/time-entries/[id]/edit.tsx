@@ -47,13 +47,17 @@ export default function EditTimeEntryScreen() {
     if (endedAt <= startedAt) { Alert.alert('Ungültig', 'Ende muss nach Start liegen.'); return }
     if (!taskId) { Alert.alert('Pflichtfeld', 'Aufgabe wählen.'); return }
 
+    let newRateCents: number | null = null
+    if (isHourly && rateStr.trim() !== '') {
+      const parsed = Math.round(parseFloat(rateStr.replace(',', '.')) * 100)
+      if (isNaN(parsed) || parsed <= 0) { Alert.alert('Ungültig', 'Stundensatz muss größer als 0 sein.'); return }
+      newRateCents = parsed
+    }
+
     updateTimeEntry(OWNER_ID, id, { startedAt, endedAt, taskId, notes: notes.trim() || undefined })
 
-    if (isHourly) {
-      const newRateCents = Math.round(parseFloat(rateStr.replace(',', '.')) * 100)
-      if (!isNaN(newRateCents) && newRateCents !== entry!.rateSnapshotCents) {
-        applyRateToTimeEntry(db, OWNER_ID, id, newRateCents)
-      }
+    if (newRateCents !== null && newRateCents !== entry!.rateSnapshotCents) {
+      applyRateToTimeEntry(db, OWNER_ID, id, newRateCents)
     }
 
     router.back()

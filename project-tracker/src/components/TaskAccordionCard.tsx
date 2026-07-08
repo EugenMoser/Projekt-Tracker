@@ -2,6 +2,7 @@ import React from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { EntryActionModal } from './EntryActionModal'
 import { formatDuration } from '../utils/time'
+import { taskAmountCents } from '../utils/money'
 
 type Entry = {
   id: string
@@ -33,13 +34,7 @@ export function TaskAccordionCard({
   const [activeEntry, setActiveEntry] = React.useState<Entry | null>(null)
 
   const totalSeconds = entries.reduce((sum, e) => sum + e.durationSeconds, 0)
-  const totalCents =
-    pricingMode === 'hourly'
-      ? entries.reduce(
-          (sum, e) => sum + Math.round((e.durationSeconds / 3600) * (e.rateSnapshotCents ?? 0)),
-          0,
-        )
-      : null
+  const totalCents = pricingMode === 'hourly' ? taskAmountCents(entries) : null
   const pct = projectTotalSeconds > 0 ? (totalSeconds / projectTotalSeconds) * 100 : 0
 
   const handleEdit = () => {

@@ -69,9 +69,13 @@ export default function EditProjectScreen() {
     const hasEntries = getProjectTotalSeconds(OWNER_ID, id) > 0
 
     if (rateRelevantChange && hasEntries) {
+      const switchingFromFixed = project.pricingMode !== 'hourly'
+      const message = switchingFromFixed
+        ? 'Bereits erfasste Zeiten haben noch keinen Stundensatz und zählen sonst 0 €, bis du sie einzeln bearbeitest. Neuen Satz rückwirkend auf diese Zeiten anwenden?'
+        : 'Soll der neue Satz auch für bereits erfasste Zeiten dieses Projekts gelten?'
       Alert.alert(
         'Stundensatz geändert',
-        'Soll der neue Satz auch für bereits erfasste Zeiten dieses Projekts gelten?',
+        message,
         [
           { text: 'Abbrechen', style: 'cancel' },
           {

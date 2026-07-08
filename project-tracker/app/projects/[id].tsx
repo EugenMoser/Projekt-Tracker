@@ -11,6 +11,7 @@ import { listTimeEntriesForProject, softDeleteTimeEntry } from '../../src/reposi
 import { listTasksByIds } from '../../src/repositories/tasks'
 import { TaskAccordionCard } from '../../src/components/TaskAccordionCard'
 import { formatDuration } from '../../src/utils/time'
+import { taskAmountCents } from '../../src/utils/money'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -59,19 +60,6 @@ export default function ProjectDetailScreen() {
       </View>
     )
 
-  const totalCents =
-    project.pricingMode === 'hourly'
-      ? entries.reduce(
-          (sum, e) => sum + Math.round((e.durationSeconds / 3600) * (e.rateSnapshotCents ?? 0)),
-          0,
-        )
-      : null
-
-  const relativeRate =
-    project.pricingMode === 'fixed' && totalSeconds > 0
-      ? Math.round((project.fixedPriceCents ?? 0) / (totalSeconds / 3600))
-      : null
-
   // Group entries by task, sorted by task total seconds desc
   const taskMap = Object.fromEntries(tasks.map((t) => [t.id, t]))
   const groupedMap: Record<string, Entry[]> = {}
@@ -86,6 +74,16 @@ export default function ProjectDetailScreen() {
       totalSeconds: taskEntries.reduce((s, e) => s + e.durationSeconds, 0),
     }))
     .sort((a, b) => b.totalSeconds - a.totalSeconds)
+
+  const totalCents =
+    project.pricingMode === 'hourly'
+      ? taskGroups.reduce((sum, g) => sum + taskAmountCents(g.entries), 0)
+      : null
+
+  const relativeRate =
+    project.pricingMode === 'fixed' && totalSeconds > 0
+      ? Math.round((project.fixedPriceCents ?? 0) / (totalSeconds / 3600))
+      : null
 
   const handleArchive = () => {
     Alert.alert(
