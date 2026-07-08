@@ -129,7 +129,18 @@ export default function ProjectDetailScreen() {
   return (
     <ScrollView style={styles.c} contentContainerStyle={styles.content}>
       <View style={[styles.header, { borderLeftColor: project.color }]}>
-        <Text style={styles.title}>{project.title}</Text>
+        <View style={styles.headerTop}>
+          <Text style={styles.title}>{project.title}</Text>
+          <Pressable
+            onPress={() => router.push(`/projects/${id}/edit`)}
+            style={styles.editBtn}
+            accessibilityRole="button"
+            accessibilityLabel="Projekt bearbeiten"
+            hitSlop={8}
+          >
+            <Text style={styles.editBtnText}>Bearbeiten</Text>
+          </Pressable>
+        </View>
         <Text style={styles.meta}>
           {project.pricingMode === 'hourly'
             ? `${((project.hourlyRateCents ?? 0) / 100).toFixed(2)} €/h`
@@ -197,6 +208,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     borderRadius: 8,
   },
+  headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  editBtn: { minHeight: 44, minWidth: 44, justifyContent: 'center', alignItems: 'flex-end' },
+  editBtnText: { color: '#4A90D9', fontWeight: '600' },
   title: { fontSize: 20, fontWeight: '700' },
   meta: { color: '#666', marginTop: 4 },
   stats: { flexDirection: 'row', paddingHorizontal: 16, paddingBottom: 8, gap: 16 },

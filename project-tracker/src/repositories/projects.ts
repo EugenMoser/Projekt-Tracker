@@ -50,7 +50,19 @@ export function createProject(userId: string, data: NewProject) {
   })
 }
 
-export function updateProject(userId: string, id: string, data: Partial<Omit<NewProject, 'taskIds'>>) {
+export function updateProject(
+  userId: string,
+  id: string,
+  data: {
+    title?: string
+    customerId?: string
+    description?: string | null
+    color?: string
+    pricingMode?: 'hourly' | 'fixed'
+    hourlyRateCents?: number | null
+    fixedPriceCents?: number | null
+  },
+) {
   return db.update(schema.projects)
     .set({ ...data, updatedAt: new Date() })
     .where(and(eq(schema.projects.id, id), eq(schema.projects.userId, userId)))
