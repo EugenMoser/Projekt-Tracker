@@ -3,6 +3,8 @@ import { View, Text, TextInput, ScrollView, Pressable, StyleSheet, Alert, Keyboa
 import { useLocalSearchParams, router } from 'expo-router'
 import { listTasksForProject } from '../../../src/repositories/tasks'
 import { getTimeEntry, updateTimeEntry, softDeleteTimeEntry } from '../../../src/repositories/timeEntries'
+import { applyRateToTimeEntry } from '../../../src/repositories/rateAdjustments'
+import { db } from '../../../src/db/client'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -29,6 +31,11 @@ export default function EditTimeEntryScreen() {
   const [taskId, setTaskId] = React.useState(entry?.taskId ?? '')
   const [notes, setNotes] = React.useState(entry?.notes ?? '')
 
+  const isHourly = entry?.pricingModeSnapshot === 'hourly'
+  const [rateStr, setRateStr] = React.useState(
+    entry?.rateSnapshotCents != null ? (entry.rateSnapshotCents / 100).toFixed(2).replace('.', ',') : '',
+  )
+
   const tasks = entry ? listTasksForProject(OWNER_ID, entry.projectId) : []
 
   if (!entry) return <View style={s.c}><Text>Nicht gefunden</Text></View>
@@ -39,7 +46,16 @@ export default function EditTimeEntryScreen() {
     if (!startedAt || !endedAt) { Alert.alert('Ungültig', 'Datum/Uhrzeit ungültig.'); return }
     if (endedAt <= startedAt) { Alert.alert('Ungültig', 'Ende muss nach Start liegen.'); return }
     if (!taskId) { Alert.alert('Pflichtfeld', 'Aufgabe wählen.'); return }
+
     updateTimeEntry(OWNER_ID, id, { startedAt, endedAt, taskId, notes: notes.trim() || undefined })
+
+    if (isHourly) {
+      const newRateCents = Math.round(parseFloat(rateStr.replace(',', '.')) * 100)
+      if (!isNaN(newRateCents) && newRateCents !== entry!.rateSnapshotCents) {
+        applyRateToTimeEntry(db, OWNER_ID, id, newRateCents)
+      }
+    }
+
     router.back()
   }
 
@@ -74,6 +90,19 @@ export default function EditTimeEntryScreen() {
       ))}
       <Text style={s.label}>Notiz</Text>
       <TextInput style={[s.input, { height: 72 }]} value={notes} onChangeText={setNotes} multiline />
+      {isHourly && (
+        <>
+          <Text style={s.label}>Stundensatz (€/h)</Text>
+          <TextInput
+            style={s.input}
+            value={rateStr}
+            onChangeText={setRateStr}
+            placeholder="80,00"
+            keyboardType="decimal-pad"
+            accessibilityLabel="Stundensatz in Euro"
+          />
+        </>
+      )}
       <Pressable
         style={s.btn}
         onPress={handleSave}
