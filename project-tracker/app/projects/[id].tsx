@@ -21,6 +21,7 @@ type Entry = {
   durationSeconds: number
   startedAt: Date
   notes: string | null
+  rateSnapshotCents: number | null
 }
 
 export default function ProjectDetailScreen() {
@@ -60,7 +61,10 @@ export default function ProjectDetailScreen() {
 
   const totalCents =
     project.pricingMode === 'hourly'
-      ? Math.round((totalSeconds / 3600) * (project.hourlyRateCents ?? 0))
+      ? entries.reduce(
+          (sum, e) => sum + Math.round((e.durationSeconds / 3600) * (e.rateSnapshotCents ?? 0)),
+          0,
+        )
       : null
 
   const relativeRate =
@@ -170,7 +174,6 @@ export default function ProjectDetailScreen() {
             entries={taskEntries}
             projectTotalSeconds={totalSeconds}
             pricingMode={project.pricingMode as 'hourly' | 'fixed'}
-            hourlyRateCents={project.hourlyRateCents}
             onEditEntry={handleEditEntry}
             onDeleteEntry={handleDeleteEntry}
           />

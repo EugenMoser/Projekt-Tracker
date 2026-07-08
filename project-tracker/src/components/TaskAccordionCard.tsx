@@ -9,6 +9,7 @@ type Entry = {
   durationSeconds: number
   startedAt: Date
   notes: string | null
+  rateSnapshotCents: number | null
 }
 
 interface Props {
@@ -16,7 +17,6 @@ interface Props {
   entries: Entry[]
   projectTotalSeconds: number
   pricingMode: 'hourly' | 'fixed'
-  hourlyRateCents: number | null | undefined
   onEditEntry: (entryId: string) => void
   onDeleteEntry: (entryId: string) => void
 }
@@ -26,7 +26,6 @@ export function TaskAccordionCard({
   entries,
   projectTotalSeconds,
   pricingMode,
-  hourlyRateCents,
   onEditEntry,
   onDeleteEntry,
 }: Props) {
@@ -35,8 +34,11 @@ export function TaskAccordionCard({
 
   const totalSeconds = entries.reduce((sum, e) => sum + e.durationSeconds, 0)
   const totalCents =
-    pricingMode === 'hourly' && hourlyRateCents
-      ? Math.round((totalSeconds / 3600) * hourlyRateCents)
+    pricingMode === 'hourly'
+      ? entries.reduce(
+          (sum, e) => sum + Math.round((e.durationSeconds / 3600) * (e.rateSnapshotCents ?? 0)),
+          0,
+        )
       : null
   const pct = projectTotalSeconds > 0 ? (totalSeconds / projectTotalSeconds) * 100 : 0
 
