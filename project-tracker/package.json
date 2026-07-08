@@ -62,7 +62,9 @@
       "**/__tests__/**/*.test.ts"
     ],
     "moduleNameMapper": {
-      "^@projekt-tracker/schema$": "<rootDir>/../packages/schema/src/index.ts"
+      "^@projekt-tracker/schema$": "<rootDir>/../packages/schema/src/index.ts",
+      "^\\./sqlite\\.js$": "<rootDir>/../packages/schema/src/sqlite.ts",
+      "^\\./migrations\\.js$": "<rootDir>/../packages/schema/src/migrations.ts"
     }
   },
   "private": true
