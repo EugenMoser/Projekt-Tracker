@@ -7,6 +7,7 @@ import {
   getProject,
   getProjectTotalSeconds,
 } from '../../src/repositories/projects'
+import { getCustomer } from '../../src/repositories/customers'
 import { listTimeEntriesForProject, softDeleteTimeEntry } from '../../src/repositories/timeEntries'
 import { listTasksByIds } from '../../src/repositories/tasks'
 import { TaskAccordionCard } from '../../src/components/TaskAccordionCard'
@@ -37,9 +38,12 @@ export default function ProjectDetailScreen() {
     return listTasksByIds(OWNER_ID, ids)
   })
   const [totalSeconds, setTotalSeconds] = React.useState(getProjectTotalSeconds(OWNER_ID, id))
+  const [customerName, setCustomerName] = React.useState<string | null>(null)
 
   const load = () => {
-    setProject(getProject(OWNER_ID, id))
+    const p = getProject(OWNER_ID, id)
+    setProject(p)
+    setCustomerName(p ? (getCustomer(OWNER_ID, p.customerId)?.name ?? null) : null)
     const rawEntries = listTimeEntriesForProject(OWNER_ID, id) as Entry[]
     setEntries(rawEntries)
     const taskIds = [...new Set(rawEntries.map((e) => e.taskId))]
@@ -128,7 +132,10 @@ export default function ProjectDetailScreen() {
     <ScrollView style={styles.c} contentContainerStyle={styles.content}>
       <View style={[styles.header, { borderLeftColor: project.color }]}>
         <View style={styles.headerTop}>
-          <Text style={styles.title}>{project.title}</Text>
+          <View style={styles.headerTitleGroup}>
+            {customerName && <Text style={styles.customerName}>{customerName}</Text>}
+            <Text style={styles.title}>{project.title}</Text>
+          </View>
           <Pressable
             onPress={() => router.push(`/projects/${id}/edit`)}
             style={styles.editBtn}
@@ -207,8 +214,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  headerTitleGroup: { flex: 1, marginRight: 8 },
   editBtn: { minHeight: 44, minWidth: 44, justifyContent: 'center', alignItems: 'flex-end' },
   editBtnText: { color: '#4A90D9', fontWeight: '600' },
+  customerName: { fontSize: 13, color: '#666', marginBottom: 2 },
   title: { fontSize: 20, fontWeight: '700' },
   meta: { color: '#666', marginTop: 4 },
   stats: { flexDirection: 'row', paddingHorizontal: 16, paddingBottom: 8, gap: 16 },
