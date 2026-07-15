@@ -1,6 +1,7 @@
 import { Pressable, View, Text, StyleSheet, GestureResponderEvent } from 'react-native'
 import * as Haptics from 'expo-haptics'
 import { DotsButton } from './RowActionMenu'
+import { getContrastTextColor } from '../utils/color'
 
 interface Props {
   id: string
@@ -13,6 +14,9 @@ interface Props {
 }
 
 export function ProjectTile({ title, customerName, color, isActive, onPress, onEditPress }: Props) {
+  const textColor = getContrastTextColor(color)
+  const secondaryTextColor = textColor === '#000000' ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.8)'
+
   const handlePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
     onPress()
@@ -32,16 +36,16 @@ export function ProjectTile({ title, customerName, color, isActive, onPress, onE
       accessibilityState={{ selected: isActive }}
     >
       <View style={styles.body}>
-        <Text style={styles.title} numberOfLines={2}>{title}</Text>
-        <Text style={styles.customer} numberOfLines={1}>{customerName}</Text>
+        <Text style={[styles.title, { color: textColor }]} numberOfLines={2}>{title}</Text>
+        <Text style={[styles.customer, { color: secondaryTextColor }]} numberOfLines={1}>{customerName}</Text>
       </View>
       <View style={styles.footer}>
         <DotsButton
           onPress={handleEditPress}
           accessibilityLabel={`${title} bearbeiten`}
-          color="#FFF"
+          color={textColor}
         />
-        <Text style={styles.icon} accessibilityElementsHidden>{isActive ? '⏸' : '▶'}</Text>
+        <Text style={[styles.icon, { color: textColor }]} accessibilityElementsHidden>{isActive ? '⏸' : '▶'}</Text>
       </View>
     </Pressable>
   )
@@ -50,8 +54,8 @@ export function ProjectTile({ title, customerName, color, isActive, onPress, onE
 const styles = StyleSheet.create({
   tile: { borderRadius: 12, padding: 14, flex: 1, margin: 6, minHeight: 100 },
   body: { flex: 1 },
-  title: { color: '#FFF', fontWeight: '700', fontSize: 15, marginBottom: 4 },
-  customer: { color: 'rgba(255,255,255,0.8)', fontSize: 12 },
+  title: { fontWeight: '700', fontSize: 15, marginBottom: 4 },
+  customer: { fontSize: 12 },
   footer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' },
-  icon: { color: '#FFF', fontSize: 20 },
+  icon: { fontSize: 20 },
 })
