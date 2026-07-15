@@ -4,6 +4,7 @@ import { useFocusEffect } from 'expo-router'
 import {
   listTasks, createTask, updateTask, deleteTask, upsertTag, setTaskTags, getTagsForTask,
 } from '../../src/repositories/tasks'
+import { DotsButton, RowActionMenu, type RowAction } from '../../src/components/RowActionMenu'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -17,6 +18,7 @@ export default function TasksScreen() {
   const [editDesc, setEditDesc] = React.useState('')
   const [editingTagsFor, setEditingTagsFor] = React.useState<string | null>(null)
   const [newTagText, setNewTagText] = React.useState('')
+  const [menuTask, setMenuTask] = React.useState<Task | null>(null)
 
   const load = () => {
     const rawTasks = listTasks(OWNER_ID)
@@ -34,17 +36,43 @@ export default function TasksScreen() {
     }
   }
 
-  const handleLongPressTask = (task: Task) => {
-    Alert.alert(task.description, undefined, [
-      { text: 'Bearbeiten', onPress: () => { setEditingTask(task); setEditDesc(task.description) } },
-      {
-        text: 'Löschen', style: 'destructive', onPress: () => {
-          deleteTask(OWNER_ID, task.id); load()
-        }
-      },
-      { text: 'Abbrechen', style: 'cancel' },
-    ])
+  const handleDeleteTask = (task: Task) => {
+    setMenuTask(null)
+    Alert.alert(
+      'Aufgabe löschen?',
+      `„${task.description}" wird unwiderruflich gelöscht.`,
+      [
+        { text: 'Abbrechen', style: 'cancel' },
+        {
+          text: 'Löschen',
+          style: 'destructive',
+          onPress: () => {
+            deleteTask(OWNER_ID, task.id)
+            load()
+          },
+        },
+      ],
+    )
   }
+
+  const menuActions: RowAction[] = menuTask
+    ? [
+        {
+          label: 'Bearbeiten',
+          onPress: () => {
+            const task = menuTask
+            setMenuTask(null)
+            setEditingTask(task)
+            setEditDesc(task.description)
+          },
+        },
+        {
+          label: 'Löschen',
+          destructive: true,
+          onPress: () => handleDeleteTask(menuTask),
+        },
+      ]
+    : []
 
   const handleSaveEdit = () => {
     if (!editDesc.trim() || !editingTask) return
@@ -79,21 +107,33 @@ export default function TasksScreen() {
         data={tasks}
         keyExtractor={(t) => t.id}
         renderItem={({ item }) => (
-          <Pressable style={styles.taskRow} onLongPress={() => handleLongPressTask(item)}>
-            <Text style={styles.taskDesc}>{item.description}</Text>
-            <View style={styles.tagRow}>
-              {item.tags.map((tag) => (
-                <Pressable key={tag.id} style={styles.tag}
-                  onLongPress={() => { handleRemoveTag(item.id, tag.id, item.tags.map((t) => t.id)) }}>
-                  <Text style={styles.tagText}>{tag.title}</Text>
+          <View style={styles.taskRow}>
+            <View style={styles.taskRowContent}>
+              <Text style={styles.taskDesc}>{item.description}</Text>
+              <View style={styles.tagRow}>
+                {item.tags.map((tag) => (
+                  <Pressable key={tag.id} style={styles.tag}
+                    onLongPress={() => { handleRemoveTag(item.id, tag.id, item.tags.map((t) => t.id)) }}>
+                    <Text style={styles.tagText}>{tag.title}</Text>
+                  </Pressable>
+                ))}
+                <Pressable style={[styles.tag, styles.tagAdd]} onPress={() => setEditingTagsFor(item.id)}>
+                  <Text style={styles.tagText}>+ Tag</Text>
                 </Pressable>
-              ))}
-              <Pressable style={[styles.tag, styles.tagAdd]} onPress={() => setEditingTagsFor(item.id)}>
-                <Text style={styles.tagText}>+ Tag</Text>
-              </Pressable>
+              </View>
             </View>
-          </Pressable>
+            <DotsButton
+              onPress={() => setMenuTask(item)}
+              accessibilityLabel={`Aktionen für ${item.description}`}
+            />
+          </View>
         )}
+      />
+      <RowActionMenu
+        visible={menuTask !== null}
+        title={menuTask?.description}
+        actions={menuActions}
+        onClose={() => setMenuTask(null)}
       />
 
       {/* Add task modal */}
@@ -180,7 +220,16 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
   addBtn: { backgroundColor: '#4A90D9', padding: 14, borderRadius: 8, alignItems: 'center', marginBottom: 16 },
   addBtnText: { color: '#FFF', fontWeight: '600' },
-  taskRow: { backgroundColor: '#FFF', borderRadius: 8, padding: 14, marginBottom: 8 },
+  taskRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    backgroundColor: '#FFF',
+    borderRadius: 8,
+    padding: 14,
+    marginBottom: 8,
+  },
+  taskRowContent: { flex: 1, marginRight: 8 },
   taskDesc: { fontSize: 15, fontWeight: '600', marginBottom: 6 },
   tagRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   tag: { backgroundColor: '#E8F4FE', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
