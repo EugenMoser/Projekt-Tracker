@@ -1,5 +1,5 @@
 import React from 'react'
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native'
+import { GestureResponderEvent, Modal, Pressable, StyleSheet, Text, View } from 'react-native'
 
 export interface RowAction {
   label: string
@@ -55,11 +55,12 @@ export function RowActionMenu({ visible, title, actions, onClose }: RowActionMen
 }
 
 interface DotsButtonProps {
-  onPress: () => void
+  onPress: (event: GestureResponderEvent) => void
   accessibilityLabel: string
+  color?: string
 }
 
-export function DotsButton({ onPress, accessibilityLabel }: DotsButtonProps) {
+export function DotsButton({ onPress, accessibilityLabel, color = '#333' }: DotsButtonProps) {
   return (
     <Pressable
       style={styles.dots}
@@ -68,7 +69,7 @@ export function DotsButton({ onPress, accessibilityLabel }: DotsButtonProps) {
       accessibilityLabel={accessibilityLabel}
       hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
     >
-      <Text style={styles.dotsText}>•••</Text>
+      <Text style={[styles.dotsText, { color }]}>•••</Text>
     </Pressable>
   )
 }
@@ -140,6 +141,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     letterSpacing: 2,
-    color: '#555',
+    color: '#333',
   },
 })

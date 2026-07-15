@@ -1,6 +1,7 @@
 import React from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { EntryActionModal } from './EntryActionModal'
+import { DotsButton } from './RowActionMenu'
 import { formatDuration } from '../utils/time'
 import { taskAmountCents } from '../utils/money'
 
@@ -85,15 +86,10 @@ export function TaskAccordionCard({
                   {entry.notes ? ` · ${entry.notes}` : ''}
                 </Text>
               </View>
-              <Pressable
-                style={styles.kebab}
+              <DotsButton
                 onPress={() => setActiveEntry(entry)}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                accessibilityRole="button"
                 accessibilityLabel={`Optionen für Eintrag vom ${new Date(entry.startedAt).toLocaleDateString('de-DE')}`}
-              >
-                <Text style={styles.kebabText}>•••</Text>
-              </Pressable>
+              />
             </View>
           ))}
         </View>
@@ -190,16 +186,5 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#888',
     marginTop: 2,
-  },
-  kebab: {
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    minHeight: 44,
-    justifyContent: 'center',
-  },
-  kebabText: {
-    fontSize: 14,
-    color: '#BBB',
-    letterSpacing: 1,
   },
 })

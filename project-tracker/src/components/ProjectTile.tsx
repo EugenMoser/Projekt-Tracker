@@ -1,5 +1,6 @@
 import { Pressable, View, Text, StyleSheet, GestureResponderEvent } from 'react-native'
 import * as Haptics from 'expo-haptics'
+import { DotsButton } from './RowActionMenu'
 
 interface Props {
   id: string
@@ -35,15 +36,11 @@ export function ProjectTile({ title, customerName, color, isActive, onPress, onE
         <Text style={styles.customer} numberOfLines={1}>{customerName}</Text>
       </View>
       <View style={styles.footer}>
-        <Pressable
+        <DotsButton
           onPress={handleEditPress}
-          style={styles.editButton}
-          accessibilityRole="button"
           accessibilityLabel={`${title} bearbeiten`}
-          hitSlop={8}
-        >
-          <Text style={styles.editIcon}>···</Text>
-        </Pressable>
+          color="#FFF"
+        />
         <Text style={styles.icon} accessibilityElementsHidden>{isActive ? '⏸' : '▶'}</Text>
       </View>
     </Pressable>
@@ -56,7 +53,5 @@ const styles = StyleSheet.create({
   title: { color: '#FFF', fontWeight: '700', fontSize: 15, marginBottom: 4 },
   customer: { color: 'rgba(255,255,255,0.8)', fontSize: 12 },
   footer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' },
-  editButton: { padding: 4 },
-  editIcon: { fontSize: 16 },
   icon: { color: '#FFF', fontSize: 20 },
 })
