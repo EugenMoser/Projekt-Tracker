@@ -128,10 +128,6 @@ export default function SettingsScreen() {
           <Text style={styles.label}>Auftragsarten</Text>
           <Text>›</Text>
         </Pressable>
-        <Pressable style={styles.row} onPress={() => router.push('/customers')}>
-          <Text style={styles.label}>Kunden</Text>
-          <Text>›</Text>
-        </Pressable>
       </View>
     </View>
   )
