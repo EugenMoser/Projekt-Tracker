@@ -33,6 +33,9 @@ export function StopModal({ visible, projectId, onDone, onCancel, onDiscard }: P
     }
   }, [visible, projectId])
 
+  const willCreateNewTask = !selectedId && newTaskText.trim().length > 0
+  const saveLabel = willCreateNewTask ? '+ Aufgabe anlegen' : 'Speichern'
+
   const filterQuery = newTaskText.trim().toLowerCase()
   const filteredTasks = filterQuery
     ? tasks.filter((t) => t.description.toLowerCase().includes(filterQuery))
@@ -159,9 +162,9 @@ export function StopModal({ visible, projectId, onDone, onCancel, onDiscard }: P
               style={styles.btnSave}
               onPress={handleSave}
               accessibilityRole="button"
-              accessibilityLabel="Timer speichern und stoppen"
+              accessibilityLabel={willCreateNewTask ? 'Neue Aufgabe anlegen und Timer speichern' : 'Timer speichern und stoppen'}
             >
-              <Text style={{ color: '#FFF', fontWeight: '600' }}>Speichern</Text>
+              <Text style={{ color: '#FFF', fontWeight: '600' }}>{saveLabel}</Text>
             </Pressable>
           </View>
           <Pressable
