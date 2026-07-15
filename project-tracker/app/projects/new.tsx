@@ -2,6 +2,7 @@ import React from 'react'
 import { View, Text, TextInput, ScrollView, Pressable, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native'
 import { router } from 'expo-router'
 import { ColorPicker } from '../../src/components/ColorPicker'
+import { RowActionMenu, type RowAction } from '../../src/components/RowActionMenu'
 import { listCustomers } from '../../src/repositories/customers'
 import { listTasks } from '../../src/repositories/tasks'
 import { createProject } from '../../src/repositories/projects'
@@ -15,6 +16,7 @@ export default function NewProjectScreen() {
 
   const [title, setTitle] = React.useState('')
   const [customerId, setCustomerId] = React.useState(customers[0]?.id ?? '')
+  const [customerMenuVisible, setCustomerMenuVisible] = React.useState(false)
   const [description, setDescription] = React.useState('')
   const [color, setColor] = React.useState(DEFAULT_COLOR)
   const [pricingMode, setPricingMode] = React.useState<'hourly' | 'fixed'>('hourly')
@@ -24,6 +26,25 @@ export default function NewProjectScreen() {
 
   const toggleTask = (id: string) =>
     setSelectedTaskIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id])
+
+  const selectedCustomer = customers.find((c) => c.id === customerId)
+
+  const customerMenuActions: RowAction[] = [
+    ...customers.map((c) => ({
+      label: `${c.customerNumber} – ${c.name}`,
+      onPress: () => {
+        setCustomerId(c.id)
+        setCustomerMenuVisible(false)
+      },
+    })),
+    {
+      label: '+ Neuen Kunden anlegen',
+      onPress: () => {
+        setCustomerMenuVisible(false)
+        router.push('/customers/new')
+      },
+    },
+  ]
 
   const parseEurosToCents = (s: string): number | undefined => {
     const n = parseFloat(s.replace(',', '.'))
@@ -79,20 +100,27 @@ export default function NewProjectScreen() {
       />
 
       <Text style={styles.label}>Kunde *</Text>
-      {customers.map((c) => (
-        <Pressable
-          key={c.id}
-          style={[styles.selectRow, c.id === customerId && styles.selectRowActive]}
-          onPress={() => setCustomerId(c.id)}
-          accessibilityRole="radio"
-          accessibilityState={{ checked: c.id === customerId }}
-          accessibilityLabel={`Kunde ${c.customerNumber} ${c.name}`}
-        >
-          <Text style={c.id === customerId ? styles.selectTextActive : undefined}>
-            {c.id === customerId ? '◉' : '○'} {c.customerNumber} – {c.name}
-          </Text>
-        </Pressable>
-      ))}
+      <Pressable
+        style={styles.dropdown}
+        onPress={() => setCustomerMenuVisible(true)}
+        accessibilityRole="button"
+        accessibilityLabel={
+          selectedCustomer
+            ? `Kunde: ${selectedCustomer.customerNumber} ${selectedCustomer.name}. Antippen zum Ändern.`
+            : 'Kunde auswählen'
+        }
+      >
+        <Text style={styles.dropdownText}>
+          {selectedCustomer ? `${selectedCustomer.customerNumber} – ${selectedCustomer.name}` : 'Kunde auswählen'}
+        </Text>
+        <Text style={styles.dropdownChevron}>▾</Text>
+      </Pressable>
+      <RowActionMenu
+        visible={customerMenuVisible}
+        title="Kunde auswählen"
+        actions={customerMenuActions}
+        onClose={() => setCustomerMenuVisible(false)}
+      />
 
       <Text style={styles.label}>Beschreibung</Text>
       <TextInput
@@ -191,6 +219,13 @@ const styles = StyleSheet.create({
   emptyBtnText: { color: '#FFF', fontWeight: '600', fontSize: 15 },
   label: { fontSize: 13, color: '#666' },
   input: { borderWidth: 1, borderColor: '#DDD', borderRadius: 8, padding: 12, backgroundColor: '#FFF', color: '#000' },
+  dropdown: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    borderWidth: 1, borderColor: '#DDD', borderRadius: 8, paddingHorizontal: 12,
+    backgroundColor: '#FFF', minHeight: 44,
+  },
+  dropdownText: { fontSize: 15, color: '#000', flexShrink: 1 },
+  dropdownChevron: { fontSize: 14, color: '#666', marginLeft: 8 },
   selectRow: { padding: 10, borderRadius: 6, backgroundColor: '#F5F5F5', marginBottom: 4, minHeight: 44, justifyContent: 'center' },
   selectRowActive: { backgroundColor: '#D0E8FF' },
   selectTextActive: { fontWeight: '600', color: '#4A90D9' },
