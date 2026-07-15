@@ -2,7 +2,7 @@ import React from 'react'
 import { Modal, View, Text, FlatList, Pressable, TextInput, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { stopTimer, discardTimer } from '../repositories/timers'
-import { listTasksForProject, createTask, listTasks } from '../repositories/tasks'
+import { createTask, listTasks } from '../repositories/tasks'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -24,11 +24,16 @@ export function StopModal({ visible, projectId, onDone, onCancel, onDiscard }: P
 
   React.useEffect(() => {
     if (visible) {
-      const projectTasks = listTasksForProject(OWNER_ID, projectId)
-      setTasks(projectTasks.length > 0 ? projectTasks : listTasks(OWNER_ID))
+      setTasks(listTasks(OWNER_ID))
       setSelectedId(null)
+      setNewTaskText('')
     }
-  }, [visible, projectId])
+  }, [visible])
+
+  const filterQuery = newTaskText.trim().toLowerCase()
+  const filteredTasks = filterQuery
+    ? tasks.filter((t) => t.description.toLowerCase().includes(filterQuery))
+    : tasks
 
   const handleSave = () => {
     let taskId = selectedId
@@ -84,7 +89,7 @@ export function StopModal({ visible, projectId, onDone, onCancel, onDiscard }: P
           <Text style={styles.heading}>Timer stoppen</Text>
           <Text style={styles.label}>Welche Aufgabe?</Text>
           <FlatList
-            data={tasks}
+            data={filteredTasks}
             keyExtractor={(t) => t.id}
             style={{ flex: 1 }}
             keyboardShouldPersistTaps="handled"
@@ -100,13 +105,20 @@ export function StopModal({ visible, projectId, onDone, onCancel, onDiscard }: P
                 <Text>{item.id === selectedId ? '◉' : '○'} {item.description}</Text>
               </Pressable>
             )}
+            ListEmptyComponent={
+              filterQuery ? (
+                <Text style={styles.emptyHint}>
+                  Keine Treffer für „{newTaskText.trim()}“ — Speichern legt sie als neue Aufgabe an.
+                </Text>
+              ) : null
+            }
           />
           <TextInput
             style={styles.input}
-            placeholder="+ Neue Aufgabe"
+            placeholder="Suchen oder neue Aufgabe eingeben"
             value={newTaskText}
             onChangeText={(t) => { setNewTaskText(t); setSelectedId(null) }}
-            accessibilityLabel="Neue Aufgabe eingeben"
+            accessibilityLabel="Aufgabe suchen oder neue Aufgabe eingeben"
           />
           <View style={styles.actions}>
             <Pressable
@@ -147,6 +159,7 @@ const styles = StyleSheet.create({
   taskRow: { padding: 14, borderRadius: 8, marginBottom: 6, backgroundColor: '#F5F5F5', minHeight: 44, justifyContent: 'center' },
   taskSelected: { backgroundColor: '#D0E8FF' },
   input: { borderWidth: 1, borderColor: '#DDD', borderRadius: 8, padding: 12, marginTop: 8, minHeight: 44 },
+  emptyHint: { padding: 14, color: '#666', fontStyle: 'italic' },
   actions: { flexDirection: 'row', gap: 12, marginTop: 24 },
   btnCancel: { flex: 1, padding: 14, alignItems: 'center', borderRadius: 8, backgroundColor: '#EEE', minHeight: 44, justifyContent: 'center' },
   btnSave: { flex: 1, padding: 14, alignItems: 'center', borderRadius: 8, backgroundColor: '#4A90D9', minHeight: 44, justifyContent: 'center' },
