@@ -1,4 +1,5 @@
 import React from 'react'
+import { Ionicons } from '@expo/vector-icons'
 import { View, Text, FlatList, Pressable, TextInput, Modal, StyleSheet, Alert } from 'react-native'
 import { listOrderTypes, createOrderType, updateOrderType, deleteOrderType } from '../../src/repositories/orderTypes'
 import { useFocusEffect } from 'expo-router'
@@ -70,6 +71,8 @@ export default function OrderTypesScreen() {
           <Pressable
             style={styles.row}
             onPress={() => openEdit(item)}
+            accessibilityRole="button"
+            accessibilityLabel={`Auftragsart ${item.digit} ${item.name} bearbeiten`}
             onLongPress={() => Alert.alert('Löschen?', item.name, [
               { text: 'Abbrechen', style: 'cancel' },
               { text: 'Löschen', style: 'destructive', onPress: () => { deleteOrderType(OWNER_ID, item.id); load() } },
@@ -77,7 +80,7 @@ export default function OrderTypesScreen() {
           >
             <Text style={styles.digit}>{item.digit}</Text>
             <Text style={styles.name}>{item.name}</Text>
-            <Text style={styles.editHint}>Tippen zum Bearbeiten</Text>
+            <Ionicons name="create-outline" size={20} color="#4A90D9" />
           </Pressable>
         )}
       />
@@ -125,7 +128,6 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', padding: 14, backgroundColor: '#FFF', borderRadius: 8, marginBottom: 8 },
   digit: { width: 32, fontWeight: '700', fontSize: 16, color: '#4A90D9' },
   name: { flex: 1, fontSize: 15 },
-  editHint: { fontSize: 11, color: '#BBB' },
   modal: { flex: 1, padding: 24, backgroundColor: '#FFF' },
   modalTitle: { fontSize: 20, fontWeight: '700', marginBottom: 16 },
   input: { borderWidth: 1, borderColor: '#DDD', borderRadius: 8, padding: 12, marginBottom: 12, backgroundColor: '#FFF', color: '#000' },

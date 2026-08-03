@@ -1,4 +1,5 @@
 import React from 'react'
+import { Ionicons } from '@expo/vector-icons'
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router'
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 
@@ -143,7 +144,7 @@ export default function ProjectDetailScreen() {
             accessibilityLabel="Projekt bearbeiten"
             hitSlop={8}
           >
-            <Text style={styles.editBtnText}>Bearbeiten</Text>
+            <Ionicons name="create-outline" size={22} color="#4A90D9" />
           </Pressable>
         </View>
         <Text style={styles.meta}>
@@ -216,7 +217,6 @@ const styles = StyleSheet.create({
   headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   headerTitleGroup: { flex: 1, marginRight: 8 },
   editBtn: { minHeight: 44, minWidth: 44, justifyContent: 'center', alignItems: 'flex-end' },
-  editBtnText: { color: '#4A90D9', fontWeight: '600' },
   customerName: { fontSize: 13, color: '#666', marginBottom: 2 },
   title: { fontSize: 20, fontWeight: '700' },
   meta: { color: '#666', marginTop: 4 },
