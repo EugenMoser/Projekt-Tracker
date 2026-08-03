@@ -32,21 +32,50 @@ function useKeyboardOverlap(
 ) {
   const [overlap, setOverlap] = React.useState(0)
   const keyboardCoordsRef = React.useRef<KeyboardEndCoordinates | null>(null)
+  // Height of the wrapper view with no keyboard showing. Only needed by the
+  // insideModal branch below, to tell how much the OS already shrank the
+  // dialog on its own before we add any padding of our own.
+  const baseHeightRef = React.useRef<number | null>(null)
 
   const remeasure = React.useCallback(() => {
-    const coords = keyboardCoordsRef.current
-    if (!coords) return
-    if (insideModal) {
-      // Fabric makes the modal's host view its own layout root, so measuring
-      // below it never sees the sheet's screen offset — see the doc comment
-      // on `insideModal` for the full story. The keyboard height itself is
-      // the overlap here.
-      const next = Math.max(coords.height, 0)
-      setOverlap((prev) => (Math.abs(prev - next) > 1 ? next : prev))
-      return
-    }
+    // Both paths measure now: the non-modal path still needs `y`/`height` in
+    // window coordinates, and the insideModal path needs `height` to detect
+    // how far Android's own dialog resize already ate into the keyboard
+    // overlap (see the doc comment on `insideModal`).
     ref.current?.measureInWindow((_x, y, _width, height) => {
       if (!Number.isFinite(y) || !Number.isFinite(height)) return
+      const coords = keyboardCoordsRef.current
+      if (!coords) {
+        // No keyboard showing: this is the undisturbed height, captured as
+        // the baseline the insideModal branch compares against once the
+        // keyboard (and possibly the dialog resize) kicks in. Only ever grow
+        // it, never shrink it: Android's dialog resize and the
+        // keyboardDidShow event come from two different sources (the dialog
+        // window vs. the activity root view) with no guaranteed order. If
+        // onLayout fires with the already-shrunk height before the keyboard
+        // event sets `coords`, this branch would otherwise freeze the
+        // shrunk height as the baseline and reintroduce the double-counting
+        // this whole path exists to avoid.
+        baseHeightRef.current = Math.max(baseHeightRef.current ?? 0, height)
+        const next = 0
+        setOverlap((prev) => (Math.abs(prev - next) > 1 ? next : prev))
+        return
+      }
+      if (insideModal) {
+        // Android's ReactModalHostView.kt puts the dialog window in
+        // SOFT_INPUT_ADJUST_RESIZE, so the OS already shrinks this view by
+        // (up to) the keyboard height on its own — padding by the full
+        // keyboard height on top would double-count and crush the content.
+        // iOS's pageSheet/formSheet is never resized, so there `height`
+        // stays at the baseline and the full keyboard height is still
+        // correct. Subtracting whatever the OS already reclaimed makes both
+        // platforms fall out of the same formula without a Platform.OS branch.
+        const baseHeight = baseHeightRef.current ?? height
+        const alreadyShrunk = Math.max(baseHeight - height, 0)
+        const next = Math.max(coords.height - alreadyShrunk, 0)
+        setOverlap((prev) => (Math.abs(prev - next) > 1 ? next : prev))
+        return
+      }
       const next = Math.max(y + height - coords.screenY, 0)
       setOverlap((prev) => (Math.abs(prev - next) > 1 ? next : prev))
     })
@@ -102,15 +131,25 @@ function useKeyboardOverlap(
 interface KeyboardAwareViewProps {
   children: React.ReactNode
   /**
-   * Set when this view sits inside a RN `<Modal>`. Under Fabric, the modal's
-   * host view (`ModalHostViewShadowNode`) is itself a layout root, so
-   * `LayoutableShadowNode::getRelativeLayoutMetrics` stops the ancestor walk
-   * there — `measureInWindow` below it returns card-relative coordinates
-   * (`y = 0`, `height` = card height) instead of window coordinates, which is
-   * exactly the wrong math this component otherwise avoids. When set, we skip
-   * the measurement and use the keyboard height as the overlap directly; that
-   * is correct as long as the sheet reaches the bottom of the screen, which
-   * pageSheet/formSheet do on the phone and Android modals always do.
+   * Set when this view sits inside a RN `<Modal>`. Two platform quirks apply
+   * here, both worked around below instead of via a `Platform.OS` branch:
+   *
+   * 1. Under Fabric, the modal's host view (`ModalHostViewShadowNode`) is
+   *    itself a layout root, so `LayoutableShadowNode::getRelativeLayoutMetrics`
+   *    stops the ancestor walk there — `measureInWindow`'s `y` below it is
+   *    card-relative, not window-relative, and useless for the non-modal
+   *    formula. `height` is unaffected (it's the view's own dimension, not
+   *    its position), so it stays usable.
+   * 2. Android's `ReactModalHostView.kt` puts the dialog window in
+   *    `SOFT_INPUT_ADJUST_RESIZE`, so the OS already shrinks the dialog (and
+   *    this view) by the keyboard height on its own. iOS's pageSheet/
+   *    formSheet is never resized. Padding by the full keyboard height would
+   *    double-count on Android and crush the content to nothing.
+   *
+   * When set, this component measures its own height instead of using `y`,
+   * compares it against the height it had with no keyboard showing, and
+   * pads only by whatever the OS did *not* already reclaim — which comes out
+   * to the full keyboard height on iOS and to (near) zero on Android.
    */
   insideModal?: boolean
 }
@@ -124,9 +163,10 @@ export function KeyboardAwareView({ children, insideModal = false }: KeyboardAwa
     <View
       ref={ref}
       // Re-measure when the frame moves: a window that does resize for the keyboard
-      // reports its new height here, not through a keyboard event. Not needed for
-      // the insideModal path, which never measures the frame.
-      onLayout={insideModal ? undefined : remeasure}
+      // reports its new height here, not through a keyboard event. This is how the
+      // insideModal path learns about Android's dialog resize, too — it has no
+      // keyboard event of its own.
+      onLayout={remeasure}
       collapsable={false}
       style={[styles.flex, { paddingBottom: overlap }]}
     >
