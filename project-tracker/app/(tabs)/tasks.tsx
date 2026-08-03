@@ -1,10 +1,11 @@
 import React from 'react'
-import { View, Text, FlatList, Pressable, TextInput, Modal, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native'
+import { View, Text, FlatList, Pressable, TextInput, Modal, StyleSheet, Alert } from 'react-native'
 import { useFocusEffect } from 'expo-router'
 import {
   listTasks, createTask, updateTask, deleteTask, upsertTag, setTaskTags, getTagsForTask,
 } from '../../src/repositories/tasks'
 import { DotsButton, RowActionMenu, type RowAction } from '../../src/components/RowActionMenu'
+import { KeyboardAwareView } from '../../src/components/KeyboardAwareView'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -138,7 +139,7 @@ export default function TasksScreen() {
 
       {/* Add task modal */}
       <Modal visible={showAdd} animationType="slide" presentationStyle="formSheet">
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <KeyboardAwareView insideModal>
           <View style={styles.modal}>
             <Text style={styles.modalTitle}>Neue Aufgabe</Text>
             <TextInput
@@ -156,12 +157,12 @@ export default function TasksScreen() {
               <Text>Abbrechen</Text>
             </Pressable>
           </View>
-        </KeyboardAvoidingView>
+        </KeyboardAwareView>
       </Modal>
 
       {/* Edit task modal */}
       <Modal visible={!!editingTask} animationType="slide" presentationStyle="formSheet">
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <KeyboardAwareView insideModal>
           <View style={styles.modal}>
             <Text style={styles.modalTitle}>Aufgabe bearbeiten</Text>
             <TextInput
@@ -179,12 +180,12 @@ export default function TasksScreen() {
               <Text>Abbrechen</Text>
             </Pressable>
           </View>
-        </KeyboardAvoidingView>
+        </KeyboardAwareView>
       </Modal>
 
       {/* Tag edit modal */}
       <Modal visible={!!editingTagsFor} animationType="slide" presentationStyle="formSheet">
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <KeyboardAwareView insideModal>
           <View style={styles.modal}>
             <Text style={styles.modalTitle}>Stichworte für „{taskBeingTagged?.description}"</Text>
             <View style={styles.tagRow}>
@@ -210,7 +211,7 @@ export default function TasksScreen() {
               <Text>Fertig</Text>
             </Pressable>
           </View>
-        </KeyboardAvoidingView>
+        </KeyboardAwareView>
       </Modal>
     </View>
   )

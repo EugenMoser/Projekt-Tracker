@@ -1,8 +1,9 @@
 import React from 'react'
-import { Modal, View, Text, SectionList, Pressable, TextInput, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native'
+import { Modal, View, Text, SectionList, Pressable, TextInput, StyleSheet, Alert } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { stopTimer, discardTimer } from '../repositories/timers'
 import { createTask, listTasks, listTasksForProject } from '../repositories/tasks'
+import { KeyboardAwareView } from './KeyboardAwareView'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -102,10 +103,7 @@ export function StopModal({ visible, projectId, onDone, onCancel, onDiscard }: P
       presentationStyle="pageSheet"
       accessibilityViewIsModal
     >
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >
+      <KeyboardAwareView insideModal>
         <View style={[styles.container, { paddingBottom: Math.max(24, insets.bottom + 16) }]}>
           <Text style={styles.heading}>Timer stoppen</Text>
           <Text style={styles.label}>Welche Aufgabe?</Text>
@@ -176,7 +174,7 @@ export function StopModal({ visible, projectId, onDone, onCancel, onDiscard }: P
             <Text style={styles.btnDiscardText}>Zeit verwerfen</Text>
           </Pressable>
         </View>
-      </KeyboardAvoidingView>
+      </KeyboardAwareView>
     </Modal>
   )
 }

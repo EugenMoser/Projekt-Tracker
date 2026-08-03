@@ -1,6 +1,7 @@
 import React from 'react'
-import { View, Text, TextInput, ScrollView, Pressable, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native'
+import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native'
 import { router, useLocalSearchParams } from 'expo-router'
+import { KeyboardAwareScrollView } from '../../../src/components/KeyboardAwareView'
 import { ColorPicker } from '../../../src/components/ColorPicker'
 import { RowActionMenu, type RowAction } from '../../../src/components/RowActionMenu'
 import { TaskPickerSheet } from '../../../src/components/TaskPickerSheet'
@@ -146,91 +147,89 @@ export default function EditProjectScreen() {
   }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <ScrollView style={styles.container} contentContainerStyle={{ gap: 12, paddingBottom: 40 }}>
-        <Text style={styles.label}>Titel *</Text>
-        <TextInput style={styles.input} value={title} onChangeText={setTitle} accessibilityLabel="Projekttitel" />
+    <KeyboardAwareScrollView style={styles.container} contentContainerStyle={{ gap: 12, paddingBottom: 40 }}>
+      <Text style={styles.label}>Titel *</Text>
+      <TextInput style={styles.input} value={title} onChangeText={setTitle} accessibilityLabel="Projekttitel" />
 
-        <Text style={styles.label}>Kunde *</Text>
-        <Pressable
-          style={styles.dropdown}
-          onPress={() => setCustomerMenuVisible(true)}
-          accessibilityRole="button"
-          accessibilityLabel={
-            selectedCustomer
-              ? `Kunde: ${selectedCustomer.customerNumber} ${selectedCustomer.name}. Antippen zum Ändern.`
-              : 'Kunde auswählen'
-          }
-        >
-          <Text style={styles.dropdownText}>
-            {selectedCustomer ? `${selectedCustomer.customerNumber} – ${selectedCustomer.name}` : 'Kunde auswählen'}
-          </Text>
-          <Text style={styles.dropdownChevron}>▾</Text>
-        </Pressable>
-        <RowActionMenu
-          visible={customerMenuVisible}
-          title="Kunde auswählen"
-          actions={customerMenuActions}
-          onClose={() => setCustomerMenuVisible(false)}
-        />
+      <Text style={styles.label}>Kunde *</Text>
+      <Pressable
+        style={styles.dropdown}
+        onPress={() => setCustomerMenuVisible(true)}
+        accessibilityRole="button"
+        accessibilityLabel={
+          selectedCustomer
+            ? `Kunde: ${selectedCustomer.customerNumber} ${selectedCustomer.name}. Antippen zum Ändern.`
+            : 'Kunde auswählen'
+        }
+      >
+        <Text style={styles.dropdownText}>
+          {selectedCustomer ? `${selectedCustomer.customerNumber} – ${selectedCustomer.name}` : 'Kunde auswählen'}
+        </Text>
+        <Text style={styles.dropdownChevron}>▾</Text>
+      </Pressable>
+      <RowActionMenu
+        visible={customerMenuVisible}
+        title="Kunde auswählen"
+        actions={customerMenuActions}
+        onClose={() => setCustomerMenuVisible(false)}
+      />
 
-        <Text style={styles.label}>Beschreibung</Text>
-        <TextInput style={[styles.input, { height: 72 }]} value={description} onChangeText={setDescription} multiline accessibilityLabel="Projektbeschreibung" />
+      <Text style={styles.label}>Beschreibung</Text>
+      <TextInput style={[styles.input, { height: 72 }]} value={description} onChangeText={setDescription} multiline accessibilityLabel="Projektbeschreibung" />
 
-        <Text style={styles.label}>Farbe</Text>
-        <ColorPicker value={color} onChange={setColor} />
+      <Text style={styles.label}>Farbe</Text>
+      <ColorPicker value={color} onChange={setColor} />
 
-        <Text style={[styles.label, { marginTop: 8 }]}>Abrechnung</Text>
-        <View style={styles.pricingRow}>
-          {(['hourly', 'fixed'] as const).map((mode) => (
-            <Pressable
-              key={mode}
-              style={[styles.pricingBtn, pricingMode === mode && styles.pricingBtnActive]}
-              onPress={() => setPricingMode(mode)}
-              accessibilityRole="radio"
-              accessibilityState={{ checked: pricingMode === mode }}
-              accessibilityLabel={mode === 'hourly' ? 'Stundensatz' : 'Festpreis'}
-            >
-              <Text style={pricingMode === mode ? { color: '#FFF' } : undefined}>
-                {mode === 'hourly' ? 'Stundensatz' : 'Festpreis'}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-        {pricingMode === 'hourly' && (
-          <TextInput style={styles.input} value={hourlyRate} onChangeText={setHourlyRate} placeholder="80,00" placeholderTextColor="#999" keyboardType="decimal-pad" accessibilityLabel="Stundensatz in Euro" />
-        )}
-        {pricingMode === 'fixed' && (
-          <TextInput style={styles.input} value={fixedPrice} onChangeText={setFixedPrice} placeholder="1.500,00" placeholderTextColor="#999" keyboardType="decimal-pad" accessibilityLabel="Festpreis in Euro" />
-        )}
+      <Text style={[styles.label, { marginTop: 8 }]}>Abrechnung</Text>
+      <View style={styles.pricingRow}>
+        {(['hourly', 'fixed'] as const).map((mode) => (
+          <Pressable
+            key={mode}
+            style={[styles.pricingBtn, pricingMode === mode && styles.pricingBtnActive]}
+            onPress={() => setPricingMode(mode)}
+            accessibilityRole="radio"
+            accessibilityState={{ checked: pricingMode === mode }}
+            accessibilityLabel={mode === 'hourly' ? 'Stundensatz' : 'Festpreis'}
+          >
+            <Text style={pricingMode === mode ? { color: '#FFF' } : undefined}>
+              {mode === 'hourly' ? 'Stundensatz' : 'Festpreis'}
+            </Text>
+          </Pressable>
+        ))}
+      </View>
+      {pricingMode === 'hourly' && (
+        <TextInput style={styles.input} value={hourlyRate} onChangeText={setHourlyRate} placeholder="80,00" placeholderTextColor="#999" keyboardType="decimal-pad" accessibilityLabel="Stundensatz in Euro" />
+      )}
+      {pricingMode === 'fixed' && (
+        <TextInput style={styles.input} value={fixedPrice} onChangeText={setFixedPrice} placeholder="1.500,00" placeholderTextColor="#999" keyboardType="decimal-pad" accessibilityLabel="Festpreis in Euro" />
+      )}
 
-        {allTasks.length > 0 && (
-          <>
-            <Text style={styles.label}>Aufgaben</Text>
-            <Pressable
-              style={styles.dropdown}
-              onPress={() => setTaskMenuVisible(true)}
-              accessibilityRole="button"
-              accessibilityLabel={`${taskSummary}. Antippen zum Ändern.`}
-            >
-              <Text style={styles.dropdownText}>{taskSummary}</Text>
-              <Text style={styles.dropdownChevron}>▾</Text>
-            </Pressable>
-            <TaskPickerSheet
-              visible={taskMenuVisible}
-              tasks={allTasks}
-              selectedIds={selectedTaskIds}
-              onToggle={toggleTask}
-              onClose={() => setTaskMenuVisible(false)}
-            />
-          </>
-        )}
+      {allTasks.length > 0 && (
+        <>
+          <Text style={styles.label}>Aufgaben</Text>
+          <Pressable
+            style={styles.dropdown}
+            onPress={() => setTaskMenuVisible(true)}
+            accessibilityRole="button"
+            accessibilityLabel={`${taskSummary}. Antippen zum Ändern.`}
+          >
+            <Text style={styles.dropdownText}>{taskSummary}</Text>
+            <Text style={styles.dropdownChevron}>▾</Text>
+          </Pressable>
+          <TaskPickerSheet
+            visible={taskMenuVisible}
+            tasks={allTasks}
+            selectedIds={selectedTaskIds}
+            onToggle={toggleTask}
+            onClose={() => setTaskMenuVisible(false)}
+          />
+        </>
+      )}
 
-        <Pressable style={styles.btn} onPress={handleSave} accessibilityRole="button" accessibilityLabel="Änderungen speichern">
-          <Text style={{ color: '#FFF', fontWeight: '600', fontSize: 16 }}>Speichern</Text>
-        </Pressable>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      <Pressable style={styles.btn} onPress={handleSave} accessibilityRole="button" accessibilityLabel="Änderungen speichern">
+        <Text style={{ color: '#FFF', fontWeight: '600', fontSize: 16 }}>Speichern</Text>
+      </Pressable>
+    </KeyboardAwareScrollView>
   )
 }
 

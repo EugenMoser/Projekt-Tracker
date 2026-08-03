@@ -1,7 +1,8 @@
 import React from 'react'
-import { View, Text, FlatList, Pressable, TextInput, Modal, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native'
+import { View, Text, FlatList, Pressable, TextInput, Modal, StyleSheet, Alert } from 'react-native'
 import { listOrderTypes, createOrderType, updateOrderType, deleteOrderType } from '../../src/repositories/orderTypes'
 import { useFocusEffect } from 'expo-router'
+import { KeyboardAwareView } from '../../src/components/KeyboardAwareView'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 type OrderType = { id: string; name: string; digit: number }
@@ -82,7 +83,7 @@ export default function OrderTypesScreen() {
       />
 
       <Modal visible={showAdd || editItem !== null} animationType="slide" presentationStyle="formSheet">
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <KeyboardAwareView insideModal>
           <View style={styles.modal}>
             <Text style={styles.modalTitle}>
               {editItem ? 'Auftragsart bearbeiten' : 'Neue Auftragsart'}
@@ -111,7 +112,7 @@ export default function OrderTypesScreen() {
               <Text style={{ color: '#666' }}>Abbrechen</Text>
             </Pressable>
           </View>
-        </KeyboardAvoidingView>
+        </KeyboardAwareView>
       </Modal>
     </View>
   )

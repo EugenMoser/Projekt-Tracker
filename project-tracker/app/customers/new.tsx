@@ -1,9 +1,10 @@
 import React from 'react'
 import {
   View, Text, TextInput, FlatList, Pressable,
-  StyleSheet, Alert, ScrollView, KeyboardAvoidingView, Platform,
+  StyleSheet, Alert,
 } from 'react-native'
 import { router, useFocusEffect } from 'expo-router'
+import { KeyboardAwareScrollView } from '../../src/components/KeyboardAwareView'
 import { listOrderTypes } from '../../src/repositories/orderTypes'
 import { createCustomer } from '../../src/repositories/customers'
 
@@ -51,116 +52,112 @@ export default function NewCustomerScreen() {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.flex}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <ScrollView style={styles.flex} contentContainerStyle={styles.container}>
-        <Text style={styles.label}>Name <Text style={styles.required}>*</Text></Text>
-        <TextInput
-          style={styles.input}
-          placeholder="z.B. Müller GmbH"
-          placeholderTextColor="#999"
-          value={name}
-          onChangeText={setName}
-          accessibilityLabel="Kundenname"
-          returnKeyType="next"
-        />
+    <KeyboardAwareScrollView style={styles.flex} contentContainerStyle={styles.container}>
+      <Text style={styles.label}>Name <Text style={styles.required}>*</Text></Text>
+      <TextInput
+        style={styles.input}
+        placeholder="z.B. Müller GmbH"
+        placeholderTextColor="#999"
+        value={name}
+        onChangeText={setName}
+        accessibilityLabel="Kundenname"
+        returnKeyType="next"
+      />
 
-        <Text style={styles.label}>Auftragsart <Text style={styles.required}>*</Text></Text>
-        {orderTypes.length === 0 ? (
-          <View style={styles.emptyHint}>
-            <Text style={styles.emptyHintText}>
-              Noch keine Auftragsart vorhanden.
-            </Text>
-            <Pressable
-              style={styles.emptyHintBtn}
-              onPress={() => router.push('/order-types')}
-              accessibilityRole="button"
-              accessibilityLabel="Auftragsart anlegen"
-            >
-              <Text style={styles.emptyHintBtnText}>Auftragsart anlegen →</Text>
-            </Pressable>
-          </View>
-        ) : (
-          <FlatList
-            data={orderTypes}
-            keyExtractor={(ot) => ot.id}
-            scrollEnabled={false}
-            renderItem={({ item }) => {
-              const isSelected = item.id === selectedOrderTypeId
-              return (
-                <Pressable
-                  style={[styles.orderTypeRow, isSelected && styles.orderTypeRowSelected]}
-                  onPress={() => setSelectedOrderTypeId(item.id)}
-                  accessibilityRole="radio"
-                  accessibilityState={{ checked: isSelected }}
-                  accessibilityLabel={`Auftragsart ${item.name}`}
-                >
-                  <View style={[styles.radioCircle, isSelected && styles.radioCircleSelected]}>
-                    {isSelected && <View style={styles.radioDot} />}
-                  </View>
-                  <Text style={[styles.orderTypeName, isSelected && styles.orderTypeNameSelected]}>
-                    {item.digit} — {item.name}
-                  </Text>
-                </Pressable>
-              )
-            }}
-          />
-        )}
-
-        <Text style={[styles.label, styles.sectionGap]}>Adresse (optional)</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Straße und Hausnummer"
-          placeholderTextColor="#999"
-          value={street}
-          onChangeText={setStreet}
-          accessibilityLabel="Straße"
-          returnKeyType="next"
-        />
-        <View style={styles.row}>
-          <TextInput
-            style={[styles.input, styles.zipInput]}
-            placeholder="PLZ"
-            placeholderTextColor="#999"
-            value={zip}
-            onChangeText={setZip}
-            accessibilityLabel="Postleitzahl"
-            keyboardType="number-pad"
-            returnKeyType="next"
-          />
-          <TextInput
-            style={[styles.input, styles.cityInput]}
-            placeholder="Stadt"
-            placeholderTextColor="#999"
-            value={city}
-            onChangeText={setCity}
-            accessibilityLabel="Stadt"
-            returnKeyType="done"
-          />
+      <Text style={styles.label}>Auftragsart <Text style={styles.required}>*</Text></Text>
+      {orderTypes.length === 0 ? (
+        <View style={styles.emptyHint}>
+          <Text style={styles.emptyHintText}>
+            Noch keine Auftragsart vorhanden.
+          </Text>
+          <Pressable
+            style={styles.emptyHintBtn}
+            onPress={() => router.push('/order-types')}
+            accessibilityRole="button"
+            accessibilityLabel="Auftragsart anlegen"
+          >
+            <Text style={styles.emptyHintBtnText}>Auftragsart anlegen →</Text>
+          </Pressable>
         </View>
+      ) : (
+        <FlatList
+          data={orderTypes}
+          keyExtractor={(ot) => ot.id}
+          scrollEnabled={false}
+          keyboardShouldPersistTaps="handled"
+          renderItem={({ item }) => {
+            const isSelected = item.id === selectedOrderTypeId
+            return (
+              <Pressable
+                style={[styles.orderTypeRow, isSelected && styles.orderTypeRowSelected]}
+                onPress={() => setSelectedOrderTypeId(item.id)}
+                accessibilityRole="radio"
+                accessibilityState={{ checked: isSelected }}
+                accessibilityLabel={`Auftragsart ${item.name}`}
+              >
+                <View style={[styles.radioCircle, isSelected && styles.radioCircleSelected]}>
+                  {isSelected && <View style={styles.radioDot} />}
+                </View>
+                <Text style={[styles.orderTypeName, isSelected && styles.orderTypeNameSelected]}>
+                  {item.digit} — {item.name}
+                </Text>
+              </Pressable>
+            )
+          }}
+        />
+      )}
 
-        <Pressable
-          style={[styles.saveBtn, (!name.trim() || !selectedOrderTypeId) && styles.saveBtnDisabled]}
-          onPress={handleSave}
-          accessibilityRole="button"
-          accessibilityLabel="Kunden anlegen"
-          accessibilityState={{ disabled: !name.trim() || !selectedOrderTypeId }}
-        >
-          <Text style={styles.saveBtnText}>Anlegen</Text>
-        </Pressable>
+      <Text style={[styles.label, styles.sectionGap]}>Adresse (optional)</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Straße und Hausnummer"
+        placeholderTextColor="#999"
+        value={street}
+        onChangeText={setStreet}
+        accessibilityLabel="Straße"
+        returnKeyType="next"
+      />
+      <View style={styles.row}>
+        <TextInput
+          style={[styles.input, styles.zipInput]}
+          placeholder="PLZ"
+          placeholderTextColor="#999"
+          value={zip}
+          onChangeText={setZip}
+          accessibilityLabel="Postleitzahl"
+          keyboardType="number-pad"
+          returnKeyType="next"
+        />
+        <TextInput
+          style={[styles.input, styles.cityInput]}
+          placeholder="Stadt"
+          placeholderTextColor="#999"
+          value={city}
+          onChangeText={setCity}
+          accessibilityLabel="Stadt"
+          returnKeyType="done"
+        />
+      </View>
 
-        <Pressable
-          style={styles.cancelBtn}
-          onPress={() => router.back()}
-          accessibilityRole="button"
-          accessibilityLabel="Abbrechen"
-        >
-          <Text style={styles.cancelBtnText}>Abbrechen</Text>
-        </Pressable>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      <Pressable
+        style={[styles.saveBtn, (!name.trim() || !selectedOrderTypeId) && styles.saveBtnDisabled]}
+        onPress={handleSave}
+        accessibilityRole="button"
+        accessibilityLabel="Kunden anlegen"
+        accessibilityState={{ disabled: !name.trim() || !selectedOrderTypeId }}
+      >
+        <Text style={styles.saveBtnText}>Anlegen</Text>
+      </Pressable>
+
+      <Pressable
+        style={styles.cancelBtn}
+        onPress={() => router.back()}
+        accessibilityRole="button"
+        accessibilityLabel="Abbrechen"
+      >
+        <Text style={styles.cancelBtnText}>Abbrechen</Text>
+      </Pressable>
+    </KeyboardAwareScrollView>
   )
 }
 

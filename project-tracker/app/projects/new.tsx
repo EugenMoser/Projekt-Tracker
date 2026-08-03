@@ -1,6 +1,7 @@
 import React from 'react'
-import { View, Text, TextInput, ScrollView, Pressable, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native'
+import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native'
 import { router } from 'expo-router'
+import { KeyboardAwareScrollView } from '../../src/components/KeyboardAwareView'
 import { ColorPicker } from '../../src/components/ColorPicker'
 import { RowActionMenu, type RowAction } from '../../src/components/RowActionMenu'
 import { TaskPickerSheet } from '../../src/components/TaskPickerSheet'
@@ -96,8 +97,7 @@ export default function NewProjectScreen() {
   }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-    <ScrollView style={styles.container} contentContainerStyle={{ gap: 12, paddingBottom: 40 }}>
+    <KeyboardAwareScrollView style={styles.container} contentContainerStyle={{ gap: 12, paddingBottom: 40 }}>
       <Text style={styles.label}>Titel *</Text>
       <TextInput
         style={styles.input}
@@ -215,8 +215,7 @@ export default function NewProjectScreen() {
       >
         <Text style={{ color: '#FFF', fontWeight: '600', fontSize: 16 }}>Anlegen</Text>
       </Pressable>
-    </ScrollView>
-    </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
   )
 }
 
