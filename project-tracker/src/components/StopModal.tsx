@@ -1,8 +1,9 @@
 import React from 'react'
 import { Modal, View, Text, SectionList, Pressable, TextInput, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { Ionicons } from '@expo/vector-icons'
 import { stopTimer, discardTimer } from '../repositories/timers'
-import { createTask, listTasks, listTasksForProject } from '../repositories/tasks'
+import { createTask, listTasks, listTasksForProject, removeTaskFromProject } from '../repositories/tasks'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -73,6 +74,13 @@ export function StopModal({ visible, projectId, onDone, onCancel, onDiscard }: P
     }
   }
 
+  const handleRemoveFromProject = (taskId: string) => {
+    removeTaskFromProject(OWNER_ID, projectId, taskId)
+    // Der Task bleibt in `tasks` (globale Liste) erhalten und rutscht dadurch
+    // automatisch in die Sektion "Alle Aufgaben" — siehe `sections`-Berechnung oben.
+    setProjectTasks((prev) => prev.filter((t) => t.id !== taskId))
+  }
+
   const handleDiscard = () => {
     Alert.alert(
       'Timer verwerfen?',
@@ -122,18 +130,34 @@ export function StopModal({ visible, projectId, onDone, onCancel, onDiscard }: P
                 </Text>
               ) : null
             }
-            renderItem={({ item }) => (
-              <Pressable
-                style={[styles.taskRow, item.id === selectedId && styles.taskSelected]}
-                onPress={() => { setSelectedId(item.id); setNewTaskText('') }}
-                accessibilityRole="radio"
-                accessibilityState={{ selected: item.id === selectedId }}
-                accessibilityLabel={item.description}
-                hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
-              >
-                <Text>{item.id === selectedId ? '◉' : '○'} {item.description}</Text>
-              </Pressable>
-            )}
+            renderItem={({ item, section }) => {
+              const isSelected = item.id === selectedId
+              return (
+                <View style={[styles.taskRow, isSelected && styles.taskSelected]}>
+                  <Pressable
+                    style={styles.taskContent}
+                    onPress={() => { setSelectedId(item.id); setNewTaskText('') }}
+                    accessibilityRole="radio"
+                    accessibilityState={{ selected: isSelected }}
+                    accessibilityLabel={item.description}
+                    hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
+                  >
+                    <Text>{isSelected ? '◉' : '○'} {item.description}</Text>
+                  </Pressable>
+                  {section.key === 'project' && (
+                    <Pressable
+                      style={styles.removeButton}
+                      onPress={() => handleRemoveFromProject(item.id)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Aus Projekt entfernen: ${item.description}`}
+                      hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
+                    >
+                      <Ionicons name="close-circle-outline" size={20} color="#999" />
+                    </Pressable>
+                  )}
+                </View>
+              )
+            }}
             ListEmptyComponent={
               filterQuery ? (
                 <Text style={styles.emptyHint}>
@@ -193,8 +217,18 @@ const styles = StyleSheet.create({
     marginTop: 12,
     marginBottom: 4,
   },
-  taskRow: { padding: 14, borderRadius: 8, marginBottom: 6, backgroundColor: '#F5F5F5', minHeight: 44, justifyContent: 'center' },
+  taskRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 8,
+    marginBottom: 6,
+    backgroundColor: '#F5F5F5',
+    minHeight: 44,
+    paddingRight: 4,
+  },
+  taskContent: { flex: 1, paddingVertical: 14, paddingHorizontal: 14, justifyContent: 'center' },
   taskSelected: { backgroundColor: '#D0E8FF' },
+  removeButton: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
   input: { borderWidth: 1, borderColor: '#DDD', borderRadius: 8, padding: 12, marginTop: 8, minHeight: 44 },
   emptyHint: { padding: 14, color: '#666', fontStyle: 'italic' },
   actions: { flexDirection: 'row', gap: 12, marginTop: 24 },

@@ -43,6 +43,18 @@ export function updateTask(userId: string, id: string, description: string) {
     .run()
 }
 
+export function removeTaskFromProject(userId: string, projectId: string, taskId: string) {
+  // Hard delete: project_tasks is a pure many-to-many join table without a
+  // `deletedAt` column, so there is nothing to soft-delete.
+  db.delete(schema.projectTasks)
+    .where(and(
+      eq(schema.projectTasks.projectId, projectId),
+      eq(schema.projectTasks.taskId, taskId),
+      eq(schema.projectTasks.userId, userId)
+    ))
+    .run()
+}
+
 export function deleteTask(userId: string, id: string) {
   db.update(schema.tasks)
     .set({ deletedAt: new Date(), updatedAt: new Date() })
