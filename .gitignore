@@ -37,6 +37,9 @@ web-build/
 ios/
 android/
 
+# React Native bundler cache (can appear as empty file causing git issues)
+com.facebook.react.devsupport.BundleDownloader
+
 # Coverage
 coverage/
 

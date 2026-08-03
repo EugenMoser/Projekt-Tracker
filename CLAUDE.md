@@ -15,40 +15,41 @@ Jede Änderung läuft durch den verbindlichen Feature-Loop in [.claude/docs/WORK
 
 Alle Konzept-/Architektur-/Workflow-Markdowns liegen unter [.claude/docs/](.claude/docs/):
 
-| Datei | Zweck |
-|---|---|
-| [WORKFLOW.md](.claude/docs/WORKFLOW.md) | **Verbindlicher Feature-Loop** + DoD-Checkliste + Commit-Format |
-| [CONCEPT.md](.claude/docs/CONCEPT.md) | Fachliches Konzept, Domain-Glossar, User Stories, UI-Wireframes, Kundennummern-Algorithmus, Open Questions |
-| [ARCHITECTURE.md](.claude/docs/ARCHITECTURE.md) | Schichten-Diagramm, Sync-Strategie (LWW), Multi-Tenant-Pattern, API-Versionierung |
-| [DATA_MODEL.md](.claude/docs/DATA_MODEL.md) | Tabellen, Constraints, Indizes (PG + SQLite via Drizzle) |
-| [ROADMAP.md](.claude/docs/ROADMAP.md) | Phasen 0–8 mit Akzeptanzkriterien |
-| [TODO.md](.claude/docs/TODO.md) | Lebendiger Backlog gruppiert nach Phasen |
-| [PROGRESS.md](.claude/docs/PROGRESS.md) | Cross-Session-Fortschrittslog (bei jedem Commit ergänzen!) |
-| [DECISIONS.md](.claude/docs/DECISIONS.md) | ADR-light: alle Architekturentscheidungen mit Begründung |
-| [SECURITY.md](.claude/docs/SECURITY.md) | Threat-Model, PIN/Biometrie, Tenant-Isolation, Secrets |
-| [DEPLOYMENT.md](.claude/docs/DEPLOYMENT.md) | Coolify-Setup auf Hostinger-VPS |
-| [SAAS_READINESS.md](.claude/docs/SAAS_READINESS.md) | Checkliste für späteren App-Store-Launch |
+| Datei                                               | Zweck                                                                                                      |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| [WORKFLOW.md](.claude/docs/WORKFLOW.md)             | **Verbindlicher Feature-Loop** + DoD-Checkliste + Commit-Format                                            |
+| [CONCEPT.md](.claude/docs/CONCEPT.md)               | Fachliches Konzept, Domain-Glossar, User Stories, UI-Wireframes, Kundennummern-Algorithmus, Open Questions |
+| [ARCHITECTURE.md](.claude/docs/ARCHITECTURE.md)     | Schichten-Diagramm, Sync-Strategie (LWW), Multi-Tenant-Pattern, API-Versionierung                          |
+| [DATA_MODEL.md](.claude/docs/DATA_MODEL.md)         | Tabellen, Constraints, Indizes (PG + SQLite via Drizzle)                                                   |
+| [ROADMAP.md](.claude/docs/ROADMAP.md)               | Phasen 0–8 mit Akzeptanzkriterien                                                                          |
+| [TODO.md](.claude/docs/TODO.md)                     | Lebendiger Backlog gruppiert nach Phasen                                                                   |
+| [PROGRESS.md](.claude/docs/PROGRESS.md)             | Cross-Session-Fortschrittslog (bei jedem Commit ergänzen!)                                                 |
+| [DECISIONS.md](.claude/docs/DECISIONS.md)           | ADR-light: alle Architekturentscheidungen mit Begründung                                                   |
+| [SECURITY.md](.claude/docs/SECURITY.md)             | Threat-Model, PIN/Biometrie, Tenant-Isolation, Secrets                                                     |
+| [DEPLOYMENT.md](.claude/docs/DEPLOYMENT.md)         | Coolify-Setup auf Hostinger-VPS                                                                            |
+| [SAAS_READINESS.md](.claude/docs/SAAS_READINESS.md) | Checkliste für späteren App-Store-Launch                                                                   |
 
-`mvp-brainstorming.md` (im Repo-Root) ist die historische Quelle der Anforderungen vom User. Kuratierte, aktuelle Version ist [CONCEPT.md](.claude/docs/CONCEPT.md).
+Die historische Anforderungsquelle `mvp-brainstorming.md` wurde entfernt, nachdem sie vollständig in [CONCEPT.md](.claude/docs/CONCEPT.md) kuratiert wurde — CONCEPT.md ist die aktuelle Quelle.
 
 ## Subagents
 
 Spezialisierte Subagents leben unter [.claude/agents/](.claude/agents/):
 
-| Agent | Wann nutzen |
-|---|---|
-| `architect` | Architektur-Entscheidungen, Design-Reviews, ADR-Entwürfe |
-| `coder` | Backend-Routes, Business-Logik, Mobile-Logik (Test-first) |
-| `db` | Schema, Migrationen, Indizes, Sync-Felder |
-| `mobile-ux` | UI/UX, Gesten (Swipe-to-Track), Listen-Performance |
-| `security` | Auth, PIN, JWT, Tenant-Isolation, Secrets, Dependencies |
-| `reviewer` | End-to-End-Review vor Commit (DoD-Check) |
+| Agent       | Wann nutzen                                               |
+| ----------- | --------------------------------------------------------- |
+| `architect` | Architektur-Entscheidungen, Design-Reviews, ADR-Entwürfe  |
+| `coder`     | Backend-Routes, Business-Logik, Mobile-Logik (Test-first) |
+| `db`        | Schema, Migrationen, Indizes, Sync-Felder                 |
+| `mobile-ux` | UI/UX, Gesten (Swipe-to-Track), Listen-Performance        |
+| `security`  | Auth, PIN, JWT, Tenant-Isolation, Secrets, Dependencies   |
+| `reviewer`  | End-to-End-Review vor Commit (DoD-Check)                  |
 
 Subagent-Mapping zu Workflow-Schritten siehe [WORKFLOW.md](.claude/docs/WORKFLOW.md#subagent-mapping).
 
 ## Projekt-Struktur
 
 Mobile-App liegt in [project-tracker/](project-tracker/). Geplante Workspace-Struktur (entsteht in Phase 1+):
+Alle KI relevanten Daten müssen in .claude (im root) liegen
 
 ```
 projekt-tracker/
@@ -94,4 +95,10 @@ npx expo start --web    # Browser
 npm run lint            # ESLint via expo lint
 ```
 
-Backend- und Workspace-Skripte werden in Phase 0/1 ergänzt.
+Aus dem Repo-Root (Workspace-weit via pnpm):
+
+```bash
+pnpm lint                # Lint über alle Packages + Mobile-App
+pnpm typecheck           # tsc --noEmit über alle Packages
+pnpm test                # Tests über alle Packages (vitest/jest)
+```

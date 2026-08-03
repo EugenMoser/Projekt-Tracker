@@ -5,7 +5,8 @@
   "scripts": {
     "postinstall": "pnpm --filter @projekt-tracker/schema build",
     "lint": "pnpm -r --filter='./packages/*' lint; pnpm --filter project-tracker lint",
-    "typecheck": "pnpm -r typecheck"
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test"
   },
   "engines": {
     "node": ">=22"
