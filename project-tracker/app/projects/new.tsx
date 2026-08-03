@@ -3,6 +3,7 @@ import { View, Text, TextInput, ScrollView, Pressable, StyleSheet, Alert, Keyboa
 import { router } from 'expo-router'
 import { ColorPicker } from '../../src/components/ColorPicker'
 import { RowActionMenu, type RowAction } from '../../src/components/RowActionMenu'
+import { TaskPickerSheet } from '../../src/components/TaskPickerSheet'
 import { listCustomers } from '../../src/repositories/customers'
 import { listTasks } from '../../src/repositories/tasks'
 import { createProject } from '../../src/repositories/projects'
@@ -17,6 +18,7 @@ export default function NewProjectScreen() {
   const [title, setTitle] = React.useState('')
   const [customerId, setCustomerId] = React.useState(customers[0]?.id ?? '')
   const [customerMenuVisible, setCustomerMenuVisible] = React.useState(false)
+  const [taskMenuVisible, setTaskMenuVisible] = React.useState(false)
   const [description, setDescription] = React.useState('')
   const [color, setColor] = React.useState(DEFAULT_COLOR)
   const [pricingMode, setPricingMode] = React.useState<'hourly' | 'fixed'>('hourly')
@@ -28,6 +30,13 @@ export default function NewProjectScreen() {
     setSelectedTaskIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id])
 
   const selectedCustomer = customers.find((c) => c.id === customerId)
+
+  const taskSummary =
+    selectedTaskIds.length === 0
+      ? 'Keine Aufgabe ausgewählt'
+      : selectedTaskIds.length === 1
+        ? '1 Aufgabe ausgewählt'
+        : `${selectedTaskIds.length} Aufgaben ausgewählt`
 
   const customerMenuActions: RowAction[] = [
     ...customers.map((c) => ({
@@ -179,18 +188,22 @@ export default function NewProjectScreen() {
       {allTasks.length > 0 && (
         <>
           <Text style={styles.label}>Aufgaben</Text>
-          {allTasks.map((t) => (
-            <Pressable
-              key={t.id}
-              style={[styles.selectRow, selectedTaskIds.includes(t.id) && styles.selectRowActive]}
-              onPress={() => toggleTask(t.id)}
-              accessibilityRole="checkbox"
-              accessibilityState={{ checked: selectedTaskIds.includes(t.id) }}
-              accessibilityLabel={`Aufgabe ${t.description}`}
-            >
-              <Text>{selectedTaskIds.includes(t.id) ? '☑' : '☐'} {t.description}</Text>
-            </Pressable>
-          ))}
+          <Pressable
+            style={styles.dropdown}
+            onPress={() => setTaskMenuVisible(true)}
+            accessibilityRole="button"
+            accessibilityLabel={`${taskSummary}. Antippen zum Ändern.`}
+          >
+            <Text style={styles.dropdownText}>{taskSummary}</Text>
+            <Text style={styles.dropdownChevron}>▾</Text>
+          </Pressable>
+          <TaskPickerSheet
+            visible={taskMenuVisible}
+            tasks={allTasks}
+            selectedIds={selectedTaskIds}
+            onToggle={toggleTask}
+            onClose={() => setTaskMenuVisible(false)}
+          />
         </>
       )}
 
@@ -226,9 +239,6 @@ const styles = StyleSheet.create({
   },
   dropdownText: { fontSize: 15, color: '#000', flexShrink: 1 },
   dropdownChevron: { fontSize: 14, color: '#666', marginLeft: 8 },
-  selectRow: { padding: 10, borderRadius: 6, backgroundColor: '#F5F5F5', marginBottom: 4, minHeight: 44, justifyContent: 'center' },
-  selectRowActive: { backgroundColor: '#D0E8FF' },
-  selectTextActive: { fontWeight: '600', color: '#4A90D9' },
   pricingRow: { flexDirection: 'row', gap: 8 },
   pricingBtn: { flex: 1, padding: 12, borderRadius: 8, backgroundColor: '#EEE', alignItems: 'center', minHeight: 44, justifyContent: 'center' },
   pricingBtnActive: { backgroundColor: '#4A90D9' },

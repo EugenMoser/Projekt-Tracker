@@ -3,9 +3,11 @@ import { View, Text, TextInput, ScrollView, Pressable, StyleSheet, Alert, Keyboa
 import { router, useLocalSearchParams } from 'expo-router'
 import { ColorPicker } from '../../../src/components/ColorPicker'
 import { RowActionMenu, type RowAction } from '../../../src/components/RowActionMenu'
+import { TaskPickerSheet } from '../../../src/components/TaskPickerSheet'
 import { listCustomers } from '../../../src/repositories/customers'
 import { getProject, updateProject, getProjectTotalSeconds } from '../../../src/repositories/projects'
 import { applyRateToProjectEntries } from '../../../src/repositories/rateAdjustments'
+import { listTasks, listTasksForProject, addTaskToProject, removeTaskFromProject } from '../../../src/repositories/tasks'
 import { db } from '../../../src/db/client'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
@@ -24,10 +26,12 @@ export default function EditProjectScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const project = getProject(OWNER_ID, id)
   const customers = listCustomers(OWNER_ID)
+  const allTasks = listTasks(OWNER_ID)
 
   const [title, setTitle] = React.useState(project?.title ?? '')
   const [customerId, setCustomerId] = React.useState(project?.customerId ?? '')
   const [customerMenuVisible, setCustomerMenuVisible] = React.useState(false)
+  const [taskMenuVisible, setTaskMenuVisible] = React.useState(false)
   const [description, setDescription] = React.useState(project?.description ?? '')
   const [color, setColor] = React.useState(project?.color ?? '#4A90D9')
   const [pricingMode, setPricingMode] = React.useState<'hourly' | 'fixed'>(
@@ -35,10 +39,30 @@ export default function EditProjectScreen() {
   )
   const [hourlyRate, setHourlyRate] = React.useState(centsToInput(project?.hourlyRateCents))
   const [fixedPrice, setFixedPrice] = React.useState(centsToInput(project?.fixedPriceCents))
+  const [selectedTaskIds, setSelectedTaskIds] = React.useState<string[]>(() =>
+    id ? listTasksForProject(OWNER_ID, id).map((t) => t.id) : [],
+  )
 
   if (!project) return <View style={styles.empty}><Text>Nicht gefunden</Text></View>
 
   const selectedCustomer = customers.find((c) => c.id === customerId)
+
+  const taskSummary =
+    selectedTaskIds.length === 0
+      ? 'Keine Aufgabe ausgewählt'
+      : selectedTaskIds.length === 1
+        ? '1 Aufgabe ausgewählt'
+        : `${selectedTaskIds.length} Aufgaben ausgewählt`
+
+  const toggleTask = (taskId: string) => {
+    if (selectedTaskIds.includes(taskId)) {
+      removeTaskFromProject(OWNER_ID, id, taskId)
+      setSelectedTaskIds((prev) => prev.filter((x) => x !== taskId))
+    } else {
+      addTaskToProject(OWNER_ID, id, taskId)
+      setSelectedTaskIds((prev) => [...prev, taskId])
+    }
+  }
 
   const customerMenuActions: RowAction[] = [
     ...customers.map((c) => ({
@@ -178,6 +202,28 @@ export default function EditProjectScreen() {
         )}
         {pricingMode === 'fixed' && (
           <TextInput style={styles.input} value={fixedPrice} onChangeText={setFixedPrice} placeholder="1.500,00" placeholderTextColor="#999" keyboardType="decimal-pad" accessibilityLabel="Festpreis in Euro" />
+        )}
+
+        {allTasks.length > 0 && (
+          <>
+            <Text style={styles.label}>Aufgaben</Text>
+            <Pressable
+              style={styles.dropdown}
+              onPress={() => setTaskMenuVisible(true)}
+              accessibilityRole="button"
+              accessibilityLabel={`${taskSummary}. Antippen zum Ändern.`}
+            >
+              <Text style={styles.dropdownText}>{taskSummary}</Text>
+              <Text style={styles.dropdownChevron}>▾</Text>
+            </Pressable>
+            <TaskPickerSheet
+              visible={taskMenuVisible}
+              tasks={allTasks}
+              selectedIds={selectedTaskIds}
+              onToggle={toggleTask}
+              onClose={() => setTaskMenuVisible(false)}
+            />
+          </>
         )}
 
         <Pressable style={styles.btn} onPress={handleSave} accessibilityRole="button" accessibilityLabel="Änderungen speichern">
