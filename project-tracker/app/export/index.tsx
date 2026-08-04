@@ -3,7 +3,9 @@ import {
   View, Text, TextInput, Pressable,
   StyleSheet, Alert, ActivityIndicator,
 } from 'react-native'
-import * as FileSystem from 'expo-file-system'
+// SDK 54 hat expo-file-system auf die neue File/Directory-API umgestellt;
+// cacheDirectory + writeAsStringAsync leben seitdem unter /legacy.
+import * as FileSystem from 'expo-file-system/legacy'
 import * as Sharing from 'expo-sharing'
 import { useFocusEffect } from 'expo-router'
 import { KeyboardAwareScrollView } from '../../src/components/KeyboardAwareView'

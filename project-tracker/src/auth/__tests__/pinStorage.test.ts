@@ -41,9 +41,9 @@ beforeEach(() => {
   jest.clearAllMocks()
   // Mock neu registrieren nach clearAllMocks
   const SecureStore = require('expo-secure-store') as {
-    getItemAsync: jest.Mock
-    setItemAsync: jest.Mock
-    deleteItemAsync: jest.Mock
+    getItemAsync: jest.Mock<(key: string) => Promise<string | null>>
+    setItemAsync: jest.Mock<(key: string, val: string) => Promise<void>>
+    deleteItemAsync: jest.Mock<(key: string) => Promise<void>>
   }
   SecureStore.getItemAsync.mockImplementation((key: string) =>
     Promise.resolve(secureStore[key] ?? null)
@@ -56,7 +56,10 @@ beforeEach(() => {
     delete secureStore[key]
     return Promise.resolve()
   })
-  const Crypto = require('expo-crypto') as { getRandomBytesAsync: jest.Mock; digestStringAsync: jest.Mock }
+  const Crypto = require('expo-crypto') as {
+    getRandomBytesAsync: jest.Mock<(byteCount: number) => Promise<Uint8Array>>
+    digestStringAsync: jest.Mock<(algorithm: unknown, data: string, options?: { encoding: string }) => Promise<string>>
+  }
   Crypto.getRandomBytesAsync.mockResolvedValue(MOCK_SALT_BYTES)
   Crypto.digestStringAsync.mockResolvedValue(MOCK_HASH)
 })
@@ -81,7 +84,9 @@ describe('pinStorage', () => {
 
   it('verifyPin returns true for correct PIN', async () => {
     await savePin('1234')
-    const Crypto = require('expo-crypto') as { digestStringAsync: jest.Mock }
+    const Crypto = require('expo-crypto') as {
+      digestStringAsync: jest.Mock<(algorithm: unknown, data: string, options?: { encoding: string }) => Promise<string>>
+    }
     Crypto.digestStringAsync.mockClear()
     expect(await verifyPin('1234')).toBe(true)
     // Verify salt was actually passed to the hash function
@@ -94,7 +99,9 @@ describe('pinStorage', () => {
 
   it('verifyPin returns false for wrong PIN (different hash)', async () => {
     await savePin('1234')
-    const Crypto = require('expo-crypto') as { digestStringAsync: jest.Mock }
+    const Crypto = require('expo-crypto') as {
+      digestStringAsync: jest.Mock<(algorithm: unknown, data: string, options?: { encoding: string }) => Promise<string>>
+    }
     Crypto.digestStringAsync.mockResolvedValueOnce('different_hash')
     expect(await verifyPin('9999')).toBe(false)
   })
