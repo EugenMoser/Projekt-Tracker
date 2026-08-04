@@ -1,9 +1,10 @@
 import React from 'react'
 import { View, StyleSheet, Pressable, Text, Alert } from 'react-native'
-import { FlashList } from '@shopify/flash-list'
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+import Animated, { useAnimatedRef } from 'react-native-reanimated'
+import Sortable from 'react-native-sortables'
+import type { SortableGridDragEndParams } from 'react-native-sortables'
 import { router, useFocusEffect } from 'expo-router'
-import { listActiveProjects } from '../../src/repositories/projects'
+import { listActiveProjects, moveProject } from '../../src/repositories/projects'
 import { getActiveTimer, startTimer } from '../../src/repositories/timers'
 import { useTimerStore } from '../../src/store/timerStore'
 import { ProjectTile } from '../../src/components/ProjectTile'
@@ -21,6 +22,7 @@ export default function HomeScreen() {
   const [activeProjectTitle, setActiveProjectTitle] = React.useState<string | null>(null)
   const { activeProjectId, setActive, clearActive, setPendingStop } = useTimerStore()
   const pendingStopProjectId = useTimerStore((s) => s.pendingStopProjectId)
+  const scrollableRef = useAnimatedRef<Animated.ScrollView>()
 
   const load = React.useCallback(() => {
     const rows = listActiveProjects(OWNER_ID)
@@ -66,6 +68,26 @@ export default function HomeScreen() {
     }
   }
 
+  const handleDragEnd = ({ data, fromIndex, toIndex }: SortableGridDragEndParams<ProjectWithCustomerName>) => {
+    // The library fires onDragEnd even for a long-press-and-release without an
+    // actual position change. Writing in that case would still stamp a fresh
+    // updated_at and could clobber a concurrent edit made from another device.
+    if (fromIndex === toIndex) return
+    const moved = data[toIndex]
+    if (!moved) return
+    const prevId = toIndex > 0 ? data[toIndex - 1].id : null
+    const nextId = toIndex < data.length - 1 ? data[toIndex + 1].id : null
+    try {
+      moveProject(OWNER_ID, moved.id, prevId, nextId)
+      setProjects(data)
+    } catch {
+      // Neighbours no longer describe a valid position — the drop was not
+      // persisted, so re-sync the visible order with the database instead of
+      // silently keeping a state the DB does not have.
+      load()
+    }
+  }
+
   return (
     <View style={styles.container}>
       {activeProjectId && activeProjectTitle && (
@@ -73,23 +95,31 @@ export default function HomeScreen() {
           <TimerBanner projectTitle={activeProjectTitle!} onPress={() => setPendingStop(activeProjectId!)} />
         </SwipeToStop>
       )}
-      <FlashList
-        data={projects}
-        numColumns={2}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <ProjectTile
-            id={item.id}
-            title={item.title}
-            customerName={item.customerName}
-            color={item.color}
-            isActive={item.id === activeProjectId}
-            onPress={() => handleTilePress(item)}
-            onEditPress={() => router.push(`/projects/${item.id}` as never)}
-          />
-        )}
+      <Animated.ScrollView
+        ref={scrollableRef}
+        style={styles.scroll}
         contentContainerStyle={styles.list}
-      />
+      >
+        <Sortable.Grid
+          columns={2}
+          data={projects}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <ProjectTile
+              id={item.id}
+              title={item.title}
+              customerName={item.customerName}
+              color={item.color}
+              isActive={item.id === activeProjectId}
+              onPress={() => handleTilePress(item)}
+              onEditPress={() => router.push(`/projects/${item.id}` as never)}
+            />
+          )}
+          onDragEnd={handleDragEnd}
+          hapticsEnabled
+          scrollableRef={scrollableRef}
+        />
+      </Animated.ScrollView>
       <Pressable style={styles.fab} onPress={() => router.push('/projects/new' as never)}>
         <Text style={styles.fabText}>+</Text>
       </Pressable>
@@ -106,6 +136,7 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F5F5F5' },
+  scroll: { flex: 1 },
   list: { padding: 6 },
   fab: {
     position: 'absolute', bottom: 24, right: 24,
