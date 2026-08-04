@@ -1,5 +1,5 @@
 import React from 'react'
-import { AppState, type AppStateStatus } from 'react-native'
+import { AppState, SafeAreaView, StyleSheet, Text, View, type AppStateStatus } from 'react-native'
 import { Stack } from 'expo-router'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import * as SecureStore from 'expo-secure-store'
@@ -15,8 +15,20 @@ import { LockScreen } from '../src/components/LockScreen'
 
 const AUTO_LOCK_THRESHOLD_MS = 60_000
 
-async function initSync(): Promise<void> {
+/**
+ * @param forceFullSync drop the stored sync cursor so the next push is a full
+ *   one. Set after a migration ran: a migration can rewrite existing rows
+ *   without touching their `updated_at` (the v2 sort_order backfill does), and
+ *   the incremental `updatedAt > since` filter would never pick those up.
+ */
+async function initSync(forceFullSync: boolean): Promise<void> {
   const store = useSyncStore.getState()
+
+  // Before the bootstrap, so an offline start does not carry the stale cursor
+  // into the next launch (where nothing would migrate any more).
+  if (forceFullSync) {
+    await SecureStore.deleteItemAsync(SECURE_KEYS.LAST_SYNCED_AT)
+  }
 
   let token = await SecureStore.getItemAsync(SECURE_KEYS.TOKEN)
   if (!token) {
@@ -32,9 +44,11 @@ async function initSync(): Promise<void> {
   }
   store.setToken(token)
 
-  const lastSyncedStr = await SecureStore.getItemAsync(SECURE_KEYS.LAST_SYNCED_AT)
-  if (lastSyncedStr) {
-    store.setLastSyncedAt(new Date(lastSyncedStr))
+  if (!forceFullSync) {
+    const lastSyncedStr = await SecureStore.getItemAsync(SECURE_KEYS.LAST_SYNCED_AT)
+    if (lastSyncedStr) {
+      store.setLastSyncedAt(new Date(lastSyncedStr))
+    }
   }
 
   startSyncLoop()
@@ -42,22 +56,29 @@ async function initSync(): Promise<void> {
 
 export default function RootLayout() {
   const [isDbReady, setIsDbReady] = React.useState(false)
+  const [migrationFailed, setMigrationFailed] = React.useState(false)
   const isLocked = useLockStore(s => s.isLocked)
   const { setLocked } = useLockStore()
   const backgroundTimeRef = React.useRef<number | null>(null)
 
   React.useEffect(() => {
     runMigrations(sqlite)
-      .then(async () => {
+      .then(async (didMigrate) => {
         // PIN-Check VOR dem Freigeben der UI, damit kein Flash entsteht
         const pinEnabled = await isPinSet()
         if (pinEnabled) setLocked(true)
         setIsDbReady(true)
-        void initSync()
+        // A migration may rewrite rows without bumping their updated_at (the v2
+        // sort_order backfill does exactly that on purpose). The incremental
+        // push filter would never see those changes, so force one full sync.
+        void initSync(didMigrate)
       })
       .catch((e) => {
         console.error('Migration failed', e)
-        setIsDbReady(true)
+        // Do NOT boot on. A migration that failed after BEGIN leaves an open
+        // transaction on the singleton connection; every write of this session
+        // would silently be rolled back when the connection closes.
+        setMigrationFailed(true)
       })
 
     return () => stopSyncLoop()
@@ -82,6 +103,7 @@ export default function RootLayout() {
     return () => sub.remove()
   }, [setLocked])
 
+  if (migrationFailed) return <MigrationErrorScreen />
   if (!isDbReady) return null
 
   return (
@@ -105,3 +127,33 @@ export default function RootLayout() {
     </GestureHandlerRootView>
   )
 }
+
+/**
+ * Dead end on purpose: no retry, no reset. Anything that could repair the
+ * schema automatically could just as well drop data, and the data on disk is
+ * still intact at this point.
+ */
+function MigrationErrorScreen() {
+  return (
+    <SafeAreaView style={styles.safe}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Datenbank konnte nicht aktualisiert werden</Text>
+        <Text style={styles.body}>
+          Bitte starte die App neu. Deine Daten sind unverändert — es wurde nichts
+          gespeichert und nichts gelöscht.
+        </Text>
+        <Text style={styles.body}>
+          Bleibt der Fehler bestehen, hilft ein Neustart des Geräts oder ein
+          Update der App.
+        </Text>
+      </View>
+    </SafeAreaView>
+  )
+}
+
+const styles = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: '#F2F2F7' },
+  container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 },
+  title: { fontSize: 22, fontWeight: '600', marginBottom: 16, textAlign: 'center' },
+  body: { fontSize: 16, color: '#3C3C43', textAlign: 'center', marginBottom: 12, lineHeight: 22 },
+})

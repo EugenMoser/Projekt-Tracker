@@ -55,11 +55,13 @@ export const projects = pgTable('projects', {
   hourlyRateCents: integer('hourly_rate_cents'),
   fixedPriceCents: integer('fixed_price_cents'),
   status: text('status').notNull().default('active'),
+  sortOrder: integer('sort_order').notNull().default(0),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   deletedAt: timestamp('deleted_at', { withTimezone: true }),
 }, (t) => ({
   userStatusIdx: index('projects_user_status_updated_idx').on(t.userId, t.status, t.updatedAt),
+  userSortIdx: index('projects_user_status_sort_idx').on(t.userId, t.status, t.sortOrder),
   pricingModeCheck: check('pricing_mode_valid', sql`pricing_mode IN ('hourly', 'fixed')`),
   statusCheck: check('status_valid', sql`status IN ('active', 'archived')`),
   pricingXor: check('pricing_xor', sql`

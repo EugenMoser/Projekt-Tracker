@@ -57,11 +57,13 @@ export const projects = sqliteTable('projects', {
   hourlyRateCents: integer('hourly_rate_cents'),
   fixedPriceCents: integer('fixed_price_cents'),
   status: text('status').notNull().default('active'),
+  sortOrder: integer('sort_order').notNull().default(0),
   createdAt: tsMs('created_at').notNull(),
   updatedAt: tsMs('updated_at').notNull(),
   deletedAt: tsMs('deleted_at'),
 }, (t) => ({
   userStatusIdx: index('projects_user_status_updated_idx').on(t.userId, t.status, t.updatedAt),
+  userSortIdx: index('projects_user_status_sort_idx').on(t.userId, t.status, t.sortOrder),
 }))
 
 export const tasks = sqliteTable('tasks', {

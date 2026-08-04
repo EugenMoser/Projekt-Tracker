@@ -1,0 +1,2 @@
+ALTER TABLE "projects" ADD COLUMN "sort_order" integer DEFAULT 0 NOT NULL;--> statement-breakpoint
+CREATE INDEX "projects_user_status_sort_idx" ON "projects" USING btree ("user_id","status","sort_order");

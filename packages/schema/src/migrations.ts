@@ -8,6 +8,14 @@ PRAGMA journal_mode = WAL;
 -- NOTE: foreign_keys must also be set per-connection in the DB client
 PRAGMA foreign_keys = ON;
 
+-- Migration bookkeeping. The runner creates this too (it has to read the
+-- version before applying anything), but keeping it here lets later
+-- migrations bump schema_version inside their own transaction.
+CREATE TABLE IF NOT EXISTS _meta (
+  key TEXT PRIMARY KEY NOT NULL,
+  value TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY NOT NULL,
   display_name TEXT NOT NULL,
@@ -143,6 +151,37 @@ CREATE TABLE IF NOT EXISTS app_settings (
   last_export_period TEXT,
   updated_at INTEGER NOT NULL
 );
+`,
+  },
+  {
+    version: 2,
+    sql: `
+BEGIN;
+
+ALTER TABLE projects ADD COLUMN sort_order INTEGER NOT NULL DEFAULT 0;
+
+-- Reproduce the order the home screen shows today (updated_at DESC), so
+-- nothing jumps around on the first launch after the update. The correlated
+-- subquery counts how many of the user's projects are newer, which yields
+-- rank 0, 1, 2 …; +1 shifts that onto the same 1000-step grid the rebalance
+-- in moveProject() uses. Deliberately no window function — that would tie the
+-- migration to the SQLite version shipped with a given Expo SDK.
+UPDATE projects SET sort_order = (
+  SELECT (COUNT(*) + 1) * 1000 FROM projects p2
+  WHERE p2.user_id = projects.user_id AND p2.updated_at > projects.updated_at
+);
+
+CREATE INDEX IF NOT EXISTS projects_user_status_sort_idx
+  ON projects(user_id, status, sort_order);
+
+-- Bump the version inside this transaction, not only in the runner. The runner
+-- writes schema_version in a separate statement after COMMIT; dying in between
+-- would replay this migration and ADD COLUMN would fail with "duplicate column
+-- name". Committing schema and version together makes the step atomic — the
+-- runner's write afterwards just repeats the same value.
+INSERT OR REPLACE INTO _meta (key, value) VALUES ('schema_version', '2');
+
+COMMIT;
 `,
   },
 ]
