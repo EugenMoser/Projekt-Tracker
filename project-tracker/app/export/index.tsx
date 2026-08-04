@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
 import {
   View, Text, TextInput, Pressable,
-  StyleSheet, Alert, ActivityIndicator, ScrollView,
+  StyleSheet, Alert, ActivityIndicator,
 } from 'react-native'
-import * as FileSystem from 'expo-file-system'
+// SDK 54 hat expo-file-system auf die neue File/Directory-API umgestellt;
+// cacheDirectory + writeAsStringAsync leben seitdem unter /legacy.
+import * as FileSystem from 'expo-file-system/legacy'
 import * as Sharing from 'expo-sharing'
 import { useFocusEffect } from 'expo-router'
+import { KeyboardAwareScrollView } from '../../src/components/KeyboardAwareView'
 import { listCustomers } from '../../src/repositories/customers'
 import { useSyncStore } from '../../src/store/syncStore'
 import { apiExportExcel } from '../../src/sync/api'
@@ -92,7 +95,7 @@ export default function ExportScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <KeyboardAwareScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text style={styles.label}>Von (YYYY-MM)</Text>
       <TextInput
         style={styles.input}
@@ -152,7 +155,7 @@ export default function ExportScreen() {
           ? <ActivityIndicator color="#FFF" />
           : <Text style={styles.btnText}>Export erstellen</Text>}
       </Pressable>
-    </ScrollView>
+    </KeyboardAwareScrollView>
   )
 }
 

@@ -41,6 +41,9 @@ const projectSchema = z.object({
   hourlyRateCents: z.number().int().nullable(),
   fixedPriceCents: z.number().int().nullable(),
   status: z.enum(['active', 'archived']),
+  // PG stores this as `integer`; anything outside int32 would blow up as a 500
+  // and take the whole push transaction with it. Reject it as a 400 instead.
+  sortOrder: z.number().int().min(-2147483648).max(2147483647),
   createdAt: isoDatetime,
   updatedAt: isoDatetime,
   deletedAt: nullableIso,

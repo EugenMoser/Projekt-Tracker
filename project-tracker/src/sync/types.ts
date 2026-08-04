@@ -30,6 +30,7 @@ export interface SyncProject {
   hourlyRateCents: number | null
   fixedPriceCents: number | null
   status: 'active' | 'archived'
+  sortOrder: number
   createdAt: string
   updatedAt: string
   deletedAt: string | null

@@ -1,0 +1,22 @@
+# Version control
+.git
+.gitignore
+
+# Mobile app (not part of backend build)
+project-tracker/
+
+# Dev artifacts
+node_modules
+**/node_modules
+**/.vite
+
+# Docs & config
+.claude/
+*.md
+!packages/server/migrations
+
+# CI / test artifacts
+coverage/
+*.log
+.env
+.env.*

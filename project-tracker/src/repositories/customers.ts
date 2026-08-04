@@ -10,6 +10,12 @@ export function listCustomers(userId: string) {
     .all()
 }
 
+export function getCustomer(userId: string, id: string) {
+  return db.select().from(schema.customers)
+    .where(and(eq(schema.customers.id, id), eq(schema.customers.userId, userId)))
+    .get() ?? null
+}
+
 export function createCustomer(
   userId: string,
   data: { name: string; orderTypeId: string; orderTypeDigit: number; street?: string; zip?: string; city?: string }
@@ -27,10 +33,17 @@ export function createCustomer(
 
 export function updateCustomer(
   userId: string, id: string,
-  data: Partial<{ name: string; street: string; zip: string; city: string }>
+  data: Partial<{ name: string; street: string; zip: string; city: string; orderTypeId: string }>
 ) {
   return db.update(schema.customers)
     .set({ ...data, updatedAt: new Date() })
+    .where(and(eq(schema.customers.id, id), eq(schema.customers.userId, userId)))
+    .run()
+}
+
+export function deleteCustomer(userId: string, id: string) {
+  return db.update(schema.customers)
+    .set({ deletedAt: new Date(), updatedAt: new Date() })
     .where(and(eq(schema.customers.id, id), eq(schema.customers.userId, userId)))
     .run()
 }

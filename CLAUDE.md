@@ -2,53 +2,50 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Wichtigste Regel: Workflow folgen
+## Arbeitsweise
 
-Jede Änderung läuft durch den verbindlichen Feature-Loop in [.claude/docs/WORKFLOW.md](.claude/docs/WORKFLOW.md). Vor JEDEM Implementierungs-Schritt:
+Ziel: kleine, in sich geschlossene Änderungen, die grün durchlaufen und nachvollziehbar dokumentiert sind.
 
-1. **WORKFLOW.md lesen** und Definition-of-Done-Checkliste verinnerlichen
-2. Anforderung aus [.claude/docs/TODO.md](.claude/docs/TODO.md) konkretisieren
-3. Bei Unklarheit erst rückfragen, dann coden
-4. Nach Fertigstellung: PROGRESS.md + TODO.md aktualisieren, Commit vorbereiten (User commitet selbst)
+- Anforderungen kommen aus [.claude/docs/TODO.md](.claude/docs/TODO.md).
+- Den Ablauf selbst (Brainstorming → TDD → Review → Verifikation) tragen die Superpowers-Skills. [.claude/docs/WORKFLOW.md](.claude/docs/WORKFLOW.md) enthält nur, was projektspezifisch ist: Commit-Format, Branch-Strategie, projekteigene DoD-Punkte.
+- Commits macht der User selbst — Claude bereitet sie vor (staging + Message-Vorschlag).
 
 ## Doku-Landkarte
 
 Alle Konzept-/Architektur-/Workflow-Markdowns liegen unter [.claude/docs/](.claude/docs/):
 
-| Datei | Zweck |
-|---|---|
-| [WORKFLOW.md](.claude/docs/WORKFLOW.md) | **Verbindlicher Feature-Loop** + DoD-Checkliste + Commit-Format |
-| [CONCEPT.md](.claude/docs/CONCEPT.md) | Fachliches Konzept, Domain-Glossar, User Stories, UI-Wireframes, Kundennummern-Algorithmus, Open Questions |
-| [ARCHITECTURE.md](.claude/docs/ARCHITECTURE.md) | Schichten-Diagramm, Sync-Strategie (LWW), Multi-Tenant-Pattern, API-Versionierung |
-| [DATA_MODEL.md](.claude/docs/DATA_MODEL.md) | Tabellen, Constraints, Indizes (PG + SQLite via Drizzle) |
-| [ROADMAP.md](.claude/docs/ROADMAP.md) | Phasen 0–8 mit Akzeptanzkriterien |
-| [TODO.md](.claude/docs/TODO.md) | Lebendiger Backlog gruppiert nach Phasen |
-| [PROGRESS.md](.claude/docs/PROGRESS.md) | Cross-Session-Fortschrittslog (bei jedem Commit ergänzen!) |
-| [DECISIONS.md](.claude/docs/DECISIONS.md) | ADR-light: alle Architekturentscheidungen mit Begründung |
-| [SECURITY.md](.claude/docs/SECURITY.md) | Threat-Model, PIN/Biometrie, Tenant-Isolation, Secrets |
-| [DEPLOYMENT.md](.claude/docs/DEPLOYMENT.md) | Coolify-Setup auf Hostinger-VPS |
-| [SAAS_READINESS.md](.claude/docs/SAAS_READINESS.md) | Checkliste für späteren App-Store-Launch |
+| Datei                                               | Zweck                                                                                                      |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| [WORKFLOW.md](.claude/docs/WORKFLOW.md)             | Commit-Format, Branch-Strategie, projektspezifische DoD-Punkte                                             |
+| [CONCEPT.md](.claude/docs/CONCEPT.md)               | Fachliches Konzept, Domain-Glossar, User Stories, UI-Wireframes, Kundennummern-Algorithmus, Open Questions |
+| [ARCHITECTURE.md](.claude/docs/ARCHITECTURE.md)     | Schichten-Diagramm, Sync-Strategie (LWW), Multi-Tenant-Pattern, API-Versionierung                          |
+| [DATA_MODEL.md](.claude/docs/DATA_MODEL.md)         | Tabellen, Constraints, Indizes (PG + SQLite via Drizzle)                                                   |
+| [ROADMAP.md](.claude/docs/ROADMAP.md)               | Phasen 0–8 mit Akzeptanzkriterien                                                                          |
+| [TODO.md](.claude/docs/TODO.md)                     | Lebendiger Backlog gruppiert nach Phasen                                                                   |
+| [PROGRESS.md](.claude/docs/PROGRESS.md)             | Cross-Session-Fortschrittslog (bei jedem Commit ergänzen!)                                                 |
+| [DECISIONS.md](.claude/docs/DECISIONS.md)           | ADR-light: alle Architekturentscheidungen mit Begründung                                                   |
+| [SECURITY.md](.claude/docs/SECURITY.md)             | Threat-Model, PIN/Biometrie, Tenant-Isolation, Secrets                                                     |
+| [DEPLOYMENT.md](.claude/docs/DEPLOYMENT.md)         | Coolify-Setup auf Hostinger-VPS                                                                            |
+| [SAAS_READINESS.md](.claude/docs/SAAS_READINESS.md) | Checkliste für späteren App-Store-Launch                                                                   |
 
-`mvp-brainstorming.md` (im Repo-Root) ist die historische Quelle der Anforderungen vom User. Kuratierte, aktuelle Version ist [CONCEPT.md](.claude/docs/CONCEPT.md).
+`.claude/mvp-brainstorming.md` ist die historische Anforderungsquelle und **nicht mehr aktuell** — ihr Inhalt ist vollständig in [CONCEPT.md](.claude/docs/CONCEPT.md) kuratiert. CONCEPT.md ist die einzige gültige Quelle.
 
 ## Subagents
 
 Spezialisierte Subagents leben unter [.claude/agents/](.claude/agents/):
 
-| Agent | Wann nutzen |
-|---|---|
-| `architect` | Architektur-Entscheidungen, Design-Reviews, ADR-Entwürfe |
-| `coder` | Backend-Routes, Business-Logik, Mobile-Logik (Test-first) |
-| `db` | Schema, Migrationen, Indizes, Sync-Felder |
-| `mobile-ux` | UI/UX, Gesten (Swipe-to-Track), Listen-Performance |
-| `security` | Auth, PIN, JWT, Tenant-Isolation, Secrets, Dependencies |
-| `reviewer` | End-to-End-Review vor Commit (DoD-Check) |
-
-Subagent-Mapping zu Workflow-Schritten siehe [WORKFLOW.md](.claude/docs/WORKFLOW.md#subagent-mapping).
+| Agent       | Wann nutzen                                               |
+| ----------- | --------------------------------------------------------- |
+| `architect` | Architektur-Entscheidungen, Design-Reviews, ADR-Entwürfe  |
+| `coder`     | Backend-Routes, Business-Logik, Mobile-Logik (Test-first) |
+| `db`        | Schema, Migrationen, Indizes, Sync-Felder                 |
+| `mobile-ux` | UI/UX, Gesten (Swipe-to-Track), Listen-Performance        |
+| `security`  | Auth, PIN, JWT, Tenant-Isolation, Secrets, Dependencies   |
+| `reviewer`  | End-to-End-Review vor Commit (DoD-Check)                  |
 
 ## Projekt-Struktur
 
-Mobile-App liegt in [project-tracker/](project-tracker/). Geplante Workspace-Struktur (entsteht in Phase 1+):
+Alle KI-relevanten Daten liegen unter `.claude/` im Root.
 
 ```
 projekt-tracker/
@@ -58,7 +55,10 @@ projekt-tracker/
 │   └── server/             # Hono Backend
 ├── .claude/
 │   ├── docs/               # Doku (siehe oben)
-│   └── agents/             # Subagent-Definitionen
+│   ├── agents/             # Subagent-Definitionen
+│   ├── plans/              # Phasenpläne (Phase 1–6)
+│   ├── .superpowers/       # Feature-Pläne + Specs aus Superpowers-Sessions
+│   └── settings.json       # Projekt-Hooks
 └── CLAUDE.md
 ```
 
@@ -94,4 +94,12 @@ npx expo start --web    # Browser
 npm run lint            # ESLint via expo lint
 ```
 
-Backend- und Workspace-Skripte werden in Phase 0/1 ergänzt.
+Aus dem Repo-Root (Workspace-weit via pnpm):
+
+```bash
+pnpm lint                # Lint über alle Packages + Mobile-App
+pnpm typecheck           # tsc --noEmit über schema, server und Mobile-App
+pnpm test                # Tests über alle Packages (vitest/jest)
+```
+
+Der Typecheck läuft zusätzlich automatisch: `.claude/hooks/typecheck.sh` prüft nach jeder Änderung an einer `.ts`/`.tsx`-Datei im Hintergrund nur das betroffene Package und meldet sich nur, wenn etwas kaputt ist (konfiguriert in `.claude/settings.json`, abschaltbar über `/hooks`).

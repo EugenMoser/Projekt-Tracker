@@ -1,4 +1,4 @@
-import { eq, and, isNull } from 'drizzle-orm'
+import { eq, and, isNull, inArray } from 'drizzle-orm'
 import { db } from '../db/client'
 import * as schema from '@projekt-tracker/schema'
 import { newId } from '../utils/uuid'
@@ -6,6 +6,13 @@ import { newId } from '../utils/uuid'
 export function listTasks(userId: string) {
   return db.select().from(schema.tasks)
     .where(and(eq(schema.tasks.userId, userId), isNull(schema.tasks.deletedAt)))
+    .all()
+}
+
+export function listTasksByIds(userId: string, ids: string[]) {
+  if (ids.length === 0) return []
+  return db.select().from(schema.tasks)
+    .where(and(eq(schema.tasks.userId, userId), inArray(schema.tasks.id, ids)))
     .all()
 }
 
@@ -27,6 +34,41 @@ export function createTask(userId: string, description: string) {
   const id = newId()
   db.insert(schema.tasks).values({ id, userId, description, createdAt: now, updatedAt: now }).run()
   return id
+}
+
+export function updateTask(userId: string, id: string, description: string) {
+  db.update(schema.tasks)
+    .set({ description, updatedAt: new Date() })
+    .where(and(eq(schema.tasks.id, id), eq(schema.tasks.userId, userId)))
+    .run()
+}
+
+export function addTaskToProject(userId: string, projectId: string, taskId: string) {
+  // Primary key is (projectId, taskId); onConflictDoNothing keeps repeated
+  // calls with the same arguments idempotent instead of throwing.
+  db.insert(schema.projectTasks)
+    .values({ projectId, taskId, userId })
+    .onConflictDoNothing()
+    .run()
+}
+
+export function removeTaskFromProject(userId: string, projectId: string, taskId: string) {
+  // Hard delete: project_tasks is a pure many-to-many join table without a
+  // `deletedAt` column, so there is nothing to soft-delete.
+  db.delete(schema.projectTasks)
+    .where(and(
+      eq(schema.projectTasks.projectId, projectId),
+      eq(schema.projectTasks.taskId, taskId),
+      eq(schema.projectTasks.userId, userId)
+    ))
+    .run()
+}
+
+export function deleteTask(userId: string, id: string) {
+  db.update(schema.tasks)
+    .set({ deletedAt: new Date(), updatedAt: new Date() })
+    .where(and(eq(schema.tasks.id, id), eq(schema.tasks.userId, userId)))
+    .run()
 }
 
 export function listTags(userId: string) {

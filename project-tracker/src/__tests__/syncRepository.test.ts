@@ -1,5 +1,6 @@
 import BetterSQLite from 'better-sqlite3'
 import { drizzle } from 'drizzle-orm/better-sqlite3'
+import { eq } from 'drizzle-orm'
 import * as schema from '@projekt-tracker/schema'
 import { migrations } from '@projekt-tracker/schema'
 import { collectPushPayload, applyPull } from '../sync/syncRepository'
@@ -50,6 +51,20 @@ function seedBase(db: ReturnType<typeof makeDb>) {
   }).run()
   db.insert(schema.projectTasks).values({ projectId: PR, taskId: TA, userId: U }).run()
 }
+
+const baseResponse = (): PullResponse => ({
+  orderTypes: [],
+  customers: [],
+  projects: [],
+  tasks: [],
+  tags: [],
+  timeEntries: [],
+  taskTags: [],
+  projectTasks: [],
+  timers: [],
+  appSettings: null,
+  serverTime: T2.toISOString(),
+})
 
 describe('collectPushPayload', () => {
   it('full sync (since=null): collects all entities', () => {
@@ -121,20 +136,6 @@ describe('collectPushPayload', () => {
 })
 
 describe('applyPull', () => {
-  const baseResponse = (): PullResponse => ({
-    orderTypes: [],
-    customers: [],
-    projects: [],
-    tasks: [],
-    tags: [],
-    timeEntries: [],
-    taskTags: [],
-    projectTasks: [],
-    timers: [],
-    appSettings: null,
-    serverTime: T2.toISOString(),
-  })
-
   it('inserts new entity from server', () => {
     const db = makeDb()
     db.insert(schema.users).values({
@@ -244,5 +245,63 @@ describe('applyPull', () => {
 
     const rows = db.select().from(schema.taskTags).all()
     expect(rows).toHaveLength(0)
+  })
+})
+
+describe('sortOrder round-trip', () => {
+  it('carries sortOrder into the push payload', () => {
+    const db = makeDb()
+    seedBase(db)
+    db.update(schema.projects)
+      .set({ sortOrder: 2000 })
+      .where(eq(schema.projects.id, PR))
+      .run()
+
+    const payload = collectPushPayload(db, U, null)
+
+    expect(payload.projects).toHaveLength(1)
+    expect(payload.projects[0].sortOrder).toBe(2000)
+  })
+
+  it('applies a newer sortOrder from the server', () => {
+    const db = makeDb()
+    seedBase(db)
+    // seedBase writes the project with updatedAt = T1; the server row is newer.
+    applyPull(db, {
+      ...baseResponse(),
+      projects: [{
+        id: PR, customerId: CU, title: 'Projekt A', description: null,
+        color: '#FF0000', pricingMode: 'hourly',
+        hourlyRateCents: 8000, fixedPriceCents: null,
+        status: 'active', sortOrder: 7000,
+        createdAt: T0.toISOString(), updatedAt: T2.toISOString(), deletedAt: null,
+      }],
+    })
+
+    const row = db.select().from(schema.projects).get()
+    expect(row?.sortOrder).toBe(7000)
+  })
+
+  it('keeps the local sortOrder when the server row is older (LWW)', () => {
+    const db = makeDb()
+    seedBase(db)
+    db.update(schema.projects)
+      .set({ sortOrder: 4000, updatedAt: T2 })
+      .where(eq(schema.projects.id, PR))
+      .run()
+
+    applyPull(db, {
+      ...baseResponse(),
+      projects: [{
+        id: PR, customerId: CU, title: 'Projekt A', description: null,
+        color: '#FF0000', pricingMode: 'hourly',
+        hourlyRateCents: 8000, fixedPriceCents: null,
+        status: 'active', sortOrder: 9000,
+        createdAt: T0.toISOString(), updatedAt: T1.toISOString(), deletedAt: null,
+      }],
+    })
+
+    const row = db.select().from(schema.projects).get()
+    expect(row?.sortOrder).toBe(4000)
   })
 })

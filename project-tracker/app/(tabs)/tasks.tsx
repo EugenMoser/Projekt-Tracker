@@ -2,8 +2,10 @@ import React from 'react'
 import { View, Text, FlatList, Pressable, TextInput, Modal, StyleSheet, Alert } from 'react-native'
 import { useFocusEffect } from 'expo-router'
 import {
-  listTasks, createTask, upsertTag, setTaskTags, getTagsForTask,
+  listTasks, createTask, updateTask, deleteTask, upsertTag, setTaskTags, getTagsForTask,
 } from '../../src/repositories/tasks'
+import { DotsButton, RowActionMenu, type RowAction } from '../../src/components/RowActionMenu'
+import { KeyboardAwareView } from '../../src/components/KeyboardAwareView'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -13,8 +15,11 @@ export default function TasksScreen() {
   const [tasks, setTasks] = React.useState<Task[]>([])
   const [showAdd, setShowAdd] = React.useState(false)
   const [newDesc, setNewDesc] = React.useState('')
+  const [editingTask, setEditingTask] = React.useState<Task | null>(null)
+  const [editDesc, setEditDesc] = React.useState('')
   const [editingTagsFor, setEditingTagsFor] = React.useState<string | null>(null)
   const [newTagText, setNewTagText] = React.useState('')
+  const [menuTask, setMenuTask] = React.useState<Task | null>(null)
 
   const load = () => {
     const rawTasks = listTasks(OWNER_ID)
@@ -32,7 +37,55 @@ export default function TasksScreen() {
     }
   }
 
-  const taskBeingEdited = tasks.find((t) => t.id === editingTagsFor)
+  const handleDeleteTask = (task: Task) => {
+    setMenuTask(null)
+    Alert.alert(
+      'Aufgabe löschen?',
+      `„${task.description}" wird unwiderruflich gelöscht.`,
+      [
+        { text: 'Abbrechen', style: 'cancel' },
+        {
+          text: 'Löschen',
+          style: 'destructive',
+          onPress: () => {
+            deleteTask(OWNER_ID, task.id)
+            load()
+          },
+        },
+      ],
+    )
+  }
+
+  const menuActions: RowAction[] = menuTask
+    ? [
+        {
+          label: 'Bearbeiten',
+          onPress: () => {
+            const task = menuTask
+            setMenuTask(null)
+            setEditingTask(task)
+            setEditDesc(task.description)
+          },
+        },
+        {
+          label: 'Löschen',
+          destructive: true,
+          onPress: () => handleDeleteTask(menuTask),
+        },
+      ]
+    : []
+
+  const handleSaveEdit = () => {
+    if (!editDesc.trim() || !editingTask) return
+    try {
+      updateTask(OWNER_ID, editingTask.id, editDesc.trim())
+      setEditingTask(null); setEditDesc(''); load()
+    } catch {
+      Alert.alert('Fehler', 'Aufgabe konnte nicht gespeichert werden.')
+    }
+  }
+
+  const taskBeingTagged = tasks.find((t) => t.id === editingTagsFor)
 
   const handleAddTag = (taskId: string, currentTagIds: string[]) => {
     if (!newTagText.trim()) return
@@ -56,58 +109,109 @@ export default function TasksScreen() {
         keyExtractor={(t) => t.id}
         renderItem={({ item }) => (
           <View style={styles.taskRow}>
-            <Text style={styles.taskDesc}>{item.description}</Text>
-            <View style={styles.tagRow}>
-              {item.tags.map((tag) => (
-                <Pressable key={tag.id} style={styles.tag}
-                  onLongPress={() => { handleRemoveTag(item.id, tag.id, item.tags.map((t) => t.id)); load() }}>
-                  <Text style={styles.tagText}>{tag.title}</Text>
+            <View style={styles.taskRowContent}>
+              <Text style={styles.taskDesc}>{item.description}</Text>
+              <View style={styles.tagRow}>
+                {item.tags.map((tag) => (
+                  <Pressable key={tag.id} style={styles.tag}
+                    onLongPress={() => { handleRemoveTag(item.id, tag.id, item.tags.map((t) => t.id)) }}>
+                    <Text style={styles.tagText}>{tag.title}</Text>
+                  </Pressable>
+                ))}
+                <Pressable style={[styles.tag, styles.tagAdd]} onPress={() => setEditingTagsFor(item.id)}>
+                  <Text style={styles.tagText}>+ Tag</Text>
                 </Pressable>
-              ))}
-              <Pressable style={[styles.tag, styles.tagAdd]} onPress={() => setEditingTagsFor(item.id)}>
-                <Text style={styles.tagText}>+ Tag</Text>
-              </Pressable>
+              </View>
             </View>
+            <DotsButton
+              onPress={() => setMenuTask(item)}
+              accessibilityLabel={`Aktionen für ${item.description}`}
+            />
           </View>
         )}
+      />
+      <RowActionMenu
+        visible={menuTask !== null}
+        title={menuTask?.description}
+        actions={menuActions}
+        onClose={() => setMenuTask(null)}
       />
 
       {/* Add task modal */}
       <Modal visible={showAdd} animationType="slide" presentationStyle="formSheet">
-        <View style={styles.modal}>
-          <Text style={styles.modalTitle}>Neue Aufgabe</Text>
-          <TextInput style={styles.input} placeholder="Bildbearbeitung" value={newDesc} onChangeText={setNewDesc} autoFocus />
-          <Pressable style={styles.saveBtn} onPress={handleAddTask}>
-            <Text style={{ color: '#FFF', fontWeight: '600' }}>Anlegen</Text>
-          </Pressable>
-          <Pressable onPress={() => setShowAdd(false)} style={{ marginTop: 12, alignItems: 'center' }}>
-            <Text>Abbrechen</Text>
-          </Pressable>
-        </View>
+        <KeyboardAwareView insideModal>
+          <View style={styles.modal}>
+            <Text style={styles.modalTitle}>Neue Aufgabe</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Bildbearbeitung"
+              placeholderTextColor="#999"
+              value={newDesc}
+              onChangeText={setNewDesc}
+              autoFocus
+            />
+            <Pressable style={styles.saveBtn} onPress={handleAddTask}>
+              <Text style={{ color: '#FFF', fontWeight: '600' }}>Anlegen</Text>
+            </Pressable>
+            <Pressable onPress={() => setShowAdd(false)} style={{ marginTop: 12, alignItems: 'center' }}>
+              <Text>Abbrechen</Text>
+            </Pressable>
+          </View>
+        </KeyboardAwareView>
+      </Modal>
+
+      {/* Edit task modal */}
+      <Modal visible={!!editingTask} animationType="slide" presentationStyle="formSheet">
+        <KeyboardAwareView insideModal>
+          <View style={styles.modal}>
+            <Text style={styles.modalTitle}>Aufgabe bearbeiten</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Beschreibung"
+              placeholderTextColor="#999"
+              value={editDesc}
+              onChangeText={setEditDesc}
+              autoFocus
+            />
+            <Pressable style={styles.saveBtn} onPress={handleSaveEdit}>
+              <Text style={{ color: '#FFF', fontWeight: '600' }}>Speichern</Text>
+            </Pressable>
+            <Pressable onPress={() => { setEditingTask(null); setEditDesc('') }} style={{ marginTop: 12, alignItems: 'center' }}>
+              <Text>Abbrechen</Text>
+            </Pressable>
+          </View>
+        </KeyboardAwareView>
       </Modal>
 
       {/* Tag edit modal */}
       <Modal visible={!!editingTagsFor} animationType="slide" presentationStyle="formSheet">
-        <View style={styles.modal}>
-          <Text style={styles.modalTitle}>Stichworte für „{taskBeingEdited?.description}"</Text>
-          <View style={styles.tagRow}>
-            {taskBeingEdited?.tags.map((tag) => (
-              <Pressable key={tag.id} style={styles.tag}
-                onPress={() => { handleRemoveTag(editingTagsFor!, tag.id, taskBeingEdited.tags.map((t) => t.id)) }}>
-                <Text style={styles.tagText}>{tag.title} ✕</Text>
-              </Pressable>
-            ))}
+        <KeyboardAwareView insideModal>
+          <View style={styles.modal}>
+            <Text style={styles.modalTitle}>Stichworte für „{taskBeingTagged?.description}"</Text>
+            <View style={styles.tagRow}>
+              {taskBeingTagged?.tags.map((tag) => (
+                <Pressable key={tag.id} style={styles.tag}
+                  onPress={() => { handleRemoveTag(editingTagsFor!, tag.id, taskBeingTagged.tags.map((t) => t.id)) }}>
+                  <Text style={styles.tagText}>{tag.title} ✕</Text>
+                </Pressable>
+              ))}
+            </View>
+            <TextInput
+              style={[styles.input, { marginTop: 12 }]}
+              placeholder="Neues Stichwort"
+              placeholderTextColor="#999"
+              value={newTagText}
+              onChangeText={setNewTagText}
+            />
+            <Pressable style={[styles.saveBtn, { marginTop: 8 }]}
+              onPress={() => handleAddTag(editingTagsFor!, taskBeingTagged?.tags.map((t) => t.id) ?? [])}>
+              <Text style={{ color: '#FFF', fontWeight: '600' }}>Stichwort hinzufügen</Text>
+            </Pressable>
+            <Pressable onPress={() => { setEditingTagsFor(null); setNewTagText('') }} style={{ marginTop: 12, alignItems: 'center' }}>
+              <Text>Fertig</Text>
+            </Pressable>
           </View>
-          <TextInput style={[styles.input, { marginTop: 12 }]} placeholder="Neues Stichwort"
-            value={newTagText} onChangeText={setNewTagText} />
-          <Pressable style={[styles.saveBtn, { marginTop: 8 }]}
-            onPress={() => handleAddTag(editingTagsFor!, taskBeingEdited?.tags.map((t) => t.id) ?? [])}>
-            <Text style={{ color: '#FFF', fontWeight: '600' }}>Stichwort hinzufügen</Text>
-          </Pressable>
-          <Pressable onPress={() => { setEditingTagsFor(null); setNewTagText('') }} style={{ marginTop: 12, alignItems: 'center' }}>
-            <Text>Fertig</Text>
-          </Pressable>
-        </View>
+        </KeyboardAwareView>
       </Modal>
     </View>
   )
@@ -117,14 +221,23 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
   addBtn: { backgroundColor: '#4A90D9', padding: 14, borderRadius: 8, alignItems: 'center', marginBottom: 16 },
   addBtnText: { color: '#FFF', fontWeight: '600' },
-  taskRow: { backgroundColor: '#FFF', borderRadius: 8, padding: 14, marginBottom: 8 },
+  taskRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    backgroundColor: '#FFF',
+    borderRadius: 8,
+    padding: 14,
+    marginBottom: 8,
+  },
+  taskRowContent: { flex: 1, marginRight: 8 },
   taskDesc: { fontSize: 15, fontWeight: '600', marginBottom: 6 },
   tagRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   tag: { backgroundColor: '#E8F4FE', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
   tagAdd: { backgroundColor: '#EEE' },
   tagText: { fontSize: 12, color: '#4A90D9' },
-  modal: { flex: 1, padding: 24 },
+  modal: { flex: 1, padding: 24, backgroundColor: '#FFF' },
   modalTitle: { fontSize: 18, fontWeight: '700', marginBottom: 16 },
-  input: { borderWidth: 1, borderColor: '#DDD', borderRadius: 8, padding: 12 },
+  input: { borderWidth: 1, borderColor: '#DDD', borderRadius: 8, padding: 12, backgroundColor: '#FFF', color: '#000' },
   saveBtn: { backgroundColor: '#4A90D9', padding: 14, borderRadius: 8, alignItems: 'center', marginTop: 8 },
 })

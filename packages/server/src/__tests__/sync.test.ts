@@ -82,12 +82,56 @@ describe('pushBodySchema — unit', () => {
         hourlyRateCents: null,
         fixedPriceCents: null,
         status: 'active',
+        sortOrder: 1000,
         createdAt: '2026-01-01T00:00:00.000Z',
         updatedAt: '2026-01-01T00:00:00.000Z',
         deletedAt: null,
       }],
     })
     expect(r.success).toBe(false)
+  })
+
+  // sortOrder is required rather than `.default(0)`: a client that does not know
+  // the field would otherwise silently collapse every project onto key 0 on the
+  // server and destroy the user's arrangement for every other device.
+  it('rejects a project without sortOrder', () => {
+    const r = pushBodySchema.safeParse({
+      projects: [{
+        id: '01930000-0000-7000-8000-000000000002',
+        customerId: '01930000-0000-7000-8000-000000000003',
+        title: 'Project',
+        description: null,
+        color: '#FF0000',
+        pricingMode: 'hourly',
+        hourlyRateCents: 8000,
+        fixedPriceCents: null,
+        status: 'active',
+        createdAt: '2026-01-01T00:00:00.000Z',
+        updatedAt: '2026-01-01T00:00:00.000Z',
+        deletedAt: null,
+      }],
+    })
+    expect(r.success).toBe(false)
+  })
+
+  it('rejects a sortOrder beyond the PG int32 range', () => {
+    const base = {
+      id: '01930000-0000-7000-8000-000000000002',
+      customerId: '01930000-0000-7000-8000-000000000003',
+      title: 'Project',
+      description: null,
+      color: '#FF0000',
+      pricingMode: 'hourly',
+      hourlyRateCents: 8000,
+      fixedPriceCents: null,
+      status: 'active',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+      deletedAt: null,
+    }
+    expect(pushBodySchema.safeParse({ projects: [{ ...base, sortOrder: 2147483648 }] }).success).toBe(false)
+    expect(pushBodySchema.safeParse({ projects: [{ ...base, sortOrder: -2147483649 }] }).success).toBe(false)
+    expect(pushBodySchema.safeParse({ projects: [{ ...base, sortOrder: 2147483647 }] }).success).toBe(true)
   })
 
   it('rejects a timeEntry with invalid pricingModeSnapshot', () => {
@@ -286,7 +330,7 @@ describe.skipIf(!DB_URL)('Sync endpoints (integration)', () => {
       body: JSON.stringify({
         orderTypes: [{ id: otId, name: 'Timer Test Art', digit: 5, createdAt: now, updatedAt: now, deletedAt: null }],
         customers: [{ id: custId, customerNumber: '26500A01', orderTypeId: otId, name: 'Timer Test Kunde', street: null, zip: null, city: null, createdAt: now, updatedAt: now, deletedAt: null }],
-        projects: [{ id: projId, customerId: custId, title: 'Timer Test Projekt', description: null, color: '#FF0000', pricingMode: 'hourly', hourlyRateCents: 8000, fixedPriceCents: null, status: 'active', createdAt: now, updatedAt: now, deletedAt: null }],
+        projects: [{ id: projId, customerId: custId, title: 'Timer Test Projekt', description: null, color: '#FF0000', pricingMode: 'hourly', hourlyRateCents: 8000, fixedPriceCents: null, status: 'active', sortOrder: 1000, createdAt: now, updatedAt: now, deletedAt: null }],
         timers: [{ id: timerId, projectId: projId, startedAt: now, createdAt: now, updatedAt: now }],
       }),
     })
