@@ -50,3 +50,7 @@ CLAUDE.md
 .firecrawl/
 .superpowers/
 docs
+# ... außer den Screenshots, die die README einbindet
+!docs/
+!docs/screenshots/
+!docs/screenshots/*.png
