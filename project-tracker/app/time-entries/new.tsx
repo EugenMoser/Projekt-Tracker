@@ -66,18 +66,22 @@ export default function NewTimeEntryScreen() {
       endedAt = new Date(startedAt.getTime() + durationMs)
     }
 
-    let taskId = selectedId
-    if (!taskId && searchText.trim()) {
-      taskId = createTask(OWNER_ID, searchText.trim())
-    }
-    if (!taskId) { Alert.alert('Pflichtfeld', 'Aufgabe wählen.'); return }
-
     let rateOverrideCents: number | undefined
     if (isHourly && rateStr.trim() !== '') {
       const parsed = Math.round(parseFloat(rateStr.replace(',', '.')) * 100)
       if (isNaN(parsed) || parsed <= 0) { Alert.alert('Ungültig', 'Stundensatz muss größer als 0 sein.'); return }
       rateOverrideCents = parsed
     }
+
+    // Resolve the task last: createTask is the only side-effecting call
+    // before createTimeEntry itself, so it must only run once every other
+    // guard above has passed — otherwise a retry after a validation error
+    // (e.g. an invalid rate) would insert a duplicate task on every attempt.
+    let taskId = selectedId
+    if (!taskId && searchText.trim()) {
+      taskId = createTask(OWNER_ID, searchText.trim())
+    }
+    if (!taskId) { Alert.alert('Pflichtfeld', 'Aufgabe wählen.'); return }
 
     createTimeEntry(OWNER_ID, {
       projectId,
