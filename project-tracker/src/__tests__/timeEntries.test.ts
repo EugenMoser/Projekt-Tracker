@@ -34,6 +34,7 @@ const U = '00000000-0000-0000-0000-000000000001'
 const OT = '00000000-0000-0000-0000-000000000002'
 const CU = '00000000-0000-0000-0000-000000000003'
 const P1 = '00000000-0000-0000-0000-000000000004'
+const P2 = '00000000-0000-0000-0000-000000000099'
 const TK = '00000000-0000-0000-0000-000000000005'
 
 function clearDb() {
@@ -174,5 +175,40 @@ describe('createTimeEntry', () => {
     const entry = getEntry(id)
     expect(entry).not.toBeNull()
     expect(entry!.notes).toBeNull()
+  })
+
+  it('ignores rateOverrideCents for fixed-price projects', () => {
+    // Seed a fixed-price project
+    testDb.insert(schema.projects).values({
+      id: P2,
+      userId: U,
+      customerId: CU,
+      title: 'P2 Fixed',
+      color: '#000',
+      pricingMode: 'fixed',
+      fixedPriceCents: 150000,
+      hourlyRateCents: null,
+      status: 'active',
+      createdAt: NOW,
+      updatedAt: NOW,
+    }).run()
+
+    const startedAt = new Date('2026-07-01T10:00:00Z')
+    const endedAt = new Date('2026-07-01T11:00:00Z')
+
+    // Create entry with rateOverrideCents provided, but project is fixed-price
+    const id = createTimeEntry(U, {
+      projectId: P2,
+      taskId: TK,
+      startedAt,
+      endedAt,
+      rateOverrideCents: 12000, // Should be ignored
+    })
+
+    const entry = getEntry(id)
+    expect(entry).not.toBeNull()
+    // Override must be ignored for fixed-price projects
+    expect(entry!.rateSnapshotCents).toBeNull()
+    expect(entry!.pricingModeSnapshot).toBe('fixed')
   })
 })
