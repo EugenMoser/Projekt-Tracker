@@ -130,81 +130,93 @@ export default function ProjectDetailScreen() {
   }
 
   return (
-    <ScrollView style={styles.c} contentContainerStyle={styles.content}>
-      <View style={[styles.header, { borderLeftColor: project.color }]}>
-        <View style={styles.headerTop}>
-          <View style={styles.headerTitleGroup}>
-            {customerName && <Text style={styles.customerName}>{customerName}</Text>}
-            <Text style={styles.title}>{project.title}</Text>
+    <View style={styles.container}>
+      <ScrollView style={styles.c} contentContainerStyle={styles.content}>
+        <View style={[styles.header, { borderLeftColor: project.color }]}>
+          <View style={styles.headerTop}>
+            <View style={styles.headerTitleGroup}>
+              {customerName && <Text style={styles.customerName}>{customerName}</Text>}
+              <Text style={styles.title}>{project.title}</Text>
+            </View>
+            <Pressable
+              onPress={() => router.push(`/projects/${id}/edit`)}
+              style={styles.editBtn}
+              accessibilityRole="button"
+              accessibilityLabel="Projekt bearbeiten"
+              hitSlop={8}
+            >
+              <Ionicons name="create-outline" size={22} color="#4A90D9" />
+            </Pressable>
           </View>
-          <Pressable
-            onPress={() => router.push(`/projects/${id}/edit`)}
-            style={styles.editBtn}
-            accessibilityRole="button"
-            accessibilityLabel="Projekt bearbeiten"
-            hitSlop={8}
-          >
-            <Ionicons name="create-outline" size={22} color="#4A90D9" />
-          </Pressable>
+          <Text style={styles.meta}>
+            {project.pricingMode === 'hourly'
+              ? `${((project.hourlyRateCents ?? 0) / 100).toFixed(2)} €/h`
+              : `Festpreis ${((project.fixedPriceCents ?? 0) / 100).toFixed(2)} €`}
+          </Text>
         </View>
-        <Text style={styles.meta}>
-          {project.pricingMode === 'hourly'
-            ? `${((project.hourlyRateCents ?? 0) / 100).toFixed(2)} €/h`
-            : `Festpreis ${((project.fixedPriceCents ?? 0) / 100).toFixed(2)} €`}
-        </Text>
-      </View>
 
-      <View style={styles.stats}>
-        <View style={styles.stat}>
-          <Text style={styles.statVal}>{formatDuration(totalSeconds)}</Text>
-          <Text style={styles.statLabel}>Gesamtzeit</Text>
+        <View style={styles.stats}>
+          <View style={styles.stat}>
+            <Text style={styles.statVal}>{formatDuration(totalSeconds)}</Text>
+            <Text style={styles.statLabel}>Gesamtzeit</Text>
+          </View>
+          {totalCents !== null && (
+            <View style={styles.stat}>
+              <Text style={styles.statVal}>{(totalCents / 100).toFixed(2)} €</Text>
+              <Text style={styles.statLabel}>Gesamtbetrag</Text>
+            </View>
+          )}
+          {relativeRate !== null && (
+            <View style={styles.stat}>
+              <Text style={styles.statVal}>{(relativeRate / 100).toFixed(2)} €/h</Text>
+              <Text style={styles.statLabel}>Relativer Stundensatz</Text>
+            </View>
+          )}
+          {project.pricingMode === 'fixed' && totalSeconds === 0 && (
+            <View style={styles.stat}>
+              <Text style={styles.statVal}>—</Text>
+              <Text style={styles.statLabel}>Relativer Stundensatz</Text>
+            </View>
+          )}
         </View>
-        {totalCents !== null && (
-          <View style={styles.stat}>
-            <Text style={styles.statVal}>{(totalCents / 100).toFixed(2)} €</Text>
-            <Text style={styles.statLabel}>Gesamtbetrag</Text>
-          </View>
-        )}
-        {relativeRate !== null && (
-          <View style={styles.stat}>
-            <Text style={styles.statVal}>{(relativeRate / 100).toFixed(2)} €/h</Text>
-            <Text style={styles.statLabel}>Relativer Stundensatz</Text>
-          </View>
-        )}
-        {project.pricingMode === 'fixed' && totalSeconds === 0 && (
-          <View style={styles.stat}>
-            <Text style={styles.statVal}>—</Text>
-            <Text style={styles.statLabel}>Relativer Stundensatz</Text>
-          </View>
-        )}
-      </View>
 
-      {taskGroups.length === 0 ? (
-        <View style={styles.empty}>
-          <Text style={styles.emptyText}>Noch keine Zeiteinträge</Text>
-        </View>
-      ) : (
-        taskGroups.map(({ task, entries: taskEntries }) => (
-          <TaskAccordionCard
-            key={task.id}
-            task={task}
-            entries={taskEntries}
-            projectTotalSeconds={totalSeconds}
-            pricingMode={project.pricingMode as 'hourly' | 'fixed'}
-            onEditEntry={handleEditEntry}
-            onDeleteEntry={handleDeleteEntry}
-          />
-        ))
-      )}
+        {taskGroups.length === 0 ? (
+          <View style={styles.empty}>
+            <Text style={styles.emptyText}>Noch keine Zeiteinträge</Text>
+          </View>
+        ) : (
+          taskGroups.map(({ task, entries: taskEntries }) => (
+            <TaskAccordionCard
+              key={task.id}
+              task={task}
+              entries={taskEntries}
+              projectTotalSeconds={totalSeconds}
+              pricingMode={project.pricingMode as 'hourly' | 'fixed'}
+              onEditEntry={handleEditEntry}
+              onDeleteEntry={handleDeleteEntry}
+            />
+          ))
+        )}
 
-      <Pressable style={styles.archiveBtn} onPress={handleArchive}>
-        <Text style={styles.archiveBtnText}>Archivieren</Text>
+        <Pressable style={styles.archiveBtn} onPress={handleArchive}>
+          <Text style={styles.archiveBtnText}>Archivieren</Text>
+        </Pressable>
+      </ScrollView>
+      <Pressable
+        style={styles.fab}
+        onPress={() => router.push(`/time-entries/new?projectId=${id}` as never)}
+        accessibilityRole="button"
+        accessibilityLabel="Zeiteintrag manuell hinzufügen"
+        hitSlop={8}
+      >
+        <Text style={styles.fabText}>+</Text>
       </Pressable>
-    </ScrollView>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
+  container: { flex: 1 },
   c: { flex: 1 },
   content: { paddingBottom: 32 },
   header: {
@@ -242,4 +254,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   archiveBtnText: { color: '#E74C3C', fontWeight: '600' },
+  fab: {
+    position: 'absolute',
+    bottom: 24,
+    right: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#4A90D9',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  fabText: { color: '#FFF', fontSize: 28, lineHeight: 32 },
 })
