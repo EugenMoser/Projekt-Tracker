@@ -1,33 +1,24 @@
+import { jest, describe, it, expect, beforeEach } from '@jest/globals'
 import { eq } from 'drizzle-orm'
 import * as schema from '@projekt-tracker/schema'
 
-// Mock the db/client module - factory can only use globals, must require inside
+// `../repositories/timeEntries` imports the singleton `db` from
+// `../db/client`, which normally opens a native expo-sqlite database. In
+// tests we swap that singleton for a real in-memory better-sqlite3 instance
+// (same Drizzle API), so the repository under test runs against a real
+// SQLite DB — no mocked query results, just a different physical backend.
 jest.mock('../db/client', () => {
-  // eslint-disable-next-line global-require
   const BetterSQLite = require('better-sqlite3')
-  // eslint-disable-next-line global-require
   const { drizzle } = require('drizzle-orm/better-sqlite3')
-  // eslint-disable-next-line global-require
   const schema = require('@projekt-tracker/schema')
-  // eslint-disable-next-line global-require
-  const { migrations } = require('@projekt-tracker/schema')
-
   const sqlite = new BetterSQLite(':memory:')
   sqlite.pragma('foreign_keys = ON')
-  for (const m of migrations) sqlite.exec(m.sql)
-  const db = drizzle(sqlite, { schema })
-  return {
-    db,
-    __testDb__: db,
-  }
+  for (const m of schema.migrations) sqlite.exec(m.sql)
+  return { db: drizzle(sqlite, { schema }) }
 })
 
-// eslint-disable-next-line import/order
+import { db as testDb } from '../db/client'
 import { createTimeEntry } from '../repositories/timeEntries'
-// eslint-disable-next-line import/order
-import { db } from '../db/client'
-
-const testDb = (db as any).__testDb__ || db
 
 const NOW = new Date('2026-07-01T10:00:00Z')
 const U = '00000000-0000-0000-0000-000000000001'
