@@ -119,6 +119,7 @@ export default function RootLayout() {
           <Stack.Screen name="customers/new" options={{ title: 'Neuer Kunde', presentation: 'modal' }} />
           <Stack.Screen name="customers/[id]/edit" options={{ title: 'Kunde bearbeiten', presentation: 'modal' }} />
           <Stack.Screen name="order-types/index" options={{ title: 'Auftragsarten' }} />
+          <Stack.Screen name="time-entries/new" options={{ title: 'Zeiteintrag anlegen', presentation: 'modal' }} />
           <Stack.Screen name="time-entries/[id]/edit" options={{ title: 'Zeiteintrag bearbeiten', presentation: 'modal' }} />
           <Stack.Screen name="export/index" options={{ title: 'Export', presentation: 'modal' }} />
           <Stack.Screen name="pin-setup/index" options={{ title: 'PIN einrichten', presentation: 'modal' }} />

@@ -218,7 +218,7 @@ export default function ProjectDetailScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   c: { flex: 1 },
-  content: { paddingBottom: 32 },
+  content: { paddingBottom: 96 },
   header: {
     padding: 16,
     borderLeftWidth: 5,

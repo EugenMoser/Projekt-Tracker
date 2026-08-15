@@ -6,21 +6,9 @@ import { TaskPicker } from '../../src/components/TaskPicker'
 import { createTask } from '../../src/repositories/tasks'
 import { createTimeEntry } from '../../src/repositories/timeEntries'
 import { getProject } from '../../src/repositories/projects'
+import { toTimeStr, toDateStr, parseDateTimeLocal } from '../../src/utils/time'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
-
-function toTimeStr(d: Date) {
-  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`
-}
-
-function toDateStr(d: Date) {
-  return d.toISOString().slice(0, 10)
-}
-
-function parseDateTimeLocal(dateStr: string, timeStr: string): Date | null {
-  const dt = new Date(`${dateStr}T${timeStr}:00`)
-  return isNaN(dt.getTime()) ? null : dt
-}
 
 type Mode = 'duration' | 'end'
 
@@ -163,6 +151,7 @@ export default function NewTimeEntryScreen() {
         onSelect={setSelectedId}
         onSearchChange={setSearchText}
         active
+        listStyle={{ maxHeight: 240, flexGrow: 0 }}
       />
 
       <Text style={s.label}>Notiz</Text>
