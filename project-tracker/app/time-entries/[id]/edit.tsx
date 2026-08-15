@@ -6,21 +6,9 @@ import { listTasksForProject } from '../../../src/repositories/tasks'
 import { getTimeEntry, updateTimeEntry, softDeleteTimeEntry } from '../../../src/repositories/timeEntries'
 import { applyRateToTimeEntry } from '../../../src/repositories/rateAdjustments'
 import { db } from '../../../src/db/client'
+import { toTimeStr, toDateStr, parseDateTimeLocal } from '../../../src/utils/time'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
-
-function toTimeStr(d: Date) {
-  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`
-}
-
-function toDateStr(d: Date) {
-  return d.toISOString().slice(0, 10)
-}
-
-function parseDateTimeLocal(dateStr: string, timeStr: string): Date | null {
-  const dt = new Date(`${dateStr}T${timeStr}:00`)
-  return isNaN(dt.getTime()) ? null : dt
-}
 
 export default function EditTimeEntryScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
