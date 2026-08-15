@@ -153,6 +153,63 @@ describe('pushBodySchema — unit', () => {
     expect(r.success).toBe(false)
   })
 
+  it('rejects a timeEntry where endedAt equals startedAt', () => {
+    const r = pushBodySchema.safeParse({
+      timeEntries: [{
+        id: '01930000-0000-7000-8000-000000000004',
+        projectId: '01930000-0000-7000-8000-000000000005',
+        taskId: '01930000-0000-7000-8000-000000000006',
+        startedAt: '2026-01-01T08:00:00.000Z',
+        endedAt: '2026-01-01T08:00:00.000Z',
+        rateSnapshotCents: null,
+        pricingModeSnapshot: 'hourly',
+        notes: null,
+        createdAt: '2026-01-01T08:00:00.000Z',
+        updatedAt: '2026-01-01T08:00:00.000Z',
+        deletedAt: null,
+      }],
+    })
+    expect(r.success).toBe(false)
+  })
+
+  it('rejects a timeEntry where endedAt is before startedAt', () => {
+    const r = pushBodySchema.safeParse({
+      timeEntries: [{
+        id: '01930000-0000-7000-8000-000000000004',
+        projectId: '01930000-0000-7000-8000-000000000005',
+        taskId: '01930000-0000-7000-8000-000000000006',
+        startedAt: '2026-01-01T09:00:00.000Z',
+        endedAt: '2026-01-01T08:00:00.000Z',
+        rateSnapshotCents: null,
+        pricingModeSnapshot: 'hourly',
+        notes: null,
+        createdAt: '2026-01-01T08:00:00.000Z',
+        updatedAt: '2026-01-01T08:00:00.000Z',
+        deletedAt: null,
+      }],
+    })
+    expect(r.success).toBe(false)
+  })
+
+  it('accepts a timeEntry where endedAt is after startedAt', () => {
+    const r = pushBodySchema.safeParse({
+      timeEntries: [{
+        id: '01930000-0000-7000-8000-000000000004',
+        projectId: '01930000-0000-7000-8000-000000000005',
+        taskId: '01930000-0000-7000-8000-000000000006',
+        startedAt: '2026-01-01T08:00:00.000Z',
+        endedAt: '2026-01-01T09:00:00.000Z',
+        rateSnapshotCents: null,
+        pricingModeSnapshot: 'hourly',
+        notes: null,
+        createdAt: '2026-01-01T08:00:00.000Z',
+        updatedAt: '2026-01-01T08:00:00.000Z',
+        deletedAt: null,
+      }],
+    })
+    expect(r.success).toBe(true)
+  })
+
   it('accepts taskTags as undefined (absent) vs empty array []', () => {
     expect(pushBodySchema.parse({}).taskTags).toBeUndefined()
     expect(pushBodySchema.parse({ taskTags: [] }).taskTags).toEqual([])

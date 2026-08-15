@@ -87,7 +87,13 @@ const timeEntrySchema = z.object({
   createdAt: isoDatetime,
   updatedAt: isoDatetime,
   deletedAt: nullableIso,
-})
+}).refine(
+  (data) => new Date(data.endedAt).getTime() > new Date(data.startedAt).getTime(),
+  {
+    message: 'endedAt must be strictly after startedAt',
+    path: ['endedAt'],
+  },
+)
 
 const timerSchema = z.object({
   id: z.string().uuid(),
