@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, SectionList, Pressable, TextInput, StyleSheet, type StyleProp, type ViewStyle } from 'react-native'
+import { Text, SectionList, Pressable, TextInput, StyleSheet } from 'react-native'
 import { listTasks, listTasksForProject } from '../repositories/tasks'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
@@ -20,14 +20,6 @@ interface Props {
    * Defaults to true, which is right for a picker that mounts fresh per screen.
    */
   active?: boolean
-  /**
-   * Extra style merged onto the SectionList's own `{ flex: 1 }`. Needed when
-   * the picker sits inside an unbounded-height scroll container (e.g. a
-   * KeyboardAwareScrollView) instead of a flex-bounded one (e.g. a Modal),
-   * so the list gets a fixed, scrollable-within-itself height rather than
-   * expanding to fit all of its content.
-   */
-  listStyle?: StyleProp<ViewStyle>
 }
 
 /**
@@ -37,7 +29,7 @@ interface Props {
  * and selection, callers decide what "save" means (stop a timer, add a time
  * entry, ...).
  */
-export function TaskPicker({ projectId, selectedId, searchText, onSelect, onSearchChange, active = true, listStyle }: Props) {
+export function TaskPicker({ projectId, selectedId, searchText, onSelect, onSearchChange, active = true }: Props) {
   const [tasks, setTasks] = React.useState<Task[]>([])
   const [projectTasks, setProjectTasks] = React.useState<Task[]>([])
 
@@ -73,7 +65,7 @@ export function TaskPicker({ projectId, selectedId, searchText, onSelect, onSear
       <SectionList
         sections={sections}
         keyExtractor={(t) => t.id}
-        style={[{ flex: 1 }, listStyle]}
+        style={{ flex: 1 }}
         keyboardShouldPersistTaps="handled"
         stickySectionHeadersEnabled={false}
         renderSectionHeader={({ section }) =>

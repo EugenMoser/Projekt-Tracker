@@ -36,15 +36,16 @@ export function TaskPickerModal({
         <Pressable style={styles.sheet} onPress={() => { /* stop propagation */ }}>
           <View style={styles.handle} />
           <Text style={styles.title}>Aufgabe auswählen</Text>
-          <TaskPicker
-            projectId={projectId}
-            selectedId={selectedId}
-            searchText={searchText}
-            onSelect={onSelect}
-            onSearchChange={onSearchChange}
-            active={visible}
-            listStyle={{ maxHeight: windowHeight * 0.5, flexGrow: 0 }}
-          />
+          <View style={{ height: windowHeight * 0.5 }}>
+            <TaskPicker
+              projectId={projectId}
+              selectedId={selectedId}
+              searchText={searchText}
+              onSelect={onSelect}
+              onSearchChange={onSearchChange}
+              active={visible}
+            />
+          </View>
           <Pressable
             style={styles.done}
             onPress={onClose}
