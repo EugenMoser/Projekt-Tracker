@@ -15,7 +15,10 @@ jest.mock('../db/client', () => {
 })
 
 import { db as mockDb } from '../db/client'
-import { listActiveProjects, createProject, moveProject } from '../repositories/projects'
+import {
+  listActiveProjects, createProject, moveProject,
+  listArchivedProjects, restoreProject,
+} from '../repositories/projects'
 import { SORT_STEP } from '../utils/sortOrder'
 
 const U = '00000000-0000-0000-0000-000000000001'
@@ -191,5 +194,63 @@ describe('project ordering', () => {
     moveProject(U2, a, null, b)
 
     expect(sortOrderOf(a)).toBe(beforeA)
+  })
+})
+
+describe('archiving and restoring', () => {
+  function archive(id: string) {
+    mockDb.update(schema.projects).set({ status: 'archived' }).where(eq(schema.projects.id, id)).run()
+  }
+
+  it('lists only archived projects, most recently archived first', () => {
+    const a = makeProject('A')
+    const b = makeProject('B')
+    makeProject('C')
+    archive(a)
+    mockDb.update(schema.projects).set({ updatedAt: new Date('2026-08-02T00:00:00Z') })
+      .where(eq(schema.projects.id, a)).run()
+    archive(b)
+    mockDb.update(schema.projects).set({ updatedAt: new Date('2026-08-03T00:00:00Z') })
+      .where(eq(schema.projects.id, b)).run()
+
+    expect(listArchivedProjects(U).map((p) => p.title)).toEqual(['B', 'A'])
+  })
+
+  it('does not list another user\'s archived projects', () => {
+    const a = makeProject('A')
+    archive(a)
+
+    expect(listArchivedProjects(U2)).toEqual([])
+  })
+
+  it('restores an archived project to active', () => {
+    const a = makeProject('A')
+    archive(a)
+    expect(listArchivedProjects(U).map((p) => p.title)).toEqual(['A'])
+
+    restoreProject(U, a)
+
+    expect(listArchivedProjects(U)).toEqual([])
+    expect(orderedTitles()).toContain('A')
+  })
+
+  it('bumps updated_at when restoring', () => {
+    const a = makeProject('A')
+    archive(a)
+    const backdated = new Date('2026-01-01T00:00:00Z')
+    mockDb.update(schema.projects).set({ updatedAt: backdated }).where(eq(schema.projects.id, a)).run()
+
+    restoreProject(U, a)
+
+    expect(updatedAtOf(a).getTime()).toBeGreaterThan(backdated.getTime())
+  })
+
+  it('ignores a restore for a project belonging to another user', () => {
+    const a = makeProject('A')
+    archive(a)
+
+    restoreProject(U2, a)
+
+    expect(listArchivedProjects(U).map((p) => p.title)).toEqual(['A'])
   })
 })

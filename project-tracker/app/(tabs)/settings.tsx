@@ -128,6 +128,10 @@ export default function SettingsScreen() {
           <Text style={styles.label}>Auftragsarten</Text>
           <Text>›</Text>
         </Pressable>
+        <Pressable style={styles.row} onPress={() => router.push('/archived-projects' as any)}>
+          <Text style={styles.label}>Archivierte Projekte</Text>
+          <Text>›</Text>
+        </Pressable>
       </View>
     </View>
   )

@@ -1,4 +1,4 @@
-import { eq, and, isNull, sum, asc, max } from 'drizzle-orm'
+import { eq, and, isNull, sum, asc, desc, max } from 'drizzle-orm'
 import { db } from '../db/client'
 import * as schema from '@projekt-tracker/schema'
 import { newId } from '../utils/uuid'
@@ -92,6 +92,24 @@ export function updateProject(
 export function archiveProject(userId: string, id: string) {
   return db.update(schema.projects)
     .set({ status: 'archived', updatedAt: new Date() })
+    .where(and(eq(schema.projects.id, id), eq(schema.projects.userId, userId)))
+    .run()
+}
+
+export function listArchivedProjects(userId: string) {
+  return db.select().from(schema.projects)
+    .where(and(
+      eq(schema.projects.userId, userId),
+      eq(schema.projects.status, 'archived'),
+      isNull(schema.projects.deletedAt)
+    ))
+    .orderBy(desc(schema.projects.updatedAt))
+    .all()
+}
+
+export function restoreProject(userId: string, id: string) {
+  return db.update(schema.projects)
+    .set({ status: 'active', updatedAt: new Date() })
     .where(and(eq(schema.projects.id, id), eq(schema.projects.userId, userId)))
     .run()
 }
