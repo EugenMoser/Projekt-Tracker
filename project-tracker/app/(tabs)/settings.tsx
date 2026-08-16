@@ -10,13 +10,17 @@ import {
   isBiometryEnabled,
   setBiometryEnabled,
 } from '../../src/auth/pinStorage'
+import { setUse12HourFormat as persistUse12HourFormat } from '../../src/settings/timeFormat'
 import { useLockStore } from '../../src/store/lockStore'
+import { useSettingsStore } from '../../src/store/settingsStore'
 
 export default function SettingsScreen() {
   const [pinEnabled, setPinEnabled] = useState(false)
   const [biometrySupported, setBiometrySupported] = useState(false)
   const [biometryEnabled, setBiometryEnabledState] = useState(false)
   const { resetAttempts } = useLockStore()
+  const use12HourFormat = useSettingsStore((s) => s.use12HourFormat)
+  const setUse12HourFormat = useSettingsStore((s) => s.setUse12HourFormat)
 
   useFocusEffect(
     useCallback(() => {
@@ -61,10 +65,30 @@ export default function SettingsScreen() {
     setBiometryEnabledState(next)
   }
 
+  const handleTimeFormatToggle = async () => {
+    const next = !use12HourFormat
+    await persistUse12HourFormat(next)
+    setUse12HourFormat(next)
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.syncSection}>
         <SyncIndicator />
+      </View>
+
+      {/* Anzeige */}
+      <View style={styles.section}>
+        <Text style={styles.sectionHeader}>Anzeige</Text>
+        <Pressable
+          style={styles.row}
+          onPress={handleTimeFormatToggle}
+          accessibilityRole="button"
+          accessibilityLabel={`Uhrzeitformat: ${use12HourFormat ? '12-Stunden mit AM/PM' : '24-Stunden'}. Antippen zum Ändern.`}
+        >
+          <Text style={styles.label}>Uhrzeitformat</Text>
+          <Text style={{ color: '#8E8E93' }}>{use12HourFormat ? '12h (AM/PM)' : '24h'}</Text>
+        </Pressable>
       </View>
 
       {/* PIN-Sektion */}

@@ -1,29 +1,38 @@
 import React from 'react'
 import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native'
 import { useLocalSearchParams, router } from 'expo-router'
+import { TimerPickerModal } from 'react-native-timer-picker'
 import { KeyboardAwareScrollView } from '../../src/components/KeyboardAwareView'
 import { TaskPickerModal } from '../../src/components/TaskPickerModal'
 import { createTask, listTasks } from '../../src/repositories/tasks'
 import { createTimeEntry } from '../../src/repositories/timeEntries'
 import { getProject } from '../../src/repositories/projects'
-import { toTimeStr, toDateStr, parseDateTimeLocal } from '../../src/utils/time'
+import { toTimeStr, toDateStr, parseDateTimeLocal, parseTimeStr, formatHoursMinutes } from '../../src/utils/time'
+import { useSettingsStore } from '../../src/store/settingsStore'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
 type Mode = 'duration' | 'end'
+type PickerTarget = 'start' | 'end' | 'duration' | null
 
 export default function NewTimeEntryScreen() {
   const { projectId } = useLocalSearchParams<{ projectId: string }>()
   const project = getProject(OWNER_ID, projectId)
   const allTasks = listTasks(OWNER_ID)
+  const use12HourFormat = useSettingsStore((s) => s.use12HourFormat)
 
   const now = new Date()
+  // Manual entries are almost always logged after the fact (ADR-018: "forgot
+  // to track"), so defaulting the start to "right now" would force an edit on
+  // every use. One hour ago is a closer guess at the common case.
+  const defaultStart = new Date(now.getTime() - 60 * 60 * 1000)
   const [dateStr, setDateStr] = React.useState(toDateStr(now))
-  const [startStr, setStartStr] = React.useState(toTimeStr(now))
+  const [startStr, setStartStr] = React.useState(toTimeStr(defaultStart))
   const [mode, setMode] = React.useState<Mode>('duration')
-  const [endStr, setEndStr] = React.useState('')
-  const [hoursStr, setHoursStr] = React.useState('')
-  const [minutesStr, setMinutesStr] = React.useState('')
+  const [endStr, setEndStr] = React.useState(toTimeStr(now))
+  const [durationHours, setDurationHours] = React.useState(0)
+  const [durationMinutes, setDurationMinutes] = React.useState(0)
+  const [activePicker, setActivePicker] = React.useState<PickerTarget>(null)
   const [selectedId, setSelectedId] = React.useState<string | null>(null)
   const [searchText, setSearchText] = React.useState('')
   const [taskPickerVisible, setTaskPickerVisible] = React.useState(false)
@@ -42,25 +51,25 @@ export default function NewTimeEntryScreen() {
       : 'Aufgabe auswählen'
 
   const handleSave = () => {
-    const startedAt = parseDateTimeLocal(dateStr, startStr)
-    if (!startedAt) { Alert.alert('Ungültig', 'Datum/Uhrzeit ungültig.'); return }
-
+    let startedAt: Date
     let endedAt: Date
+
     if (mode === 'end') {
+      const parsedStart = parseDateTimeLocal(dateStr, startStr)
       const parsedEnd = parseDateTimeLocal(dateStr, endStr)
-      if (!parsedEnd) { Alert.alert('Ungültig', 'Datum/Uhrzeit ungültig.'); return }
-      if (parsedEnd <= startedAt) { Alert.alert('Ungültig', 'Ende muss nach Start liegen.'); return }
+      if (!parsedStart || !parsedEnd) { Alert.alert('Ungültig', 'Datum/Uhrzeit ungültig.'); return }
+      if (parsedEnd <= parsedStart) { Alert.alert('Ungültig', 'Ende muss nach Start liegen.'); return }
+      startedAt = parsedStart
       endedAt = parsedEnd
     } else {
-      const hours = hoursStr.trim() === '' ? 0 : Number(hoursStr.replace(',', '.'))
-      const minutes = minutesStr.trim() === '' ? 0 : Number(minutesStr.replace(',', '.'))
-      if (isNaN(hours) || isNaN(minutes) || hours < 0 || minutes < 0) {
-        Alert.alert('Ungültig', 'Stunden und Minuten müssen gültige Zahlen sein.')
-        return
-      }
-      const durationMs = hours * 3600_000 + minutes * 60_000
+      const durationMs = durationHours * 3600_000 + durationMinutes * 60_000
       if (durationMs <= 0) { Alert.alert('Ungültig', 'Dauer muss größer als 0 sein.'); return }
-      endedAt = new Date(startedAt.getTime() + durationMs)
+      // No explicit end time in this mode — anchor "now" (time of day) onto
+      // the chosen date, so a past Datum still yields a plausible end.
+      const parsedDate = parseDateTimeLocal(dateStr, toTimeStr(new Date()))
+      if (!parsedDate) { Alert.alert('Ungültig', 'Datum ungültig.'); return }
+      endedAt = parsedDate
+      startedAt = new Date(endedAt.getTime() - durationMs)
     }
 
     let rateOverrideCents: number | undefined
@@ -92,12 +101,25 @@ export default function NewTimeEntryScreen() {
     router.back()
   }
 
+  const pickerInitialValue =
+    activePicker === 'duration'
+      ? { hours: durationHours, minutes: durationMinutes }
+      : activePicker === 'start'
+        ? parseTimeStr(startStr)
+        : activePicker === 'end'
+          ? parseTimeStr(endStr)
+          : undefined
+
   return (
     <KeyboardAwareScrollView style={s.c} contentContainerStyle={{ gap: 12, paddingBottom: 40 }}>
       <Text style={s.label}>Datum (YYYY-MM-DD)</Text>
-      <TextInput style={s.input} value={dateStr} onChangeText={setDateStr} placeholder="2026-01-15" />
-      <Text style={s.label}>Startzeit (HH:MM)</Text>
-      <TextInput style={s.input} value={startStr} onChangeText={setStartStr} placeholder="09:00" />
+      <TextInput
+        style={s.input}
+        value={dateStr}
+        onChangeText={setDateStr}
+        placeholder="2026-01-15"
+        keyboardType="numbers-and-punctuation"
+      />
 
       <View style={s.modeRow}>
         <Pressable
@@ -114,43 +136,71 @@ export default function NewTimeEntryScreen() {
           onPress={() => setMode('end')}
           accessibilityRole="radio"
           accessibilityState={{ selected: mode === 'end' }}
-          accessibilityLabel="Endzeit eingeben"
+          accessibilityLabel="Von/Bis-Zeit eingeben"
         >
-          <Text style={mode === 'end' ? s.modeTextSelected : s.modeText}>Ende</Text>
+          <Text style={mode === 'end' ? s.modeTextSelected : s.modeText}>Zeit</Text>
         </Pressable>
       </View>
 
       {mode === 'end' ? (
         <>
-          <Text style={s.label}>Endzeit (HH:MM)</Text>
-          <TextInput style={s.input} value={endStr} onChangeText={setEndStr} placeholder="10:30" />
+          <Text style={s.label}>Startzeit</Text>
+          <Pressable
+            style={s.dropdown}
+            onPress={() => setActivePicker('start')}
+            accessibilityRole="button"
+            accessibilityLabel={`Startzeit ${startStr}. Antippen zum Ändern.`}
+          >
+            <Text style={s.dropdownText}>{startStr}</Text>
+            <Text style={s.dropdownChevron}>▾</Text>
+          </Pressable>
+          <Text style={s.label}>Endzeit</Text>
+          <Pressable
+            style={s.dropdown}
+            onPress={() => setActivePicker('end')}
+            accessibilityRole="button"
+            accessibilityLabel={`Endzeit ${endStr}. Antippen zum Ändern.`}
+          >
+            <Text style={s.dropdownText}>{endStr}</Text>
+            <Text style={s.dropdownChevron}>▾</Text>
+          </Pressable>
         </>
       ) : (
-        <View style={s.durationRow}>
-          <View style={s.durationField}>
-            <Text style={s.label}>Stunden</Text>
-            <TextInput
-              style={s.input}
-              value={hoursStr}
-              onChangeText={setHoursStr}
-              placeholder="1"
-              keyboardType="number-pad"
-              accessibilityLabel="Stunden"
-            />
-          </View>
-          <View style={s.durationField}>
-            <Text style={s.label}>Minuten</Text>
-            <TextInput
-              style={s.input}
-              value={minutesStr}
-              onChangeText={setMinutesStr}
-              placeholder="30"
-              keyboardType="number-pad"
-              accessibilityLabel="Minuten"
-            />
-          </View>
-        </View>
+        <>
+          <Text style={s.label}>Dauer</Text>
+          <Pressable
+            style={s.dropdown}
+            onPress={() => setActivePicker('duration')}
+            accessibilityRole="button"
+            accessibilityLabel={`Dauer ${durationHours} Stunden ${durationMinutes} Minuten. Antippen zum Ändern.`}
+          >
+            <Text style={s.dropdownText}>{durationHours} Std {durationMinutes} Min</Text>
+            <Text style={s.dropdownChevron}>▾</Text>
+          </Pressable>
+        </>
       )}
+
+      <TimerPickerModal
+        visible={activePicker !== null}
+        setIsVisible={(visible) => { if (!visible) setActivePicker(null) }}
+        modalTitle={activePicker === 'duration' ? 'Dauer wählen' : activePicker === 'start' ? 'Startzeit wählen' : 'Endzeit wählen'}
+        hideSeconds
+        use12HourPicker={activePicker !== 'duration' && use12HourFormat}
+        hourLimit={activePicker === 'duration' ? undefined : { min: 0, max: 23 }}
+        initialValue={pickerInitialValue}
+        onConfirm={({ hours, minutes }) => {
+          if (activePicker === 'duration') {
+            setDurationHours(hours)
+            setDurationMinutes(minutes)
+          } else if (activePicker === 'start') {
+            setStartStr(formatHoursMinutes(hours, minutes))
+          } else if (activePicker === 'end') {
+            setEndStr(formatHoursMinutes(hours, minutes))
+          }
+          setActivePicker(null)
+        }}
+        onCancel={() => setActivePicker(null)}
+      />
 
       <Text style={s.label}>Aufgabe</Text>
       <Pressable
@@ -217,7 +267,5 @@ const s = StyleSheet.create({
   modeBtnSelected: { backgroundColor: '#4A90D9' },
   modeText: { color: '#333', fontWeight: '500' },
   modeTextSelected: { color: '#FFF', fontWeight: '600' },
-  durationRow: { flexDirection: 'row', gap: 12 },
-  durationField: { flex: 1, gap: 4 },
   btn: { backgroundColor: '#4A90D9', padding: 14, borderRadius: 8, alignItems: 'center', minHeight: 44 },
 })

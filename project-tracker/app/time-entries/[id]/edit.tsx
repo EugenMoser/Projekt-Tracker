@@ -1,22 +1,28 @@
 import React from 'react'
 import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native'
 import { useLocalSearchParams, router } from 'expo-router'
+import { TimerPickerModal } from 'react-native-timer-picker'
 import { KeyboardAwareScrollView } from '../../../src/components/KeyboardAwareView'
 import { listTasksForProject } from '../../../src/repositories/tasks'
 import { getTimeEntry, updateTimeEntry, softDeleteTimeEntry } from '../../../src/repositories/timeEntries'
 import { applyRateToTimeEntry } from '../../../src/repositories/rateAdjustments'
 import { db } from '../../../src/db/client'
-import { toTimeStr, toDateStr, parseDateTimeLocal } from '../../../src/utils/time'
+import { toTimeStr, toDateStr, parseDateTimeLocal, parseTimeStr, formatHoursMinutes } from '../../../src/utils/time'
+import { useSettingsStore } from '../../../src/store/settingsStore'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
+
+type PickerTarget = 'start' | 'end' | null
 
 export default function EditTimeEntryScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const entry = getTimeEntry(OWNER_ID, id)
+  const use12HourFormat = useSettingsStore((s) => s.use12HourFormat)
 
   const [dateStr, setDateStr] = React.useState(entry ? toDateStr(entry.startedAt) : '')
   const [startStr, setStartStr] = React.useState(entry ? toTimeStr(entry.startedAt) : '')
   const [endStr, setEndStr] = React.useState(entry ? toTimeStr(entry.endedAt) : '')
+  const [activePicker, setActivePicker] = React.useState<PickerTarget>(null)
   const [taskId, setTaskId] = React.useState(entry?.taskId ?? '')
   const [notes, setNotes] = React.useState(entry?.notes ?? '')
 
@@ -62,11 +68,51 @@ export default function EditTimeEntryScreen() {
   return (
     <KeyboardAwareScrollView style={s.c} contentContainerStyle={{ gap: 12, paddingBottom: 40 }}>
       <Text style={s.label}>Datum (YYYY-MM-DD)</Text>
-      <TextInput style={s.input} value={dateStr} onChangeText={setDateStr} placeholder="2026-01-15" />
-      <Text style={s.label}>Startzeit (HH:MM)</Text>
-      <TextInput style={s.input} value={startStr} onChangeText={setStartStr} placeholder="09:00" />
-      <Text style={s.label}>Endzeit (HH:MM)</Text>
-      <TextInput style={s.input} value={endStr} onChangeText={setEndStr} placeholder="10:30" />
+      <TextInput
+        style={s.input}
+        value={dateStr}
+        onChangeText={setDateStr}
+        placeholder="2026-01-15"
+        keyboardType="numbers-and-punctuation"
+      />
+      <Text style={s.label}>Startzeit</Text>
+      <Pressable
+        style={s.dropdown}
+        onPress={() => setActivePicker('start')}
+        accessibilityRole="button"
+        accessibilityLabel={`Startzeit ${startStr}. Antippen zum Ändern.`}
+      >
+        <Text style={s.dropdownText}>{startStr}</Text>
+        <Text style={s.dropdownChevron}>▾</Text>
+      </Pressable>
+      <Text style={s.label}>Endzeit</Text>
+      <Pressable
+        style={s.dropdown}
+        onPress={() => setActivePicker('end')}
+        accessibilityRole="button"
+        accessibilityLabel={`Endzeit ${endStr}. Antippen zum Ändern.`}
+      >
+        <Text style={s.dropdownText}>{endStr}</Text>
+        <Text style={s.dropdownChevron}>▾</Text>
+      </Pressable>
+      <TimerPickerModal
+        visible={activePicker !== null}
+        setIsVisible={(visible) => { if (!visible) setActivePicker(null) }}
+        modalTitle={activePicker === 'start' ? 'Startzeit wählen' : 'Endzeit wählen'}
+        hideSeconds
+        use12HourPicker={use12HourFormat}
+        hourLimit={{ min: 0, max: 23 }}
+        initialValue={activePicker === 'start' ? parseTimeStr(startStr) : parseTimeStr(endStr)}
+        onConfirm={({ hours, minutes }) => {
+          if (activePicker === 'start') {
+            setStartStr(formatHoursMinutes(hours, minutes))
+          } else if (activePicker === 'end') {
+            setEndStr(formatHoursMinutes(hours, minutes))
+          }
+          setActivePicker(null)
+        }}
+        onCancel={() => setActivePicker(null)}
+      />
       <Text style={s.label}>Aufgabe</Text>
       {tasks.map((t) => (
         <Pressable
@@ -119,6 +165,13 @@ const s = StyleSheet.create({
   c: { flex: 1, padding: 16 },
   label: { fontSize: 13, color: '#666' },
   input: { borderWidth: 1, borderColor: '#DDD', borderRadius: 8, padding: 12 },
+  dropdown: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    borderWidth: 1, borderColor: '#DDD', borderRadius: 8, paddingHorizontal: 12,
+    backgroundColor: '#FFF', minHeight: 44,
+  },
+  dropdownText: { fontSize: 15, color: '#000', flexShrink: 1 },
+  dropdownChevron: { fontSize: 14, color: '#666', marginLeft: 8 },
   taskRow: { padding: 10, borderRadius: 6, backgroundColor: '#F5F5F5', minHeight: 44 },
   taskSelected: { backgroundColor: '#D0E8FF' },
   btn: { backgroundColor: '#4A90D9', padding: 14, borderRadius: 8, alignItems: 'center', minHeight: 44 },

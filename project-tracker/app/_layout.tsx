@@ -11,6 +11,8 @@ import { startSyncLoop, stopSyncLoop } from '../src/sync/service'
 import { apiBootstrap } from '../src/sync/api'
 import { API_BASE_URL, BOOTSTRAP_DISPLAY_NAME, SECURE_KEYS } from '../src/sync/config'
 import { isPinSet } from '../src/auth/pinStorage'
+import { isUse12HourFormat } from '../src/settings/timeFormat'
+import { useSettingsStore } from '../src/store/settingsStore'
 import { LockScreen } from '../src/components/LockScreen'
 
 const AUTO_LOCK_THRESHOLD_MS = 60_000
@@ -68,6 +70,9 @@ export default function RootLayout() {
         const pinEnabled = await isPinSet()
         if (pinEnabled) setLocked(true)
         setIsDbReady(true)
+        void isUse12HourFormat().then((enabled) => {
+          useSettingsStore.getState().setUse12HourFormat(enabled)
+        })
         // A migration may rewrite rows without bumping their updated_at (the v2
         // sort_order backfill does exactly that on purpose). The incremental
         // push filter would never see those changes, so force one full sync.

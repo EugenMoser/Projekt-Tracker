@@ -21,3 +21,12 @@ export function parseDateTimeLocal(dateStr: string, timeStr: string): Date | nul
   const dt = new Date(`${dateStr}T${timeStr}:00`)
   return isNaN(dt.getTime()) ? null : dt
 }
+
+export function parseTimeStr(timeStr: string): { hours: number; minutes: number } {
+  const [hours, minutes] = timeStr.split(':').map(Number)
+  return { hours: hours || 0, minutes: minutes || 0 }
+}
+
+export function formatHoursMinutes(hours: number, minutes: number): string {
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`
+}

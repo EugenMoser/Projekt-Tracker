@@ -1,4 +1,4 @@
-import { toDateStr } from '../utils/time'
+import { toDateStr, parseTimeStr, formatHoursMinutes } from '../utils/time'
 
 describe('toDateStr', () => {
   it('matches the local calendar date shortly after local midnight', () => {
@@ -17,5 +17,25 @@ describe('toDateStr', () => {
   it('matches the local calendar date shortly before local midnight', () => {
     const d = new Date(2026, 0, 15, 23, 59)
     expect(toDateStr(d)).toBe('2026-01-15')
+  })
+})
+
+describe('parseTimeStr', () => {
+  it('parses an HH:MM string into hours and minutes', () => {
+    expect(parseTimeStr('09:05')).toEqual({ hours: 9, minutes: 5 })
+  })
+
+  it('parses midnight', () => {
+    expect(parseTimeStr('00:00')).toEqual({ hours: 0, minutes: 0 })
+  })
+})
+
+describe('formatHoursMinutes', () => {
+  it('zero-pads single-digit hours and minutes', () => {
+    expect(formatHoursMinutes(9, 5)).toBe('09:05')
+  })
+
+  it('leaves double-digit values unpadded', () => {
+    expect(formatHoursMinutes(23, 59)).toBe('23:59')
   })
 })
