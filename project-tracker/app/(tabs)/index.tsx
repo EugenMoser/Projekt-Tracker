@@ -5,6 +5,7 @@ import Sortable from 'react-native-sortables'
 import type { SortableGridDragEndParams } from 'react-native-sortables'
 import { router, useFocusEffect } from 'expo-router'
 import { listActiveProjects, moveProject } from '../../src/repositories/projects'
+import { listCustomers } from '../../src/repositories/customers'
 import { getActiveTimer, startTimer } from '../../src/repositories/timers'
 import { useTimerStore } from '../../src/store/timerStore'
 import { ProjectTile } from '../../src/components/ProjectTile'
@@ -26,7 +27,8 @@ export default function HomeScreen() {
 
   const load = React.useCallback(() => {
     const rows = listActiveProjects(OWNER_ID)
-    setProjects(rows.map((p) => ({ ...p, customerName: '' })))
+    const customerNames = new Map(listCustomers(OWNER_ID).map((c) => [c.id, c.name]))
+    setProjects(rows.map((p) => ({ ...p, customerName: customerNames.get(p.customerId) ?? '' })))
     const timer = getActiveTimer(OWNER_ID)
     if (timer) {
       const active = rows.find((p) => p.id === timer.projectId)
