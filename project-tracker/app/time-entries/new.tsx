@@ -2,8 +2,8 @@ import React from 'react'
 import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native'
 import { useLocalSearchParams, router } from 'expo-router'
 import { KeyboardAwareScrollView } from '../../src/components/KeyboardAwareView'
-import { TaskPicker } from '../../src/components/TaskPicker'
-import { createTask } from '../../src/repositories/tasks'
+import { TaskPickerModal } from '../../src/components/TaskPickerModal'
+import { createTask, listTasks } from '../../src/repositories/tasks'
 import { createTimeEntry } from '../../src/repositories/timeEntries'
 import { getProject } from '../../src/repositories/projects'
 import { toTimeStr, toDateStr, parseDateTimeLocal } from '../../src/utils/time'
@@ -15,6 +15,7 @@ type Mode = 'duration' | 'end'
 export default function NewTimeEntryScreen() {
   const { projectId } = useLocalSearchParams<{ projectId: string }>()
   const project = getProject(OWNER_ID, projectId)
+  const allTasks = listTasks(OWNER_ID)
 
   const now = new Date()
   const [dateStr, setDateStr] = React.useState(toDateStr(now))
@@ -25,12 +26,20 @@ export default function NewTimeEntryScreen() {
   const [minutesStr, setMinutesStr] = React.useState('')
   const [selectedId, setSelectedId] = React.useState<string | null>(null)
   const [searchText, setSearchText] = React.useState('')
+  const [taskPickerVisible, setTaskPickerVisible] = React.useState(false)
   const [notes, setNotes] = React.useState('')
 
   const isHourly = project?.pricingMode === 'hourly'
   const [rateStr, setRateStr] = React.useState('')
 
   if (!project) return <View style={s.c}><Text>Projekt nicht gefunden</Text></View>
+
+  const selectedTask = allTasks.find((t) => t.id === selectedId)
+  const taskTriggerLabel = selectedTask
+    ? selectedTask.description
+    : searchText.trim()
+      ? `„${searchText.trim()}“ (neu anlegen)`
+      : 'Aufgabe auswählen'
 
   const handleSave = () => {
     const startedAt = parseDateTimeLocal(dateStr, startStr)
@@ -144,14 +153,23 @@ export default function NewTimeEntryScreen() {
       )}
 
       <Text style={s.label}>Aufgabe</Text>
-      <TaskPicker
+      <Pressable
+        style={s.dropdown}
+        onPress={() => setTaskPickerVisible(true)}
+        accessibilityRole="button"
+        accessibilityLabel={`${taskTriggerLabel}. Antippen zum Ändern.`}
+      >
+        <Text style={s.dropdownText}>{taskTriggerLabel}</Text>
+        <Text style={s.dropdownChevron}>▾</Text>
+      </Pressable>
+      <TaskPickerModal
+        visible={taskPickerVisible}
         projectId={projectId}
         selectedId={selectedId}
         searchText={searchText}
         onSelect={setSelectedId}
         onSearchChange={setSearchText}
-        active
-        listStyle={{ maxHeight: 240, flexGrow: 0 }}
+        onClose={() => setTaskPickerVisible(false)}
       />
 
       <Text style={s.label}>Notiz</Text>
@@ -187,6 +205,13 @@ const s = StyleSheet.create({
   c: { flex: 1, padding: 16 },
   label: { fontSize: 13, color: '#666' },
   input: { borderWidth: 1, borderColor: '#DDD', borderRadius: 8, padding: 12 },
+  dropdown: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    borderWidth: 1, borderColor: '#DDD', borderRadius: 8, paddingHorizontal: 12,
+    backgroundColor: '#FFF', minHeight: 44,
+  },
+  dropdownText: { fontSize: 15, color: '#000', flexShrink: 1 },
+  dropdownChevron: { fontSize: 14, color: '#666', marginLeft: 8 },
   modeRow: { flexDirection: 'row', gap: 8 },
   modeBtn: { flex: 1, padding: 10, borderRadius: 8, backgroundColor: '#F5F5F5', alignItems: 'center', minHeight: 44, justifyContent: 'center' },
   modeBtnSelected: { backgroundColor: '#4A90D9' },
