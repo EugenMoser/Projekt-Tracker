@@ -103,9 +103,9 @@ export function ColorPicker({ value, onChange }: Props) {
                 style={styles.applyBtn}
                 onPress={handleApply}
                 accessibilityRole="button"
-                accessibilityLabel="Farbe übernehmen"
+                accessibilityLabel="Farbe speichern"
               >
-                <Text style={styles.applyBtnText}>Übernehmen</Text>
+                <Text style={styles.applyBtnText}>Speichern</Text>
               </Pressable>
             </View>
           </Pressable>
