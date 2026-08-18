@@ -1,15 +1,27 @@
 import React from 'react'
-import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native'
-import { useLocalSearchParams, router } from 'expo-router'
+
+import { router, useLocalSearchParams } from 'expo-router'
+import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
 import { TimerPickerModal } from 'react-native-timer-picker'
+
 import { KeyboardAwareScrollView } from '../../src/components/KeyboardAwareView'
 import { TaskPickerModal } from '../../src/components/TaskPickerModal'
+import {
+  TIME_PICKER_CANCEL_BUTTON,
+  TIME_PICKER_CONFIRM_BUTTON,
+  TIME_PICKER_MODAL_STYLES,
+} from '../../src/components/timePickerModalStyles'
+import { getProject } from '../../src/repositories/projects'
 import { createTask, listTasks } from '../../src/repositories/tasks'
 import { createTimeEntry } from '../../src/repositories/timeEntries'
-import { getProject } from '../../src/repositories/projects'
-import { toTimeStr, toDateStr, parseDateTimeLocal, parseTimeStr, formatHoursMinutes } from '../../src/utils/time'
 import { useSettingsStore } from '../../src/store/settingsStore'
-import { TIME_PICKER_MODAL_STYLES, TIME_PICKER_CANCEL_BUTTON, TIME_PICKER_CONFIRM_BUTTON } from '../../src/components/timePickerModalStyles'
+import {
+  formatHoursMinutes,
+  parseDateTimeLocal,
+  parseTimeStr,
+  toDateStr,
+  toTimeStr,
+} from '../../src/utils/time'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -42,7 +54,12 @@ export default function NewTimeEntryScreen() {
   const isHourly = project?.pricingMode === 'hourly'
   const [rateStr, setRateStr] = React.useState('')
 
-  if (!project) return <View style={s.c}><Text>Projekt nicht gefunden</Text></View>
+  if (!project)
+    return (
+      <View style={s.c}>
+        <Text>Projekt nicht gefunden</Text>
+      </View>
+    )
 
   const selectedTask = allTasks.find((t) => t.id === selectedId)
   const taskTriggerLabel = selectedTask
@@ -58,17 +75,29 @@ export default function NewTimeEntryScreen() {
     if (mode === 'end') {
       const parsedStart = parseDateTimeLocal(dateStr, startStr)
       const parsedEnd = parseDateTimeLocal(dateStr, endStr)
-      if (!parsedStart || !parsedEnd) { Alert.alert('Ungültig', 'Datum/Uhrzeit ungültig.'); return }
-      if (parsedEnd <= parsedStart) { Alert.alert('Ungültig', 'Ende muss nach Start liegen.'); return }
+      if (!parsedStart || !parsedEnd) {
+        Alert.alert('Ungültig', 'Datum/Uhrzeit ungültig.')
+        return
+      }
+      if (parsedEnd <= parsedStart) {
+        Alert.alert('Ungültig', 'Ende muss nach Start liegen.')
+        return
+      }
       startedAt = parsedStart
       endedAt = parsedEnd
     } else {
       const durationMs = durationHours * 3600_000 + durationMinutes * 60_000
-      if (durationMs <= 0) { Alert.alert('Ungültig', 'Dauer muss größer als 0 sein.'); return }
+      if (durationMs <= 0) {
+        Alert.alert('Ungültig', 'Dauer muss größer als 0 sein.')
+        return
+      }
       // No explicit end time in this mode — anchor "now" (time of day) onto
       // the chosen date, so a past Datum still yields a plausible end.
       const parsedDate = parseDateTimeLocal(dateStr, toTimeStr(new Date()))
-      if (!parsedDate) { Alert.alert('Ungültig', 'Datum ungültig.'); return }
+      if (!parsedDate) {
+        Alert.alert('Ungültig', 'Datum ungültig.')
+        return
+      }
       endedAt = parsedDate
       startedAt = new Date(endedAt.getTime() - durationMs)
     }
@@ -76,7 +105,10 @@ export default function NewTimeEntryScreen() {
     let rateOverrideCents: number | undefined
     if (isHourly && rateStr.trim() !== '') {
       const parsed = Math.round(parseFloat(rateStr.replace(',', '.')) * 100)
-      if (isNaN(parsed) || parsed <= 0) { Alert.alert('Ungültig', 'Stundensatz muss größer als 0 sein.'); return }
+      if (isNaN(parsed) || parsed <= 0) {
+        Alert.alert('Ungültig', 'Stundensatz muss größer als 0 sein.')
+        return
+      }
       rateOverrideCents = parsed
     }
 
@@ -88,7 +120,10 @@ export default function NewTimeEntryScreen() {
     if (!taskId && searchText.trim()) {
       taskId = createTask(OWNER_ID, searchText.trim())
     }
-    if (!taskId) { Alert.alert('Pflichtfeld', 'Aufgabe wählen.'); return }
+    if (!taskId) {
+      Alert.alert('Pflichtfeld', 'Aufgabe wählen.')
+      return
+    }
 
     createTimeEntry(OWNER_ID, {
       projectId,
@@ -175,7 +210,9 @@ export default function NewTimeEntryScreen() {
             accessibilityRole="button"
             accessibilityLabel={`Dauer ${durationHours} Stunden ${durationMinutes} Minuten. Antippen zum Ändern.`}
           >
-            <Text style={s.dropdownText}>{durationHours} Std {durationMinutes} Min</Text>
+            <Text style={s.dropdownText}>
+              {durationHours} Std {durationMinutes} Min
+            </Text>
             <Text style={s.dropdownChevron}>▾</Text>
           </Pressable>
         </>
@@ -183,8 +220,16 @@ export default function NewTimeEntryScreen() {
 
       <TimerPickerModal
         visible={activePicker !== null}
-        setIsVisible={(visible) => { if (!visible) setActivePicker(null) }}
-        modalTitle={activePicker === 'duration' ? 'Dauer wählen' : activePicker === 'start' ? 'Startzeit wählen' : 'Endzeit wählen'}
+        setIsVisible={(visible) => {
+          if (!visible) setActivePicker(null)
+        }}
+        modalTitle={
+          activePicker === 'duration'
+            ? 'Dauer wählen'
+            : activePicker === 'start'
+              ? 'Startzeit wählen'
+              : 'Endzeit wählen'
+        }
         hideSeconds
         use12HourPicker={activePicker !== 'duration' && use12HourFormat}
         hourLimit={activePicker === 'duration' ? undefined : { min: 0, max: 23 }}
@@ -227,7 +272,12 @@ export default function NewTimeEntryScreen() {
       />
 
       <Text style={s.label}>Notiz</Text>
-      <TextInput style={[s.input, { height: 72 }]} value={notes} onChangeText={setNotes} multiline />
+      <TextInput
+        style={[s.input, { height: 72 }]}
+        value={notes}
+        onChangeText={setNotes}
+        multiline
+      />
 
       {isHourly && (
         <>
@@ -260,16 +310,36 @@ const s = StyleSheet.create({
   label: { fontSize: 13, color: '#666' },
   input: { borderWidth: 1, borderColor: '#DDD', borderRadius: 8, padding: 12 },
   dropdown: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    borderWidth: 1, borderColor: '#DDD', borderRadius: 8, paddingHorizontal: 12,
-    backgroundColor: '#FFF', minHeight: 44,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: '#DDD',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    backgroundColor: '#FFF',
+    minHeight: 44,
   },
   dropdownText: { fontSize: 15, color: '#000', flexShrink: 1 },
   dropdownChevron: { fontSize: 14, color: '#666', marginLeft: 8 },
   modeRow: { flexDirection: 'row', gap: 8 },
-  modeBtn: { flex: 1, padding: 10, borderRadius: 8, backgroundColor: '#F5F5F5', alignItems: 'center', minHeight: 44, justifyContent: 'center' },
+  modeBtn: {
+    flex: 1,
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: '#F5F5F5',
+    alignItems: 'center',
+    minHeight: 44,
+    justifyContent: 'center',
+  },
   modeBtnSelected: { backgroundColor: '#4A90D9' },
   modeText: { color: '#333', fontWeight: '500' },
   modeTextSelected: { color: '#FFF', fontWeight: '600' },
-  btn: { backgroundColor: '#4A90D9', padding: 14, borderRadius: 8, alignItems: 'center', minHeight: 44 },
+  btn: {
+    backgroundColor: '#4A90D9',
+    padding: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+    minHeight: 44,
+  },
 })

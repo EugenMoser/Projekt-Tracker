@@ -1,4 +1,13 @@
-import { jest, describe, it, expect, beforeEach } from '@jest/globals'
+import { beforeEach, describe, expect, it, jest } from '@jest/globals'
+
+import {
+  clearPin,
+  isBiometryEnabled,
+  isPinSet,
+  savePin,
+  setBiometryEnabled,
+  verifyPin,
+} from '../pinStorage'
 
 // In-memory store für SecureStore-Mock
 const secureStore: Record<string, string> = {}
@@ -26,18 +35,9 @@ jest.mock('expo-crypto', () => ({
   CryptoEncoding: { HEX: 'hex' },
 }))
 
-import {
-  savePin,
-  verifyPin,
-  isPinSet,
-  clearPin,
-  setBiometryEnabled,
-  isBiometryEnabled,
-} from '../pinStorage'
-
 beforeEach(() => {
   // SecureStore zurücksetzen
-  Object.keys(secureStore).forEach(k => delete secureStore[k])
+  Object.keys(secureStore).forEach((k) => delete secureStore[k])
   jest.clearAllMocks()
   // Mock neu registrieren nach clearAllMocks
   const SecureStore = require('expo-secure-store') as {
@@ -46,7 +46,7 @@ beforeEach(() => {
     deleteItemAsync: jest.Mock<(key: string) => Promise<void>>
   }
   SecureStore.getItemAsync.mockImplementation((key: string) =>
-    Promise.resolve(secureStore[key] ?? null)
+    Promise.resolve(secureStore[key] ?? null),
   )
   SecureStore.setItemAsync.mockImplementation((key: string, val: string) => {
     secureStore[key] = val
@@ -58,7 +58,9 @@ beforeEach(() => {
   })
   const Crypto = require('expo-crypto') as {
     getRandomBytesAsync: jest.Mock<(byteCount: number) => Promise<Uint8Array>>
-    digestStringAsync: jest.Mock<(algorithm: unknown, data: string, options?: { encoding: string }) => Promise<string>>
+    digestStringAsync: jest.Mock<
+      (algorithm: unknown, data: string, options?: { encoding: string }) => Promise<string>
+    >
   }
   Crypto.getRandomBytesAsync.mockResolvedValue(MOCK_SALT_BYTES)
   Crypto.digestStringAsync.mockResolvedValue(MOCK_HASH)
@@ -85,22 +87,24 @@ describe('pinStorage', () => {
   it('verifyPin returns true for correct PIN', async () => {
     await savePin('1234')
     const Crypto = require('expo-crypto') as {
-      digestStringAsync: jest.Mock<(algorithm: unknown, data: string, options?: { encoding: string }) => Promise<string>>
+      digestStringAsync: jest.Mock<
+        (algorithm: unknown, data: string, options?: { encoding: string }) => Promise<string>
+      >
     }
     Crypto.digestStringAsync.mockClear()
     expect(await verifyPin('1234')).toBe(true)
     // Verify salt was actually passed to the hash function
-    expect(Crypto.digestStringAsync).toHaveBeenCalledWith(
-      'SHA-256',
-      MOCK_SALT_HEX + '1234',
-      { encoding: 'hex' }
-    )
+    expect(Crypto.digestStringAsync).toHaveBeenCalledWith('SHA-256', MOCK_SALT_HEX + '1234', {
+      encoding: 'hex',
+    })
   })
 
   it('verifyPin returns false for wrong PIN (different hash)', async () => {
     await savePin('1234')
     const Crypto = require('expo-crypto') as {
-      digestStringAsync: jest.Mock<(algorithm: unknown, data: string, options?: { encoding: string }) => Promise<string>>
+      digestStringAsync: jest.Mock<
+        (algorithm: unknown, data: string, options?: { encoding: string }) => Promise<string>
+      >
     }
     Crypto.digestStringAsync.mockResolvedValueOnce('different_hash')
     expect(await verifyPin('9999')).toBe(false)
@@ -114,7 +118,7 @@ describe('pinStorage', () => {
     await savePin('1234')
     await clearPin()
     expect(await isPinSet()).toBe(false)
-    expect(Object.keys(secureStore).filter(k => k.startsWith('pt_pin'))).toHaveLength(0)
+    expect(Object.keys(secureStore).filter((k) => k.startsWith('pt_pin'))).toHaveLength(0)
   })
 
   it('isBiometryEnabled returns false by default', async () => {

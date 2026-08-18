@@ -1,4 +1,5 @@
 import React from 'react'
+
 import { GestureResponderEvent, Modal, Pressable, StyleSheet, Text, View } from 'react-native'
 
 export interface RowAction {
@@ -24,7 +25,12 @@ export function RowActionMenu({ visible, title, actions, onClose }: RowActionMen
       accessibilityViewIsModal
     >
       <Pressable style={styles.backdrop} onPress={onClose}>
-        <Pressable style={styles.sheet} onPress={() => { /* stop propagation */ }}>
+        <Pressable
+          style={styles.sheet}
+          onPress={() => {
+            /* stop propagation */
+          }}
+        >
           <View style={styles.handle} />
           {title ? <Text style={styles.title}>{title}</Text> : null}
           {actions.map((action) => (

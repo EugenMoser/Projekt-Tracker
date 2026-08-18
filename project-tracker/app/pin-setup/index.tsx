@@ -1,13 +1,8 @@
 import React, { useState } from 'react'
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  Alert,
-  SafeAreaView,
-} from 'react-native'
+
 import { router, useLocalSearchParams } from 'expo-router'
+import { Alert, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native'
+
 import { savePin, verifyPin } from '../../src/auth/pinStorage'
 
 type Step = 'verify-current' | 'enter' | 'confirm'
@@ -29,9 +24,12 @@ export default function PinSetupScreen() {
   const [newPin, setNewPin] = useState('')
 
   const handleKey = (key: string) => {
-    if (key === '⌫') { setDigits(d => d.slice(0, -1)); return }
+    if (key === '⌫') {
+      setDigits((d) => d.slice(0, -1))
+      return
+    }
     if (digits.length >= 6) return
-    setDigits(d => d + key)
+    setDigits((d) => d + key)
   }
 
   const handleConfirm = async () => {
@@ -106,9 +104,7 @@ export default function PinSetupScreen() {
           accessibilityRole="button"
           accessibilityLabel="Weiter"
         >
-          <Text style={styles.confirmText}>
-            {step === 'confirm' ? 'Speichern' : 'Weiter'}
-          </Text>
+          <Text style={styles.confirmText}>{step === 'confirm' ? 'Speichern' : 'Weiter'}</Text>
         </Pressable>
       </View>
     </SafeAreaView>
@@ -123,15 +119,22 @@ const styles = StyleSheet.create({
   dots: { fontSize: 28, letterSpacing: 12, marginBottom: 24 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', width: 264, marginBottom: 24 },
   key: {
-    width: 80, height: 80, margin: 4, borderRadius: 40,
-    backgroundColor: '#FFF', alignItems: 'center', justifyContent: 'center',
+    width: 80,
+    height: 80,
+    margin: 4,
+    borderRadius: 40,
+    backgroundColor: '#FFF',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   keyInvisible: { backgroundColor: 'transparent' },
   keyPressed: { backgroundColor: '#E5E5EA' },
   keyText: { fontSize: 24, fontWeight: '400' },
   confirm: {
-    backgroundColor: '#007AFF', borderRadius: 12,
-    paddingHorizontal: 48, paddingVertical: 14,
+    backgroundColor: '#007AFF',
+    borderRadius: 12,
+    paddingHorizontal: 48,
+    paddingVertical: 14,
   },
   confirmDisabled: { backgroundColor: '#C7C7CC' },
   confirmText: { color: '#FFF', fontSize: 17, fontWeight: '600' },

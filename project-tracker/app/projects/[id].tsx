@@ -1,19 +1,16 @@
 import React from 'react'
+
 import { Ionicons } from '@expo/vector-icons'
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router'
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 
-import {
-  archiveProject,
-  getProject,
-  getProjectTotalSeconds,
-} from '../../src/repositories/projects'
-import { getCustomer } from '../../src/repositories/customers'
-import { listTimeEntriesForProject, softDeleteTimeEntry } from '../../src/repositories/timeEntries'
-import { listTasksByIds } from '../../src/repositories/tasks'
 import { TaskAccordionCard } from '../../src/components/TaskAccordionCard'
-import { formatDuration } from '../../src/utils/time'
+import { getCustomer } from '../../src/repositories/customers'
+import { archiveProject, getProject, getProjectTotalSeconds } from '../../src/repositories/projects'
+import { listTasksByIds } from '../../src/repositories/tasks'
+import { listTimeEntriesForProject, softDeleteTimeEntry } from '../../src/repositories/timeEntries'
 import { taskAmountCents } from '../../src/utils/money'
+import { formatDuration } from '../../src/utils/time'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -91,20 +88,16 @@ export default function ProjectDetailScreen() {
       : null
 
   const handleArchive = () => {
-    Alert.alert(
-      'Archivieren?',
-      'Das Projekt verschwindet aus der Kachelansicht.',
-      [
-        { text: 'Abbrechen', style: 'cancel' },
-        {
-          text: 'Archivieren',
-          onPress: () => {
-            archiveProject(OWNER_ID, id)
-            router.back()
-          },
+    Alert.alert('Archivieren?', 'Das Projekt verschwindet aus der Kachelansicht.', [
+      { text: 'Abbrechen', style: 'cancel' },
+      {
+        text: 'Archivieren',
+        onPress: () => {
+          archiveProject(OWNER_ID, id)
+          router.back()
         },
-      ],
-    )
+      },
+    ])
   }
 
   const handleEditEntry = (entryId: string) => {
@@ -112,21 +105,17 @@ export default function ProjectDetailScreen() {
   }
 
   const handleDeleteEntry = (entryId: string) => {
-    Alert.alert(
-      'Zeiteintrag löschen?',
-      'Dieser Eintrag wird unwiderruflich gelöscht.',
-      [
-        { text: 'Abbrechen', style: 'cancel' },
-        {
-          text: 'Löschen',
-          style: 'destructive',
-          onPress: () => {
-            softDeleteTimeEntry(OWNER_ID, entryId)
-            load()
-          },
+    Alert.alert('Zeiteintrag löschen?', 'Dieser Eintrag wird unwiderruflich gelöscht.', [
+      { text: 'Abbrechen', style: 'cancel' },
+      {
+        text: 'Löschen',
+        style: 'destructive',
+        onPress: () => {
+          softDeleteTimeEntry(OWNER_ID, entryId)
+          load()
         },
-      ],
-    )
+      },
+    ])
   }
 
   return (

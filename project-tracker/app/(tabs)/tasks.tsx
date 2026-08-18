@@ -1,11 +1,19 @@
 import React from 'react'
-import { View, Text, FlatList, Pressable, TextInput, Modal, StyleSheet, Alert } from 'react-native'
+
 import { useFocusEffect } from 'expo-router'
-import {
-  listTasks, createTask, updateTask, deleteTask, upsertTag, setTaskTags, getTagsForTask,
-} from '../../src/repositories/tasks'
-import { DotsButton, RowActionMenu, type RowAction } from '../../src/components/RowActionMenu'
+import { Alert, FlatList, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
+
 import { KeyboardAwareView } from '../../src/components/KeyboardAwareView'
+import { DotsButton, RowActionMenu, type RowAction } from '../../src/components/RowActionMenu'
+import {
+  createTask,
+  deleteTask,
+  getTagsForTask,
+  listTasks,
+  setTaskTags,
+  updateTask,
+  upsertTag,
+} from '../../src/repositories/tasks'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -25,13 +33,19 @@ export default function TasksScreen() {
     const rawTasks = listTasks(OWNER_ID)
     setTasks(rawTasks.map((t) => ({ ...t, tags: getTagsForTask(OWNER_ID, t.id) })))
   }
-  useFocusEffect(React.useCallback(() => { load() }, []))
+  useFocusEffect(
+    React.useCallback(() => {
+      load()
+    }, []),
+  )
 
   const handleAddTask = () => {
     if (!newDesc.trim()) return
     try {
       createTask(OWNER_ID, newDesc.trim())
-      setNewDesc(''); setShowAdd(false); load()
+      setNewDesc('')
+      setShowAdd(false)
+      load()
     } catch {
       Alert.alert('Fehler', 'Aufgabe mit diesem Namen existiert bereits.')
     }
@@ -39,21 +53,17 @@ export default function TasksScreen() {
 
   const handleDeleteTask = (task: Task) => {
     setMenuTask(null)
-    Alert.alert(
-      'Aufgabe löschen?',
-      `„${task.description}" wird unwiderruflich gelöscht.`,
-      [
-        { text: 'Abbrechen', style: 'cancel' },
-        {
-          text: 'Löschen',
-          style: 'destructive',
-          onPress: () => {
-            deleteTask(OWNER_ID, task.id)
-            load()
-          },
+    Alert.alert('Aufgabe löschen?', `„${task.description}" wird unwiderruflich gelöscht.`, [
+      { text: 'Abbrechen', style: 'cancel' },
+      {
+        text: 'Löschen',
+        style: 'destructive',
+        onPress: () => {
+          deleteTask(OWNER_ID, task.id)
+          load()
         },
-      ],
-    )
+      },
+    ])
   }
 
   const menuActions: RowAction[] = menuTask
@@ -79,7 +89,9 @@ export default function TasksScreen() {
     if (!editDesc.trim() || !editingTask) return
     try {
       updateTask(OWNER_ID, editingTask.id, editDesc.trim())
-      setEditingTask(null); setEditDesc(''); load()
+      setEditingTask(null)
+      setEditDesc('')
+      load()
     } catch {
       Alert.alert('Fehler', 'Aufgabe konnte nicht gespeichert werden.')
     }
@@ -91,11 +103,16 @@ export default function TasksScreen() {
     if (!newTagText.trim()) return
     const tagId = upsertTag(OWNER_ID, newTagText.trim())
     setTaskTags(OWNER_ID, taskId, [...new Set([...currentTagIds, tagId])])
-    setNewTagText(''); load()
+    setNewTagText('')
+    load()
   }
 
   const handleRemoveTag = (taskId: string, tagId: string, currentTagIds: string[]) => {
-    setTaskTags(OWNER_ID, taskId, currentTagIds.filter((id) => id !== tagId))
+    setTaskTags(
+      OWNER_ID,
+      taskId,
+      currentTagIds.filter((id) => id !== tagId),
+    )
     load()
   }
 
@@ -113,12 +130,24 @@ export default function TasksScreen() {
               <Text style={styles.taskDesc}>{item.description}</Text>
               <View style={styles.tagRow}>
                 {item.tags.map((tag) => (
-                  <Pressable key={tag.id} style={styles.tag}
-                    onLongPress={() => { handleRemoveTag(item.id, tag.id, item.tags.map((t) => t.id)) }}>
+                  <Pressable
+                    key={tag.id}
+                    style={styles.tag}
+                    onLongPress={() => {
+                      handleRemoveTag(
+                        item.id,
+                        tag.id,
+                        item.tags.map((t) => t.id),
+                      )
+                    }}
+                  >
                     <Text style={styles.tagText}>{tag.title}</Text>
                   </Pressable>
                 ))}
-                <Pressable style={[styles.tag, styles.tagAdd]} onPress={() => setEditingTagsFor(item.id)}>
+                <Pressable
+                  style={[styles.tag, styles.tagAdd]}
+                  onPress={() => setEditingTagsFor(item.id)}
+                >
                   <Text style={styles.tagText}>+ Tag</Text>
                 </Pressable>
               </View>
@@ -153,7 +182,10 @@ export default function TasksScreen() {
             <Pressable style={styles.saveBtn} onPress={handleAddTask}>
               <Text style={{ color: '#FFF', fontWeight: '600' }}>Anlegen</Text>
             </Pressable>
-            <Pressable onPress={() => setShowAdd(false)} style={{ marginTop: 12, alignItems: 'center' }}>
+            <Pressable
+              onPress={() => setShowAdd(false)}
+              style={{ marginTop: 12, alignItems: 'center' }}
+            >
               <Text>Abbrechen</Text>
             </Pressable>
           </View>
@@ -176,7 +208,13 @@ export default function TasksScreen() {
             <Pressable style={styles.saveBtn} onPress={handleSaveEdit}>
               <Text style={{ color: '#FFF', fontWeight: '600' }}>Speichern</Text>
             </Pressable>
-            <Pressable onPress={() => { setEditingTask(null); setEditDesc('') }} style={{ marginTop: 12, alignItems: 'center' }}>
+            <Pressable
+              onPress={() => {
+                setEditingTask(null)
+                setEditDesc('')
+              }}
+              style={{ marginTop: 12, alignItems: 'center' }}
+            >
               <Text>Abbrechen</Text>
             </Pressable>
           </View>
@@ -190,8 +228,17 @@ export default function TasksScreen() {
             <Text style={styles.modalTitle}>Stichworte für „{taskBeingTagged?.description}"</Text>
             <View style={styles.tagRow}>
               {taskBeingTagged?.tags.map((tag) => (
-                <Pressable key={tag.id} style={styles.tag}
-                  onPress={() => { handleRemoveTag(editingTagsFor!, tag.id, taskBeingTagged.tags.map((t) => t.id)) }}>
+                <Pressable
+                  key={tag.id}
+                  style={styles.tag}
+                  onPress={() => {
+                    handleRemoveTag(
+                      editingTagsFor!,
+                      tag.id,
+                      taskBeingTagged.tags.map((t) => t.id),
+                    )
+                  }}
+                >
                   <Text style={styles.tagText}>{tag.title} ✕</Text>
                 </Pressable>
               ))}
@@ -203,11 +250,21 @@ export default function TasksScreen() {
               value={newTagText}
               onChangeText={setNewTagText}
             />
-            <Pressable style={[styles.saveBtn, { marginTop: 8 }]}
-              onPress={() => handleAddTag(editingTagsFor!, taskBeingTagged?.tags.map((t) => t.id) ?? [])}>
+            <Pressable
+              style={[styles.saveBtn, { marginTop: 8 }]}
+              onPress={() =>
+                handleAddTag(editingTagsFor!, taskBeingTagged?.tags.map((t) => t.id) ?? [])
+              }
+            >
               <Text style={{ color: '#FFF', fontWeight: '600' }}>Stichwort hinzufügen</Text>
             </Pressable>
-            <Pressable onPress={() => { setEditingTagsFor(null); setNewTagText('') }} style={{ marginTop: 12, alignItems: 'center' }}>
+            <Pressable
+              onPress={() => {
+                setEditingTagsFor(null)
+                setNewTagText('')
+              }}
+              style={{ marginTop: 12, alignItems: 'center' }}
+            >
               <Text>Fertig</Text>
             </Pressable>
           </View>
@@ -219,7 +276,13 @@ export default function TasksScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
-  addBtn: { backgroundColor: '#4A90D9', padding: 14, borderRadius: 8, alignItems: 'center', marginBottom: 16 },
+  addBtn: {
+    backgroundColor: '#4A90D9',
+    padding: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 16,
+  },
   addBtnText: { color: '#FFF', fontWeight: '600' },
   taskRow: {
     flexDirection: 'row',
@@ -238,6 +301,19 @@ const styles = StyleSheet.create({
   tagText: { fontSize: 12, color: '#4A90D9' },
   modal: { flex: 1, padding: 24, backgroundColor: '#FFF' },
   modalTitle: { fontSize: 18, fontWeight: '700', marginBottom: 16 },
-  input: { borderWidth: 1, borderColor: '#DDD', borderRadius: 8, padding: 12, backgroundColor: '#FFF', color: '#000' },
-  saveBtn: { backgroundColor: '#4A90D9', padding: 14, borderRadius: 8, alignItems: 'center', marginTop: 8 },
+  input: {
+    borderWidth: 1,
+    borderColor: '#DDD',
+    borderRadius: 8,
+    padding: 12,
+    backgroundColor: '#FFF',
+    color: '#000',
+  },
+  saveBtn: {
+    backgroundColor: '#4A90D9',
+    padding: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 8,
+  },
 })

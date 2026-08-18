@@ -1,15 +1,14 @@
-import { describe, it, expect } from 'vitest'
 import { Hono } from 'hono'
 import { sign } from 'hono/jwt'
+import { describe, expect, it } from 'vitest'
+
 import { createAuthMiddleware } from '../middleware/auth.js'
 import type { AppVariables } from '../middleware/auth.js'
 
 const SECRET = 'test-jwt-secret-must-be-32chars!!'
 
 const testApp = new Hono<{ Variables: AppVariables }>()
-testApp.get('/protected', createAuthMiddleware(SECRET), (c) =>
-  c.json({ userId: c.get('userId') })
-)
+testApp.get('/protected', createAuthMiddleware(SECRET), (c) => c.json({ userId: c.get('userId') }))
 
 describe('createAuthMiddleware', () => {
   it('returns 401 when Authorization header is missing', async () => {

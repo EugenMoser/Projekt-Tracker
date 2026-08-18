@@ -1,14 +1,16 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest'
-import { Hono } from 'hono'
-import postgres from 'postgres'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+import * as schema from '@projekt-tracker/schema/pg'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import { migrate } from 'drizzle-orm/postgres-js/migrator'
-import { join, dirname } from 'node:path'
-import { fileURLToPath } from 'node:url'
-import * as schema from '@projekt-tracker/schema/pg'
+import { Hono } from 'hono'
+import postgres from 'postgres'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+
+import type { AppVariables } from '../middleware/auth.js'
 import { createBootstrapRoute } from '../routes/auth.js'
 import { createSyncRoute, pushBodySchema } from '../routes/sync.js'
-import type { AppVariables } from '../middleware/auth.js'
 
 describe('pushBodySchema — unit', () => {
   it('accepts an empty body (all arrays default to [])', () => {
@@ -30,63 +32,71 @@ describe('pushBodySchema — unit', () => {
 
   it('accepts a valid orderType record', () => {
     const r = pushBodySchema.safeParse({
-      orderTypes: [{
-        id: '01930000-0000-7000-8000-000000000001',
-        name: 'Hochzeitsfotografie',
-        digit: 1,
-        createdAt: '2026-01-01T00:00:00.000Z',
-        updatedAt: '2026-01-01T00:00:00.000Z',
-        deletedAt: null,
-      }],
+      orderTypes: [
+        {
+          id: '01930000-0000-7000-8000-000000000001',
+          name: 'Hochzeitsfotografie',
+          digit: 1,
+          createdAt: '2026-01-01T00:00:00.000Z',
+          updatedAt: '2026-01-01T00:00:00.000Z',
+          deletedAt: null,
+        },
+      ],
     })
     expect(r.success).toBe(true)
   })
 
   it('rejects an orderType with digit = 0 (min is 1)', () => {
     const r = pushBodySchema.safeParse({
-      orderTypes: [{
-        id: '01930000-0000-7000-8000-000000000001',
-        name: 'Test',
-        digit: 0,
-        createdAt: '2026-01-01T00:00:00.000Z',
-        updatedAt: '2026-01-01T00:00:00.000Z',
-        deletedAt: null,
-      }],
+      orderTypes: [
+        {
+          id: '01930000-0000-7000-8000-000000000001',
+          name: 'Test',
+          digit: 0,
+          createdAt: '2026-01-01T00:00:00.000Z',
+          updatedAt: '2026-01-01T00:00:00.000Z',
+          deletedAt: null,
+        },
+      ],
     })
     expect(r.success).toBe(false)
   })
 
   it('rejects an orderType with digit = 10 (max is 9)', () => {
     const r = pushBodySchema.safeParse({
-      orderTypes: [{
-        id: '01930000-0000-7000-8000-000000000001',
-        name: 'Test',
-        digit: 10,
-        createdAt: '2026-01-01T00:00:00.000Z',
-        updatedAt: '2026-01-01T00:00:00.000Z',
-        deletedAt: null,
-      }],
+      orderTypes: [
+        {
+          id: '01930000-0000-7000-8000-000000000001',
+          name: 'Test',
+          digit: 10,
+          createdAt: '2026-01-01T00:00:00.000Z',
+          updatedAt: '2026-01-01T00:00:00.000Z',
+          deletedAt: null,
+        },
+      ],
     })
     expect(r.success).toBe(false)
   })
 
   it('rejects a project with invalid pricingMode', () => {
     const r = pushBodySchema.safeParse({
-      projects: [{
-        id: '01930000-0000-7000-8000-000000000002',
-        customerId: '01930000-0000-7000-8000-000000000003',
-        title: 'Project',
-        description: null,
-        color: '#FF0000',
-        pricingMode: 'subscription',
-        hourlyRateCents: null,
-        fixedPriceCents: null,
-        status: 'active',
-        sortOrder: 1000,
-        createdAt: '2026-01-01T00:00:00.000Z',
-        updatedAt: '2026-01-01T00:00:00.000Z',
-        deletedAt: null,
-      }],
+      projects: [
+        {
+          id: '01930000-0000-7000-8000-000000000002',
+          customerId: '01930000-0000-7000-8000-000000000003',
+          title: 'Project',
+          description: null,
+          color: '#FF0000',
+          pricingMode: 'subscription',
+          hourlyRateCents: null,
+          fixedPriceCents: null,
+          status: 'active',
+          sortOrder: 1000,
+          createdAt: '2026-01-01T00:00:00.000Z',
+          updatedAt: '2026-01-01T00:00:00.000Z',
+          deletedAt: null,
+        },
+      ],
     })
     expect(r.success).toBe(false)
   })
@@ -96,20 +106,22 @@ describe('pushBodySchema — unit', () => {
   // server and destroy the user's arrangement for every other device.
   it('rejects a project without sortOrder', () => {
     const r = pushBodySchema.safeParse({
-      projects: [{
-        id: '01930000-0000-7000-8000-000000000002',
-        customerId: '01930000-0000-7000-8000-000000000003',
-        title: 'Project',
-        description: null,
-        color: '#FF0000',
-        pricingMode: 'hourly',
-        hourlyRateCents: 8000,
-        fixedPriceCents: null,
-        status: 'active',
-        createdAt: '2026-01-01T00:00:00.000Z',
-        updatedAt: '2026-01-01T00:00:00.000Z',
-        deletedAt: null,
-      }],
+      projects: [
+        {
+          id: '01930000-0000-7000-8000-000000000002',
+          customerId: '01930000-0000-7000-8000-000000000003',
+          title: 'Project',
+          description: null,
+          color: '#FF0000',
+          pricingMode: 'hourly',
+          hourlyRateCents: 8000,
+          fixedPriceCents: null,
+          status: 'active',
+          createdAt: '2026-01-01T00:00:00.000Z',
+          updatedAt: '2026-01-01T00:00:00.000Z',
+          deletedAt: null,
+        },
+      ],
     })
     expect(r.success).toBe(false)
   })
@@ -129,83 +141,97 @@ describe('pushBodySchema — unit', () => {
       updatedAt: '2026-01-01T00:00:00.000Z',
       deletedAt: null,
     }
-    expect(pushBodySchema.safeParse({ projects: [{ ...base, sortOrder: 2147483648 }] }).success).toBe(false)
-    expect(pushBodySchema.safeParse({ projects: [{ ...base, sortOrder: -2147483649 }] }).success).toBe(false)
-    expect(pushBodySchema.safeParse({ projects: [{ ...base, sortOrder: 2147483647 }] }).success).toBe(true)
+    expect(
+      pushBodySchema.safeParse({ projects: [{ ...base, sortOrder: 2147483648 }] }).success,
+    ).toBe(false)
+    expect(
+      pushBodySchema.safeParse({ projects: [{ ...base, sortOrder: -2147483649 }] }).success,
+    ).toBe(false)
+    expect(
+      pushBodySchema.safeParse({ projects: [{ ...base, sortOrder: 2147483647 }] }).success,
+    ).toBe(true)
   })
 
   it('rejects a timeEntry with invalid pricingModeSnapshot', () => {
     const r = pushBodySchema.safeParse({
-      timeEntries: [{
-        id: '01930000-0000-7000-8000-000000000004',
-        projectId: '01930000-0000-7000-8000-000000000005',
-        taskId: '01930000-0000-7000-8000-000000000006',
-        startedAt: '2026-01-01T08:00:00.000Z',
-        endedAt: '2026-01-01T09:00:00.000Z',
-        rateSnapshotCents: null,
-        pricingModeSnapshot: 'unknown',
-        notes: null,
-        createdAt: '2026-01-01T08:00:00.000Z',
-        updatedAt: '2026-01-01T08:00:00.000Z',
-        deletedAt: null,
-      }],
+      timeEntries: [
+        {
+          id: '01930000-0000-7000-8000-000000000004',
+          projectId: '01930000-0000-7000-8000-000000000005',
+          taskId: '01930000-0000-7000-8000-000000000006',
+          startedAt: '2026-01-01T08:00:00.000Z',
+          endedAt: '2026-01-01T09:00:00.000Z',
+          rateSnapshotCents: null,
+          pricingModeSnapshot: 'unknown',
+          notes: null,
+          createdAt: '2026-01-01T08:00:00.000Z',
+          updatedAt: '2026-01-01T08:00:00.000Z',
+          deletedAt: null,
+        },
+      ],
     })
     expect(r.success).toBe(false)
   })
 
   it('rejects a timeEntry where endedAt equals startedAt', () => {
     const r = pushBodySchema.safeParse({
-      timeEntries: [{
-        id: '01930000-0000-7000-8000-000000000004',
-        projectId: '01930000-0000-7000-8000-000000000005',
-        taskId: '01930000-0000-7000-8000-000000000006',
-        startedAt: '2026-01-01T08:00:00.000Z',
-        endedAt: '2026-01-01T08:00:00.000Z',
-        rateSnapshotCents: null,
-        pricingModeSnapshot: 'hourly',
-        notes: null,
-        createdAt: '2026-01-01T08:00:00.000Z',
-        updatedAt: '2026-01-01T08:00:00.000Z',
-        deletedAt: null,
-      }],
+      timeEntries: [
+        {
+          id: '01930000-0000-7000-8000-000000000004',
+          projectId: '01930000-0000-7000-8000-000000000005',
+          taskId: '01930000-0000-7000-8000-000000000006',
+          startedAt: '2026-01-01T08:00:00.000Z',
+          endedAt: '2026-01-01T08:00:00.000Z',
+          rateSnapshotCents: null,
+          pricingModeSnapshot: 'hourly',
+          notes: null,
+          createdAt: '2026-01-01T08:00:00.000Z',
+          updatedAt: '2026-01-01T08:00:00.000Z',
+          deletedAt: null,
+        },
+      ],
     })
     expect(r.success).toBe(false)
   })
 
   it('rejects a timeEntry where endedAt is before startedAt', () => {
     const r = pushBodySchema.safeParse({
-      timeEntries: [{
-        id: '01930000-0000-7000-8000-000000000004',
-        projectId: '01930000-0000-7000-8000-000000000005',
-        taskId: '01930000-0000-7000-8000-000000000006',
-        startedAt: '2026-01-01T09:00:00.000Z',
-        endedAt: '2026-01-01T08:00:00.000Z',
-        rateSnapshotCents: null,
-        pricingModeSnapshot: 'hourly',
-        notes: null,
-        createdAt: '2026-01-01T08:00:00.000Z',
-        updatedAt: '2026-01-01T08:00:00.000Z',
-        deletedAt: null,
-      }],
+      timeEntries: [
+        {
+          id: '01930000-0000-7000-8000-000000000004',
+          projectId: '01930000-0000-7000-8000-000000000005',
+          taskId: '01930000-0000-7000-8000-000000000006',
+          startedAt: '2026-01-01T09:00:00.000Z',
+          endedAt: '2026-01-01T08:00:00.000Z',
+          rateSnapshotCents: null,
+          pricingModeSnapshot: 'hourly',
+          notes: null,
+          createdAt: '2026-01-01T08:00:00.000Z',
+          updatedAt: '2026-01-01T08:00:00.000Z',
+          deletedAt: null,
+        },
+      ],
     })
     expect(r.success).toBe(false)
   })
 
   it('accepts a timeEntry where endedAt is after startedAt', () => {
     const r = pushBodySchema.safeParse({
-      timeEntries: [{
-        id: '01930000-0000-7000-8000-000000000004',
-        projectId: '01930000-0000-7000-8000-000000000005',
-        taskId: '01930000-0000-7000-8000-000000000006',
-        startedAt: '2026-01-01T08:00:00.000Z',
-        endedAt: '2026-01-01T09:00:00.000Z',
-        rateSnapshotCents: null,
-        pricingModeSnapshot: 'hourly',
-        notes: null,
-        createdAt: '2026-01-01T08:00:00.000Z',
-        updatedAt: '2026-01-01T08:00:00.000Z',
-        deletedAt: null,
-      }],
+      timeEntries: [
+        {
+          id: '01930000-0000-7000-8000-000000000004',
+          projectId: '01930000-0000-7000-8000-000000000005',
+          taskId: '01930000-0000-7000-8000-000000000006',
+          startedAt: '2026-01-01T08:00:00.000Z',
+          endedAt: '2026-01-01T09:00:00.000Z',
+          rateSnapshotCents: null,
+          pricingModeSnapshot: 'hourly',
+          notes: null,
+          createdAt: '2026-01-01T08:00:00.000Z',
+          updatedAt: '2026-01-01T08:00:00.000Z',
+          deletedAt: null,
+        },
+      ],
     })
     expect(r.success).toBe(true)
   })
@@ -241,10 +267,7 @@ describe.skipIf(!DB_URL)('Sync endpoints (integration)', () => {
     sql = postgres(DB_URL!, { max: 5 })
     db = drizzle(sql, { schema })
 
-    const migrationsFolder = join(
-      dirname(fileURLToPath(import.meta.url)),
-      '../../migrations',
-    )
+    const migrationsFolder = join(dirname(fileURLToPath(import.meta.url)), '../../migrations')
     const migSql = postgres(DB_URL!, { max: 1 })
     await migrate(drizzle(migSql), { migrationsFolder })
     await migSql.end()
@@ -256,7 +279,7 @@ describe.skipIf(!DB_URL)('Sync endpoints (integration)', () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ displayName: 'Sync Integration Test User' }),
     })
-    const body = await res.json() as { token: string; userId: string }
+    const body = (await res.json()) as { token: string; userId: string }
     token = body.token
 
     app = new Hono<{ Variables: AppVariables }>()
@@ -286,7 +309,7 @@ describe.skipIf(!DB_URL)('Sync endpoints (integration)', () => {
       headers: { Authorization: `Bearer ${token}` },
     })
     expect(res.status).toBe(200)
-    const body = await res.json() as Record<string, unknown>
+    const body = (await res.json()) as Record<string, unknown>
     expect(body.orderTypes).toEqual([])
     expect(body.customers).toEqual([])
     expect(body.projects).toEqual([])
@@ -315,26 +338,28 @@ describe.skipIf(!DB_URL)('Sync endpoints (integration)', () => {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        orderTypes: [{
-          id: orderTypeId,
-          name: 'Sync Test Art',
-          digit: 3,
-          createdAt: now,
-          updatedAt: now,
-          deletedAt: null,
-        }],
+        orderTypes: [
+          {
+            id: orderTypeId,
+            name: 'Sync Test Art',
+            digit: 3,
+            createdAt: now,
+            updatedAt: now,
+            deletedAt: null,
+          },
+        ],
       }),
     })
     expect(pushRes.status).toBe(200)
-    const pushBody = await pushRes.json() as { serverTime: string }
+    const pushBody = (await pushRes.json()) as { serverTime: string }
     expect(typeof pushBody.serverTime).toBe('string')
 
     const pullRes = await app.request('/v1/sync/pull', {
       headers: { Authorization: `Bearer ${token}` },
     })
     expect(pullRes.status).toBe(200)
-    const pullBody = await pullRes.json() as { orderTypes: { id: string; name: string }[] }
-    const found = pullBody.orderTypes.find(o => o.id === orderTypeId)
+    const pullBody = (await pullRes.json()) as { orderTypes: { id: string; name: string }[] }
+    const found = pullBody.orderTypes.find((o) => o.id === orderTypeId)
     expect(found).toBeDefined()
     expect(found?.name).toBe('Sync Test Art')
   })
@@ -348,10 +373,16 @@ describe.skipIf(!DB_URL)('Sync endpoints (integration)', () => {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        orderTypes: [{
-          id: orderTypeId, name: 'Original Name', digit: 4,
-          createdAt: serverTime, updatedAt: serverTime, deletedAt: null,
-        }],
+        orderTypes: [
+          {
+            id: orderTypeId,
+            name: 'Original Name',
+            digit: 4,
+            createdAt: serverTime,
+            updatedAt: serverTime,
+            deletedAt: null,
+          },
+        ],
       }),
     })
 
@@ -359,18 +390,24 @@ describe.skipIf(!DB_URL)('Sync endpoints (integration)', () => {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        orderTypes: [{
-          id: orderTypeId, name: 'Stale Name', digit: 4,
-          createdAt: serverTime, updatedAt: olderTime, deletedAt: null,
-        }],
+        orderTypes: [
+          {
+            id: orderTypeId,
+            name: 'Stale Name',
+            digit: 4,
+            createdAt: serverTime,
+            updatedAt: olderTime,
+            deletedAt: null,
+          },
+        ],
       }),
     })
 
     const pullRes = await app.request('/v1/sync/pull', {
       headers: { Authorization: `Bearer ${token}` },
     })
-    const pullBody = await pullRes.json() as { orderTypes: { id: string; name: string }[] }
-    const found = pullBody.orderTypes.find(o => o.id === orderTypeId)
+    const pullBody = (await pullRes.json()) as { orderTypes: { id: string; name: string }[] }
+    const found = pullBody.orderTypes.find((o) => o.id === orderTypeId)
     expect(found?.name).toBe('Original Name')
   })
 
@@ -385,16 +422,58 @@ describe.skipIf(!DB_URL)('Sync endpoints (integration)', () => {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        orderTypes: [{ id: otId, name: 'Timer Test Art', digit: 5, createdAt: now, updatedAt: now, deletedAt: null }],
-        customers: [{ id: custId, customerNumber: '26500A01', orderTypeId: otId, name: 'Timer Test Kunde', street: null, zip: null, city: null, createdAt: now, updatedAt: now, deletedAt: null }],
-        projects: [{ id: projId, customerId: custId, title: 'Timer Test Projekt', description: null, color: '#FF0000', pricingMode: 'hourly', hourlyRateCents: 8000, fixedPriceCents: null, status: 'active', sortOrder: 1000, createdAt: now, updatedAt: now, deletedAt: null }],
-        timers: [{ id: timerId, projectId: projId, startedAt: now, createdAt: now, updatedAt: now }],
+        orderTypes: [
+          {
+            id: otId,
+            name: 'Timer Test Art',
+            digit: 5,
+            createdAt: now,
+            updatedAt: now,
+            deletedAt: null,
+          },
+        ],
+        customers: [
+          {
+            id: custId,
+            customerNumber: '26500A01',
+            orderTypeId: otId,
+            name: 'Timer Test Kunde',
+            street: null,
+            zip: null,
+            city: null,
+            createdAt: now,
+            updatedAt: now,
+            deletedAt: null,
+          },
+        ],
+        projects: [
+          {
+            id: projId,
+            customerId: custId,
+            title: 'Timer Test Projekt',
+            description: null,
+            color: '#FF0000',
+            pricingMode: 'hourly',
+            hourlyRateCents: 8000,
+            fixedPriceCents: null,
+            status: 'active',
+            sortOrder: 1000,
+            createdAt: now,
+            updatedAt: now,
+            deletedAt: null,
+          },
+        ],
+        timers: [
+          { id: timerId, projectId: projId, startedAt: now, createdAt: now, updatedAt: now },
+        ],
       }),
     })
 
-    const before = await app.request('/v1/sync/pull', { headers: { Authorization: `Bearer ${token}` } })
-    const beforeBody = await before.json() as { timers: { id: string }[] }
-    expect(beforeBody.timers.some(t => t.id === timerId)).toBe(true)
+    const before = await app.request('/v1/sync/pull', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    const beforeBody = (await before.json()) as { timers: { id: string }[] }
+    expect(beforeBody.timers.some((t) => t.id === timerId)).toBe(true)
 
     await app.request('/v1/sync/push', {
       method: 'POST',
@@ -402,8 +481,10 @@ describe.skipIf(!DB_URL)('Sync endpoints (integration)', () => {
       body: JSON.stringify({ timers: [] }),
     })
 
-    const after = await app.request('/v1/sync/pull', { headers: { Authorization: `Bearer ${token}` } })
-    const afterBody = await after.json() as { timers: unknown[] }
+    const after = await app.request('/v1/sync/pull', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    const afterBody = (await after.json()) as { timers: unknown[] }
     expect(afterBody.timers).toEqual([])
   })
 
@@ -417,7 +498,16 @@ describe.skipIf(!DB_URL)('Sync endpoints (integration)', () => {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        orderTypes: [{ id: otId, name: 'Since Test Art', digit: 6, createdAt: after, updatedAt: after, deletedAt: null }],
+        orderTypes: [
+          {
+            id: otId,
+            name: 'Since Test Art',
+            digit: 6,
+            createdAt: after,
+            updatedAt: after,
+            deletedAt: null,
+          },
+        ],
       }),
     })
 
@@ -425,14 +515,14 @@ describe.skipIf(!DB_URL)('Sync endpoints (integration)', () => {
       headers: { Authorization: `Bearer ${token}` },
     })
     expect(res.status).toBe(200)
-    const body = await res.json() as { orderTypes: { id: string }[] }
-    expect(body.orderTypes.some(o => o.id === otId)).toBe(true)
+    const body = (await res.json()) as { orderTypes: { id: string }[] }
+    expect(body.orderTypes.some((o) => o.id === otId)).toBe(true)
 
     const futureTs = new Date(Date.now() + 60_000).toISOString()
     const resEmpty = await app.request(`/v1/sync/pull?since=${encodeURIComponent(futureTs)}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-    const bodyEmpty = await resEmpty.json() as { orderTypes: { id: string }[] }
-    expect(bodyEmpty.orderTypes.some(o => o.id === otId)).toBe(false)
+    const bodyEmpty = (await resEmpty.json()) as { orderTypes: { id: string }[] }
+    expect(bodyEmpty.orderTypes.some((o) => o.id === otId)).toBe(false)
   })
 })

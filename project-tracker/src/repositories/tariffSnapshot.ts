@@ -1,7 +1,7 @@
+import * as schema from '@projekt-tracker/schema'
 import { and, eq } from 'drizzle-orm'
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3'
 import type { ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite'
-import * as schema from '@projekt-tracker/schema'
 
 type AnyDb = BetterSQLite3Database<typeof schema> | ExpoSQLiteDatabase<typeof schema>
 
@@ -15,7 +15,10 @@ interface TariffSnapshot {
   pricingModeSnapshot: string
 }
 
-export function buildTimeEntrySnapshot(db: AnyDb, { projectId, userId }: SnapshotParams): TariffSnapshot {
+export function buildTimeEntrySnapshot(
+  db: AnyDb,
+  { projectId, userId }: SnapshotParams,
+): TariffSnapshot {
   // ExpoSQLiteDatabase shares the sync .get() surface; revisit if async Expo driver is adopted
   const project = (db as BetterSQLite3Database<typeof schema>)
     .select({

@@ -1,17 +1,19 @@
 import React from 'react'
-import { View, StyleSheet, Pressable, Text, Alert } from 'react-native'
-import Animated, { useAnimatedRef } from 'react-native-reanimated'
-import Sortable from 'react-native-sortables'
-import type { SortableGridDragEndParams } from 'react-native-sortables'
+
 import { router, useFocusEffect } from 'expo-router'
-import { listActiveProjects, moveProject } from '../../src/repositories/projects'
-import { listCustomers } from '../../src/repositories/customers'
-import { getActiveTimer, startTimer } from '../../src/repositories/timers'
-import { useTimerStore } from '../../src/store/timerStore'
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native'
+import Animated, { useAnimatedRef } from 'react-native-reanimated'
+import type { SortableGridDragEndParams } from 'react-native-sortables'
+import Sortable from 'react-native-sortables'
+
 import { ProjectTile } from '../../src/components/ProjectTile'
-import { TimerBanner } from '../../src/components/TimerBanner'
 import { StopModal } from '../../src/components/StopModal'
 import { SwipeToStop } from '../../src/components/SwipeToStop'
+import { TimerBanner } from '../../src/components/TimerBanner'
+import { listCustomers } from '../../src/repositories/customers'
+import { listActiveProjects, moveProject } from '../../src/repositories/projects'
+import { getActiveTimer, startTimer } from '../../src/repositories/timers'
+import { useTimerStore } from '../../src/store/timerStore'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -40,7 +42,11 @@ export default function HomeScreen() {
     }
   }, [setActive, clearActive])
 
-  useFocusEffect(React.useCallback(() => { load() }, [load]))
+  useFocusEffect(
+    React.useCallback(() => {
+      load()
+    }, [load]),
+  )
 
   const handleTilePress = (project: ProjectWithCustomerName) => {
     if (activeProjectId === project.id) {
@@ -48,17 +54,15 @@ export default function HomeScreen() {
       return
     }
     if (activeProjectId) {
-      Alert.alert(
-        'Timer läuft noch',
-        `"${activeProjectTitle}" ist noch aktiv. Erst stoppen?`,
-        [
-          { text: 'Abbrechen', style: 'cancel' },
-          {
-            text: 'Stoppen & neues starten',
-            onPress: () => { setPendingStop(activeProjectId) },
+      Alert.alert('Timer läuft noch', `"${activeProjectTitle}" ist noch aktiv. Erst stoppen?`, [
+        { text: 'Abbrechen', style: 'cancel' },
+        {
+          text: 'Stoppen & neues starten',
+          onPress: () => {
+            setPendingStop(activeProjectId)
           },
-        ]
-      )
+        },
+      ])
       return
     }
     try {
@@ -70,7 +74,11 @@ export default function HomeScreen() {
     }
   }
 
-  const handleDragEnd = ({ data, fromIndex, toIndex }: SortableGridDragEndParams<ProjectWithCustomerName>) => {
+  const handleDragEnd = ({
+    data,
+    fromIndex,
+    toIndex,
+  }: SortableGridDragEndParams<ProjectWithCustomerName>) => {
     // The library fires onDragEnd even for a long-press-and-release without an
     // actual position change. Writing in that case would still stamp a fresh
     // updated_at and could clobber a concurrent edit made from another device.
@@ -94,7 +102,10 @@ export default function HomeScreen() {
     <View style={styles.container}>
       {activeProjectId && activeProjectTitle && (
         <SwipeToStop enabled={!!activeProjectId} onStop={() => setPendingStop(activeProjectId!)}>
-          <TimerBanner projectTitle={activeProjectTitle!} onPress={() => setPendingStop(activeProjectId!)} />
+          <TimerBanner
+            projectTitle={activeProjectTitle!}
+            onPress={() => setPendingStop(activeProjectId!)}
+          />
         </SwipeToStop>
       )}
       <Animated.ScrollView
@@ -128,9 +139,15 @@ export default function HomeScreen() {
       <StopModal
         visible={!!pendingStopProjectId}
         projectId={pendingStopProjectId ?? ''}
-        onDone={() => { setPendingStop(null); load() }}
+        onDone={() => {
+          setPendingStop(null)
+          load()
+        }}
         onCancel={() => setPendingStop(null)}
-        onDiscard={() => { setPendingStop(null); load() }}
+        onDiscard={() => {
+          setPendingStop(null)
+          load()
+        }}
       />
     </View>
   )
@@ -141,10 +158,19 @@ const styles = StyleSheet.create({
   scroll: { flex: 1 },
   list: { padding: 6 },
   fab: {
-    position: 'absolute', bottom: 24, right: 24,
-    width: 56, height: 56, borderRadius: 28,
-    backgroundColor: '#4A90D9', alignItems: 'center', justifyContent: 'center',
-    shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 4, elevation: 4,
+    position: 'absolute',
+    bottom: 24,
+    right: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#4A90D9',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
   },
   fabText: { color: '#FFF', fontSize: 28, lineHeight: 32 },
 })

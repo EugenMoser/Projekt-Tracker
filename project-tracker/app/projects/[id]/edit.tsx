@@ -1,15 +1,26 @@
 import React from 'react'
-import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native'
+
 import { router, useLocalSearchParams } from 'expo-router'
-import { KeyboardAwareScrollView } from '../../../src/components/KeyboardAwareView'
+import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
+
 import { ColorPicker } from '../../../src/components/ColorPicker'
+import { KeyboardAwareScrollView } from '../../../src/components/KeyboardAwareView'
 import { RowActionMenu, type RowAction } from '../../../src/components/RowActionMenu'
 import { TaskPickerSheet } from '../../../src/components/TaskPickerSheet'
-import { listCustomers } from '../../../src/repositories/customers'
-import { getProject, updateProject, getProjectTotalSeconds } from '../../../src/repositories/projects'
-import { applyRateToProjectEntries } from '../../../src/repositories/rateAdjustments'
-import { listTasks, listTasksForProject, addTaskToProject, removeTaskFromProject } from '../../../src/repositories/tasks'
 import { db } from '../../../src/db/client'
+import { listCustomers } from '../../../src/repositories/customers'
+import {
+  getProject,
+  getProjectTotalSeconds,
+  updateProject,
+} from '../../../src/repositories/projects'
+import { applyRateToProjectEntries } from '../../../src/repositories/rateAdjustments'
+import {
+  addTaskToProject,
+  listTasks,
+  listTasksForProject,
+  removeTaskFromProject,
+} from '../../../src/repositories/tasks'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -44,7 +55,12 @@ export default function EditProjectScreen() {
     id ? listTasksForProject(OWNER_ID, id).map((t) => t.id) : [],
   )
 
-  if (!project) return <View style={styles.empty}><Text>Nicht gefunden</Text></View>
+  if (!project)
+    return (
+      <View style={styles.empty}>
+        <Text>Nicht gefunden</Text>
+      </View>
+    )
 
   const selectedCustomer = customers.find((c) => c.id === customerId)
 
@@ -82,10 +98,7 @@ export default function EditProjectScreen() {
     },
   ]
 
-  const persist = (
-    hourlyRateCents: number | undefined,
-    fixedPriceCents: number | undefined,
-  ) => {
+  const persist = (hourlyRateCents: number | undefined, fixedPriceCents: number | undefined) => {
     updateProject(OWNER_ID, id, {
       title: title.trim(),
       customerId,
@@ -99,15 +112,33 @@ export default function EditProjectScreen() {
   }
 
   const handleSave = () => {
-    if (!title.trim()) { Alert.alert('Pflichtfeld', 'Titel ist Pflicht.'); return }
-    if (!customerId) { Alert.alert('Pflichtfeld', 'Kunde ist Pflicht.'); return }
-    if (pricingMode === 'hourly' && !hourlyRate) { Alert.alert('Pflichtfeld', 'Stundensatz ist Pflicht.'); return }
-    if (pricingMode === 'fixed' && !fixedPrice) { Alert.alert('Pflichtfeld', 'Festpreis ist Pflicht.'); return }
+    if (!title.trim()) {
+      Alert.alert('Pflichtfeld', 'Titel ist Pflicht.')
+      return
+    }
+    if (!customerId) {
+      Alert.alert('Pflichtfeld', 'Kunde ist Pflicht.')
+      return
+    }
+    if (pricingMode === 'hourly' && !hourlyRate) {
+      Alert.alert('Pflichtfeld', 'Stundensatz ist Pflicht.')
+      return
+    }
+    if (pricingMode === 'fixed' && !fixedPrice) {
+      Alert.alert('Pflichtfeld', 'Festpreis ist Pflicht.')
+      return
+    }
 
     const hourlyRateCents = pricingMode === 'hourly' ? parseEurosToCents(hourlyRate) : undefined
     const fixedPriceCents = pricingMode === 'fixed' ? parseEurosToCents(fixedPrice) : undefined
-    if (pricingMode === 'hourly' && !hourlyRateCents) { Alert.alert('Ungültig', 'Stundensatz ungültig.'); return }
-    if (pricingMode === 'fixed' && !fixedPriceCents) { Alert.alert('Ungültig', 'Festpreis ungültig.'); return }
+    if (pricingMode === 'hourly' && !hourlyRateCents) {
+      Alert.alert('Ungültig', 'Stundensatz ungültig.')
+      return
+    }
+    if (pricingMode === 'fixed' && !fixedPriceCents) {
+      Alert.alert('Ungültig', 'Festpreis ungültig.')
+      return
+    }
 
     const rateRelevantChange =
       pricingMode === 'hourly' &&
@@ -119,27 +150,23 @@ export default function EditProjectScreen() {
       const message = switchingFromFixed
         ? 'Bereits erfasste Zeiten haben noch keinen Stundensatz und zählen sonst 0 €, bis du sie einzeln bearbeitest. Neuen Satz rückwirkend auf diese Zeiten anwenden?'
         : 'Soll der neue Satz auch für bereits erfasste Zeiten dieses Projekts gelten?'
-      Alert.alert(
-        'Stundensatz geändert',
-        message,
-        [
-          { text: 'Abbrechen', style: 'cancel' },
-          {
-            text: 'Nur neue Zeiten',
-            onPress: () => persist(hourlyRateCents, fixedPriceCents),
+      Alert.alert('Stundensatz geändert', message, [
+        { text: 'Abbrechen', style: 'cancel' },
+        {
+          text: 'Nur neue Zeiten',
+          onPress: () => persist(hourlyRateCents, fixedPriceCents),
+        },
+        {
+          text: 'Auch rückwirkend',
+          onPress: () => {
+            applyRateToProjectEntries(db, OWNER_ID, id, {
+              rateSnapshotCents: hourlyRateCents!,
+              pricingModeSnapshot: 'hourly',
+            })
+            persist(hourlyRateCents, fixedPriceCents)
           },
-          {
-            text: 'Auch rückwirkend',
-            onPress: () => {
-              applyRateToProjectEntries(db, OWNER_ID, id, {
-                rateSnapshotCents: hourlyRateCents!,
-                pricingModeSnapshot: 'hourly',
-              })
-              persist(hourlyRateCents, fixedPriceCents)
-            },
-          },
-        ],
-      )
+        },
+      ])
       return
     }
 
@@ -147,9 +174,17 @@ export default function EditProjectScreen() {
   }
 
   return (
-    <KeyboardAwareScrollView style={styles.container} contentContainerStyle={{ gap: 12, paddingBottom: 40 }}>
+    <KeyboardAwareScrollView
+      style={styles.container}
+      contentContainerStyle={{ gap: 12, paddingBottom: 40 }}
+    >
       <Text style={styles.label}>Titel *</Text>
-      <TextInput style={styles.input} value={title} onChangeText={setTitle} accessibilityLabel="Projekttitel" />
+      <TextInput
+        style={styles.input}
+        value={title}
+        onChangeText={setTitle}
+        accessibilityLabel="Projekttitel"
+      />
 
       <Text style={styles.label}>Kunde *</Text>
       <Pressable
@@ -163,7 +198,9 @@ export default function EditProjectScreen() {
         }
       >
         <Text style={styles.dropdownText}>
-          {selectedCustomer ? `${selectedCustomer.customerNumber} – ${selectedCustomer.name}` : 'Kunde auswählen'}
+          {selectedCustomer
+            ? `${selectedCustomer.customerNumber} – ${selectedCustomer.name}`
+            : 'Kunde auswählen'}
         </Text>
         <Text style={styles.dropdownChevron}>▾</Text>
       </Pressable>
@@ -175,7 +212,13 @@ export default function EditProjectScreen() {
       />
 
       <Text style={styles.label}>Beschreibung</Text>
-      <TextInput style={[styles.input, { height: 72 }]} value={description} onChangeText={setDescription} multiline accessibilityLabel="Projektbeschreibung" />
+      <TextInput
+        style={[styles.input, { height: 72 }]}
+        value={description}
+        onChangeText={setDescription}
+        multiline
+        accessibilityLabel="Projektbeschreibung"
+      />
 
       <Text style={styles.label}>Farbe</Text>
       <ColorPicker value={color} onChange={setColor} />
@@ -198,10 +241,26 @@ export default function EditProjectScreen() {
         ))}
       </View>
       {pricingMode === 'hourly' && (
-        <TextInput style={styles.input} value={hourlyRate} onChangeText={setHourlyRate} placeholder="80,00" placeholderTextColor="#999" keyboardType="decimal-pad" accessibilityLabel="Stundensatz in Euro" />
+        <TextInput
+          style={styles.input}
+          value={hourlyRate}
+          onChangeText={setHourlyRate}
+          placeholder="80,00"
+          placeholderTextColor="#999"
+          keyboardType="decimal-pad"
+          accessibilityLabel="Stundensatz in Euro"
+        />
       )}
       {pricingMode === 'fixed' && (
-        <TextInput style={styles.input} value={fixedPrice} onChangeText={setFixedPrice} placeholder="1.500,00" placeholderTextColor="#999" keyboardType="decimal-pad" accessibilityLabel="Festpreis in Euro" />
+        <TextInput
+          style={styles.input}
+          value={fixedPrice}
+          onChangeText={setFixedPrice}
+          placeholder="1.500,00"
+          placeholderTextColor="#999"
+          keyboardType="decimal-pad"
+          accessibilityLabel="Festpreis in Euro"
+        />
       )}
 
       {allTasks.length > 0 && (
@@ -226,7 +285,12 @@ export default function EditProjectScreen() {
         </>
       )}
 
-      <Pressable style={styles.btn} onPress={handleSave} accessibilityRole="button" accessibilityLabel="Änderungen speichern">
+      <Pressable
+        style={styles.btn}
+        onPress={handleSave}
+        accessibilityRole="button"
+        accessibilityLabel="Änderungen speichern"
+      >
         <Text style={{ color: '#FFF', fontWeight: '600', fontSize: 16 }}>Speichern</Text>
       </Pressable>
     </KeyboardAwareScrollView>
@@ -237,16 +301,44 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
   label: { fontSize: 13, color: '#666' },
-  input: { borderWidth: 1, borderColor: '#DDD', borderRadius: 8, padding: 12, backgroundColor: '#FFF', color: '#000' },
+  input: {
+    borderWidth: 1,
+    borderColor: '#DDD',
+    borderRadius: 8,
+    padding: 12,
+    backgroundColor: '#FFF',
+    color: '#000',
+  },
   dropdown: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    borderWidth: 1, borderColor: '#DDD', borderRadius: 8, paddingHorizontal: 12,
-    backgroundColor: '#FFF', minHeight: 44,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: '#DDD',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    backgroundColor: '#FFF',
+    minHeight: 44,
   },
   dropdownText: { fontSize: 15, color: '#000', flexShrink: 1 },
   dropdownChevron: { fontSize: 14, color: '#666', marginLeft: 8 },
   pricingRow: { flexDirection: 'row', gap: 8 },
-  pricingBtn: { flex: 1, padding: 12, borderRadius: 8, backgroundColor: '#EEE', alignItems: 'center', minHeight: 44, justifyContent: 'center' },
+  pricingBtn: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 8,
+    backgroundColor: '#EEE',
+    alignItems: 'center',
+    minHeight: 44,
+    justifyContent: 'center',
+  },
   pricingBtnActive: { backgroundColor: '#4A90D9' },
-  btn: { backgroundColor: '#4A90D9', padding: 16, borderRadius: 8, alignItems: 'center', marginTop: 8, minHeight: 52 },
+  btn: {
+    backgroundColor: '#4A90D9',
+    padding: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 8,
+    minHeight: 52,
+  },
 })

@@ -1,4 +1,5 @@
 import React from 'react'
+
 import {
   Keyboard,
   LayoutAnimation,
@@ -28,7 +29,7 @@ type KeyboardEndCoordinates = KeyboardEvent['endCoordinates']
  */
 function useKeyboardOverlap(
   ref: React.RefObject<React.ComponentRef<typeof View> | null>,
-  insideModal: boolean
+  insideModal: boolean,
 ) {
   const [overlap, setOverlap] = React.useState(0)
   const keyboardCoordsRef = React.useRef<KeyboardEndCoordinates | null>(null)
@@ -184,7 +185,10 @@ type KeyboardAwareScrollViewProps = ScrollViewProps & {
  * without it the ScrollView swallows the first tap on the confirm button while the
  * keyboard is open.
  */
-export function KeyboardAwareScrollView({ children, ...scrollViewProps }: KeyboardAwareScrollViewProps) {
+export function KeyboardAwareScrollView({
+  children,
+  ...scrollViewProps
+}: KeyboardAwareScrollViewProps) {
   return (
     <KeyboardAwareView>
       <ScrollView keyboardShouldPersistTaps="handled" {...scrollViewProps}>

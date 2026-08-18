@@ -1,5 +1,14 @@
 import React from 'react'
-import { FlatList, Modal, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native'
+
+import {
+  FlatList,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native'
 
 interface Task {
   id: string
@@ -26,7 +35,12 @@ export function TaskPickerSheet({ visible, tasks, selectedIds, onToggle, onClose
       accessibilityViewIsModal
     >
       <Pressable style={styles.backdrop} onPress={onClose}>
-        <Pressable style={styles.sheet} onPress={() => { /* stop propagation */ }}>
+        <Pressable
+          style={styles.sheet}
+          onPress={() => {
+            /* stop propagation */
+          }}
+        >
           <View style={styles.handle} />
           <Text style={styles.title}>Aufgaben auswählen</Text>
           <FlatList
@@ -43,7 +57,9 @@ export function TaskPickerSheet({ visible, tasks, selectedIds, onToggle, onClose
                   accessibilityState={{ checked }}
                   accessibilityLabel={`Aufgabe ${item.description}`}
                 >
-                  <Text>{checked ? '☑' : '☐'} {item.description}</Text>
+                  <Text>
+                    {checked ? '☑' : '☐'} {item.description}
+                  </Text>
                 </Pressable>
               )
             }}
@@ -90,7 +106,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 16,
   },
-  selectRow: { padding: 10, borderRadius: 6, backgroundColor: '#F5F5F5', marginBottom: 4, minHeight: 44, justifyContent: 'center' },
+  selectRow: {
+    padding: 10,
+    borderRadius: 6,
+    backgroundColor: '#F5F5F5',
+    marginBottom: 4,
+    minHeight: 44,
+    justifyContent: 'center',
+  },
   selectRowActive: { backgroundColor: '#D0E8FF' },
   done: {
     backgroundColor: '#FFF',

@@ -1,10 +1,11 @@
-import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
-import { z } from 'zod'
+import { Hono } from 'hono'
 import { sign } from 'hono/jwt'
+import { z } from 'zod'
+
 import type { Db } from '../db.js'
-import { createUser } from '../repositories/users.js'
 import type { AppVariables } from '../middleware/auth.js'
+import { createUser } from '../repositories/users.js'
 
 const bootstrapSchema = z.object({
   displayName: z.string().min(1),

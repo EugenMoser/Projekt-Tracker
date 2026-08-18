@@ -1,6 +1,7 @@
-import { z } from 'zod'
-import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
+import { Hono } from 'hono'
+import { z } from 'zod'
+
 import type { Db } from '../db.js'
 import type { AppVariables } from '../middleware/auth.js'
 import { createAuthMiddleware } from '../middleware/auth.js'
@@ -8,8 +9,8 @@ import { queryExportData } from '../repositories/export.js'
 import { renderExcel } from '../services/excelRenderer.js'
 
 export const exportQuerySchema = z.object({
-  from:       z.string().regex(/^\d{4}-\d{2}$/, 'Format YYYY-MM required'),
-  to:         z.string().regex(/^\d{4}-\d{2}$/, 'Format YYYY-MM required'),
+  from: z.string().regex(/^\d{4}-\d{2}$/, 'Format YYYY-MM required'),
+  to: z.string().regex(/^\d{4}-\d{2}$/, 'Format YYYY-MM required'),
   customerId: z.string().uuid().optional(),
 })
 
@@ -32,7 +33,13 @@ export function createExportRoute(db: Db, jwtSecret: string) {
     const { from, to, customerId } = c.req.valid('query')
 
     try {
-      const { rows, tagMap } = await queryExportData(db, userId, monthStart(from), monthEnd(to), customerId)
+      const { rows, tagMap } = await queryExportData(
+        db,
+        userId,
+        monthStart(from),
+        monthEnd(to),
+        customerId,
+      )
       const buffer = await renderExcel(rows, tagMap)
 
       return c.body(new Uint8Array(buffer) as Uint8Array<ArrayBuffer>, 200, {

@@ -1,5 +1,7 @@
 import React from 'react'
-import { Modal, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native'
+
+import { Modal, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native'
+
 import { TaskPicker } from './TaskPicker'
 
 interface Props {
@@ -20,7 +22,13 @@ interface Props {
  * scrolling past the first ~240px of tasks.
  */
 export function TaskPickerModal({
-  visible, projectId, selectedId, searchText, onSelect, onSearchChange, onClose,
+  visible,
+  projectId,
+  selectedId,
+  searchText,
+  onSelect,
+  onSearchChange,
+  onClose,
 }: Props) {
   const { height: windowHeight } = useWindowDimensions()
 
@@ -33,7 +41,12 @@ export function TaskPickerModal({
       accessibilityViewIsModal
     >
       <Pressable style={styles.backdrop} onPress={onClose}>
-        <Pressable style={styles.sheet} onPress={() => { /* stop propagation */ }}>
+        <Pressable
+          style={styles.sheet}
+          onPress={() => {
+            /* stop propagation */
+          }}
+        >
           <View style={styles.handle} />
           <Text style={styles.title}>Aufgabe auswählen</Text>
           <View style={{ height: windowHeight * 0.5 }}>

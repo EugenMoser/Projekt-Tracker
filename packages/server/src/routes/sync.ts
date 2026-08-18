@@ -1,10 +1,11 @@
-import { z } from 'zod'
-import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
+import { Hono } from 'hono'
+import { z } from 'zod'
+
 import type { Db } from '../db.js'
 import type { AppVariables } from '../middleware/auth.js'
 import { createAuthMiddleware } from '../middleware/auth.js'
-import { pushChanges, pullSince } from '../repositories/sync.js'
+import { pullSince, pushChanges } from '../repositories/sync.js'
 
 const isoDatetime = z.string().datetime()
 const nullableIso = z.string().datetime().nullable()
@@ -75,25 +76,24 @@ const projectTaskSchema = z.object({
   taskId: z.string().uuid(),
 })
 
-const timeEntrySchema = z.object({
-  id: z.string().uuid(),
-  projectId: z.string().uuid(),
-  taskId: z.string().uuid(),
-  startedAt: isoDatetime,
-  endedAt: isoDatetime,
-  rateSnapshotCents: z.number().int().nullable(),
-  pricingModeSnapshot: z.enum(['hourly', 'fixed']),
-  notes: z.string().nullable(),
-  createdAt: isoDatetime,
-  updatedAt: isoDatetime,
-  deletedAt: nullableIso,
-}).refine(
-  (data) => new Date(data.endedAt).getTime() > new Date(data.startedAt).getTime(),
-  {
+const timeEntrySchema = z
+  .object({
+    id: z.string().uuid(),
+    projectId: z.string().uuid(),
+    taskId: z.string().uuid(),
+    startedAt: isoDatetime,
+    endedAt: isoDatetime,
+    rateSnapshotCents: z.number().int().nullable(),
+    pricingModeSnapshot: z.enum(['hourly', 'fixed']),
+    notes: z.string().nullable(),
+    createdAt: isoDatetime,
+    updatedAt: isoDatetime,
+    deletedAt: nullableIso,
+  })
+  .refine((data) => new Date(data.endedAt).getTime() > new Date(data.startedAt).getTime(), {
     message: 'endedAt must be strictly after startedAt',
     path: ['endedAt'],
-  },
-)
+  })
 
 const timerSchema = z.object({
   id: z.string().uuid(),
@@ -111,16 +111,16 @@ const appSettingsSchema = z.object({
 })
 
 export const pushBodySchema = z.object({
-  orderTypes:   z.array(orderTypeSchema).default([]),
-  customers:    z.array(customerSchema).default([]),
-  projects:     z.array(projectSchema).default([]),
-  tasks:        z.array(taskSchema).default([]),
-  tags:         z.array(tagSchema).default([]),
-  timeEntries:  z.array(timeEntrySchema).default([]),
-  taskTags:     z.array(taskTagSchema).optional(),
+  orderTypes: z.array(orderTypeSchema).default([]),
+  customers: z.array(customerSchema).default([]),
+  projects: z.array(projectSchema).default([]),
+  tasks: z.array(taskSchema).default([]),
+  tags: z.array(tagSchema).default([]),
+  timeEntries: z.array(timeEntrySchema).default([]),
+  taskTags: z.array(taskTagSchema).optional(),
   projectTasks: z.array(projectTaskSchema).optional(),
-  timers:       z.array(timerSchema).optional(),
-  appSettings:  appSettingsSchema.nullable().optional(),
+  timers: z.array(timerSchema).optional(),
+  appSettings: appSettingsSchema.nullable().optional(),
 })
 
 export type PushBody = z.infer<typeof pushBodySchema>

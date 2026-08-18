@@ -1,9 +1,11 @@
 import React from 'react'
+
 import { Pressable, StyleSheet, Text, View } from 'react-native'
+
+import { taskAmountCents } from '../utils/money'
+import { formatDuration } from '../utils/time'
 import { EntryActionModal } from './EntryActionModal'
 import { DotsButton } from './RowActionMenu'
-import { formatDuration } from '../utils/time'
-import { taskAmountCents } from '../utils/money'
 
 type Entry = {
   id: string

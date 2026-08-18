@@ -1,4 +1,6 @@
-import { jest, describe, it, expect, beforeEach } from '@jest/globals'
+import { beforeEach, describe, expect, it, jest } from '@jest/globals'
+
+import { isUse12HourFormat, setUse12HourFormat } from '../timeFormat'
 
 const secureStore: Record<string, string> = {}
 
@@ -10,17 +12,15 @@ jest.mock('expo-secure-store', () => ({
   }),
 }))
 
-import { isUse12HourFormat, setUse12HourFormat } from '../timeFormat'
-
 beforeEach(() => {
-  Object.keys(secureStore).forEach(k => delete secureStore[k])
+  Object.keys(secureStore).forEach((k) => delete secureStore[k])
   jest.clearAllMocks()
   const SecureStore = require('expo-secure-store') as {
     getItemAsync: jest.Mock<(key: string) => Promise<string | null>>
     setItemAsync: jest.Mock<(key: string, val: string) => Promise<void>>
   }
   SecureStore.getItemAsync.mockImplementation((key: string) =>
-    Promise.resolve(secureStore[key] ?? null)
+    Promise.resolve(secureStore[key] ?? null),
   )
   SecureStore.setItemAsync.mockImplementation((key: string, val: string) => {
     secureStore[key] = val

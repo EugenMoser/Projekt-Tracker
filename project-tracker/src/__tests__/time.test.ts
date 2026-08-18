@@ -1,4 +1,4 @@
-import { toDateStr, parseTimeStr, formatHoursMinutes } from '../utils/time'
+import { formatHoursMinutes, parseTimeStr, toDateStr } from '../utils/time'
 
 describe('toDateStr', () => {
   it('matches the local calendar date shortly after local midnight', () => {

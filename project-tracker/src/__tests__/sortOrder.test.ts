@@ -1,5 +1,6 @@
-import { describe, it, expect } from '@jest/globals'
-import { SORT_STEP, keyBetween } from '../utils/sortOrder'
+import { describe, expect, it } from '@jest/globals'
+
+import { keyBetween, SORT_STEP } from '../utils/sortOrder'
 
 describe('keyBetween', () => {
   it('returns the first step when the list is empty', () => {

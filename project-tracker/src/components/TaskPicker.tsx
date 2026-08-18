@@ -1,5 +1,7 @@
 import React from 'react'
-import { Text, SectionList, Pressable, TextInput, StyleSheet } from 'react-native'
+
+import { Pressable, SectionList, StyleSheet, Text, TextInput } from 'react-native'
+
 import { listTasks, listTasksForProject } from '../repositories/tasks'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
@@ -29,7 +31,14 @@ interface Props {
  * and selection, callers decide what "save" means (stop a timer, add a time
  * entry, ...).
  */
-export function TaskPicker({ projectId, selectedId, searchText, onSelect, onSearchChange, active = true }: Props) {
+export function TaskPicker({
+  projectId,
+  selectedId,
+  searchText,
+  onSelect,
+  onSearchChange,
+  active = true,
+}: Props) {
   const [tasks, setTasks] = React.useState<Task[]>([])
   const [projectTasks, setProjectTasks] = React.useState<Task[]>([])
 
@@ -78,13 +87,18 @@ export function TaskPicker({ projectId, selectedId, searchText, onSelect, onSear
         renderItem={({ item }) => (
           <Pressable
             style={[styles.taskRow, item.id === selectedId && styles.taskSelected]}
-            onPress={() => { onSelect(item.id); onSearchChange('') }}
+            onPress={() => {
+              onSelect(item.id)
+              onSearchChange('')
+            }}
             accessibilityRole="radio"
             accessibilityState={{ selected: item.id === selectedId }}
             accessibilityLabel={item.description}
             hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
           >
-            <Text>{item.id === selectedId ? '◉' : '○'} {item.description}</Text>
+            <Text>
+              {item.id === selectedId ? '◉' : '○'} {item.description}
+            </Text>
           </Pressable>
         )}
         ListEmptyComponent={
@@ -99,7 +113,10 @@ export function TaskPicker({ projectId, selectedId, searchText, onSelect, onSear
         style={styles.input}
         placeholder="Suchen oder neue Aufgabe eingeben"
         value={searchText}
-        onChangeText={(t) => { onSearchChange(t); onSelect(null) }}
+        onChangeText={(t) => {
+          onSearchChange(t)
+          onSelect(null)
+        }}
         accessibilityLabel="Aufgabe suchen oder neue Aufgabe eingeben"
       />
     </>
@@ -115,8 +132,22 @@ const styles = StyleSheet.create({
     marginTop: 12,
     marginBottom: 4,
   },
-  taskRow: { padding: 14, borderRadius: 8, marginBottom: 6, backgroundColor: '#F5F5F5', minHeight: 44, justifyContent: 'center' },
+  taskRow: {
+    padding: 14,
+    borderRadius: 8,
+    marginBottom: 6,
+    backgroundColor: '#F5F5F5',
+    minHeight: 44,
+    justifyContent: 'center',
+  },
   taskSelected: { backgroundColor: '#D0E8FF' },
-  input: { borderWidth: 1, borderColor: '#DDD', borderRadius: 8, padding: 12, marginTop: 8, minHeight: 44 },
+  input: {
+    borderWidth: 1,
+    borderColor: '#DDD',
+    borderRadius: 8,
+    padding: 12,
+    marginTop: 8,
+    minHeight: 44,
+  },
   emptyHint: { padding: 14, color: '#666', fontStyle: 'italic' },
 })

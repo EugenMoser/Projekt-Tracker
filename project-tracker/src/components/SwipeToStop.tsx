@@ -1,9 +1,13 @@
 import React from 'react'
-import { View, Text, StyleSheet } from 'react-native'
-import Animated, {
-  useAnimatedStyle, useSharedValue, withSpring, runOnJS,
-} from 'react-native-reanimated'
+
+import { StyleSheet, Text, View } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated'
 
 interface Props {
   children: React.ReactNode
@@ -45,9 +49,7 @@ export function SwipeToStop({ children, onStop, enabled = true }: Props) {
         <Text style={styles.stopText}>◼ Stoppen</Text>
       </Animated.View>
       <GestureDetector gesture={panGesture}>
-        <Animated.View style={animStyle}>
-          {children}
-        </Animated.View>
+        <Animated.View style={animStyle}>{children}</Animated.View>
       </GestureDetector>
     </View>
   )

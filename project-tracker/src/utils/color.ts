@@ -13,9 +13,13 @@ export function getContrastTextColor(hexColor: string): '#000000' | '#FFFFFF' {
 
 function hexToRgb(hex: string): { r: number; g: number; b: number } {
   const normalized = hex.replace('#', '')
-  const full = normalized.length === 3
-    ? normalized.split('').map((c) => c + c).join('')
-    : normalized
+  const full =
+    normalized.length === 3
+      ? normalized
+          .split('')
+          .map((c) => c + c)
+          .join('')
+      : normalized
   const value = parseInt(full, 16)
   return {
     r: (value >> 16) & 255,

@@ -1,7 +1,8 @@
-import { describe, it, expect } from '@jest/globals'
+import { describe, expect, it } from '@jest/globals'
+import { migrations } from '@projekt-tracker/schema'
 import BetterSQLite from 'better-sqlite3'
 import type * as SQLite from 'expo-sqlite'
-import { migrations } from '@projekt-tracker/schema'
+
 import { runMigrations } from '../db/migrate'
 
 // The other migration tests exec the SQL directly. This one drives the real
@@ -29,15 +30,16 @@ const OT = '00000000-0000-0000-0000-000000000002'
 const CU = '00000000-0000-0000-0000-000000000003'
 
 function schemaVersion(sqlite: BetterSQLite.Database): string | undefined {
-  const row = sqlite
-    .prepare(`SELECT value FROM _meta WHERE key = 'schema_version'`)
-    .get() as { value: string } | undefined
+  const row = sqlite.prepare(`SELECT value FROM _meta WHERE key = 'schema_version'`).get() as
+    { value: string } | undefined
   return row?.value
 }
 
 function seedProject(sqlite: BetterSQLite.Database, id: string, sortOrder: number) {
   sqlite
-    .prepare(`INSERT INTO order_types (id, user_id, name, digit, created_at, updated_at) VALUES (?, ?, 'Foto', 1, 0, 0)`)
+    .prepare(
+      `INSERT INTO order_types (id, user_id, name, digit, created_at, updated_at) VALUES (?, ?, 'Foto', 1, 0, 0)`,
+    )
     .run(OT, OWNER)
   sqlite
     .prepare(

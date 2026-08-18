@@ -1,5 +1,7 @@
 import React from 'react'
+
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native'
+
 import { formatDuration } from '../utils/time'
 
 interface Props {
@@ -31,7 +33,12 @@ export function EntryActionModal({ visible, taskName, entry, onEdit, onDelete, o
       accessibilityViewIsModal
     >
       <Pressable style={styles.backdrop} onPress={onClose}>
-        <Pressable style={styles.sheet} onPress={() => { /* stop propagation */ }}>
+        <Pressable
+          style={styles.sheet}
+          onPress={() => {
+            /* stop propagation */
+          }}
+        >
           <View style={styles.handle} />
           <Text style={styles.context}>
             {taskName} · {date} · {duration}

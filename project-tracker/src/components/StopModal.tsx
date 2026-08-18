@@ -1,8 +1,10 @@
 import React from 'react'
-import { Modal, View, Text, Pressable, StyleSheet, Alert } from 'react-native'
+
+import { Alert, Modal, Pressable, StyleSheet, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { stopTimer, discardTimer } from '../repositories/timers'
+
 import { createTask } from '../repositories/tasks'
+import { discardTimer, stopTimer } from '../repositories/timers'
 import { KeyboardAwareView } from './KeyboardAwareView'
 import { TaskPicker } from './TaskPicker'
 
@@ -49,25 +51,21 @@ export function StopModal({ visible, projectId, onDone, onCancel, onDiscard }: P
   }
 
   const handleDiscard = () => {
-    Alert.alert(
-      'Timer verwerfen?',
-      'Die erfasste Zeit wird gelöscht und nicht gespeichert.',
-      [
-        { text: 'Abbrechen', style: 'cancel' },
-        {
-          text: 'Ja, verwerfen',
-          style: 'destructive',
-          onPress: () => {
-            try {
-              discardTimer(OWNER_ID)
-              onDiscard()
-            } catch (e) {
-              Alert.alert('Fehler', String(e))
-            }
-          },
+    Alert.alert('Timer verwerfen?', 'Die erfasste Zeit wird gelöscht und nicht gespeichert.', [
+      { text: 'Abbrechen', style: 'cancel' },
+      {
+        text: 'Ja, verwerfen',
+        style: 'destructive',
+        onPress: () => {
+          try {
+            discardTimer(OWNER_ID)
+            onDiscard()
+          } catch (e) {
+            Alert.alert('Fehler', String(e))
+          }
         },
-      ]
-    )
+      },
+    ])
   }
 
   return (
@@ -102,7 +100,11 @@ export function StopModal({ visible, projectId, onDone, onCancel, onDiscard }: P
               style={styles.btnSave}
               onPress={handleSave}
               accessibilityRole="button"
-              accessibilityLabel={willCreateNewTask ? 'Neue Aufgabe anlegen und Timer speichern' : 'Timer speichern und stoppen'}
+              accessibilityLabel={
+                willCreateNewTask
+                  ? 'Neue Aufgabe anlegen und Timer speichern'
+                  : 'Timer speichern und stoppen'
+              }
             >
               <Text style={{ color: '#FFF', fontWeight: '600' }}>{saveLabel}</Text>
             </Pressable>
@@ -126,8 +128,24 @@ const styles = StyleSheet.create({
   heading: { fontSize: 20, fontWeight: '700', marginBottom: 16 },
   label: { fontSize: 14, color: '#666', marginBottom: 8 },
   actions: { flexDirection: 'row', gap: 12, marginTop: 24 },
-  btnCancel: { flex: 1, padding: 14, alignItems: 'center', borderRadius: 8, backgroundColor: '#EEE', minHeight: 44, justifyContent: 'center' },
-  btnSave: { flex: 1, padding: 14, alignItems: 'center', borderRadius: 8, backgroundColor: '#4A90D9', minHeight: 44, justifyContent: 'center' },
+  btnCancel: {
+    flex: 1,
+    padding: 14,
+    alignItems: 'center',
+    borderRadius: 8,
+    backgroundColor: '#EEE',
+    minHeight: 44,
+    justifyContent: 'center',
+  },
+  btnSave: {
+    flex: 1,
+    padding: 14,
+    alignItems: 'center',
+    borderRadius: 8,
+    backgroundColor: '#4A90D9',
+    minHeight: 44,
+    justifyContent: 'center',
+  },
   btnDiscard: {
     marginTop: 8,
     padding: 14,

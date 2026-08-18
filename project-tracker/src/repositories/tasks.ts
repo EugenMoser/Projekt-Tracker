@@ -1,30 +1,38 @@
-import { eq, and, isNull, inArray } from 'drizzle-orm'
-import { db } from '../db/client'
 import * as schema from '@projekt-tracker/schema'
+import { and, eq, inArray, isNull } from 'drizzle-orm'
+
+import { db } from '../db/client'
 import { newId } from '../utils/uuid'
 
 export function listTasks(userId: string) {
-  return db.select().from(schema.tasks)
+  return db
+    .select()
+    .from(schema.tasks)
     .where(and(eq(schema.tasks.userId, userId), isNull(schema.tasks.deletedAt)))
     .all()
 }
 
 export function listTasksByIds(userId: string, ids: string[]) {
   if (ids.length === 0) return []
-  return db.select().from(schema.tasks)
+  return db
+    .select()
+    .from(schema.tasks)
     .where(and(eq(schema.tasks.userId, userId), inArray(schema.tasks.id, ids)))
     .all()
 }
 
 export function listTasksForProject(userId: string, projectId: string) {
-  return db.select({ task: schema.tasks })
+  return db
+    .select({ task: schema.tasks })
     .from(schema.projectTasks)
     .innerJoin(schema.tasks, eq(schema.projectTasks.taskId, schema.tasks.id))
-    .where(and(
-      eq(schema.projectTasks.userId, userId),
-      eq(schema.projectTasks.projectId, projectId),
-      isNull(schema.tasks.deletedAt)
-    ))
+    .where(
+      and(
+        eq(schema.projectTasks.userId, userId),
+        eq(schema.projectTasks.projectId, projectId),
+        isNull(schema.tasks.deletedAt),
+      ),
+    )
     .all()
     .map((r) => r.task)
 }
@@ -46,21 +54,20 @@ export function updateTask(userId: string, id: string, description: string) {
 export function addTaskToProject(userId: string, projectId: string, taskId: string) {
   // Primary key is (projectId, taskId); onConflictDoNothing keeps repeated
   // calls with the same arguments idempotent instead of throwing.
-  db.insert(schema.projectTasks)
-    .values({ projectId, taskId, userId })
-    .onConflictDoNothing()
-    .run()
+  db.insert(schema.projectTasks).values({ projectId, taskId, userId }).onConflictDoNothing().run()
 }
 
 export function removeTaskFromProject(userId: string, projectId: string, taskId: string) {
   // Hard delete: project_tasks is a pure many-to-many join table without a
   // `deletedAt` column, so there is nothing to soft-delete.
   db.delete(schema.projectTasks)
-    .where(and(
-      eq(schema.projectTasks.projectId, projectId),
-      eq(schema.projectTasks.taskId, taskId),
-      eq(schema.projectTasks.userId, userId)
-    ))
+    .where(
+      and(
+        eq(schema.projectTasks.projectId, projectId),
+        eq(schema.projectTasks.taskId, taskId),
+        eq(schema.projectTasks.userId, userId),
+      ),
+    )
     .run()
 }
 
@@ -72,13 +79,17 @@ export function deleteTask(userId: string, id: string) {
 }
 
 export function listTags(userId: string) {
-  return db.select().from(schema.tags)
+  return db
+    .select()
+    .from(schema.tags)
     .where(and(eq(schema.tags.userId, userId), isNull(schema.tags.deletedAt)))
     .all()
 }
 
 export function upsertTag(userId: string, title: string): string {
-  const existing = db.select().from(schema.tags)
+  const existing = db
+    .select()
+    .from(schema.tags)
     .where(and(eq(schema.tags.userId, userId), eq(schema.tags.title, title)))
     .get()
   if (existing) return existing.id
@@ -89,14 +100,17 @@ export function upsertTag(userId: string, title: string): string {
 }
 
 export function setTaskTags(userId: string, taskId: string, tagIds: string[]) {
-  db.delete(schema.taskTags).where(and(eq(schema.taskTags.taskId, taskId), eq(schema.taskTags.userId, userId))).run()
+  db.delete(schema.taskTags)
+    .where(and(eq(schema.taskTags.taskId, taskId), eq(schema.taskTags.userId, userId)))
+    .run()
   for (const tagId of tagIds) {
     db.insert(schema.taskTags).values({ taskId, tagId, userId }).run()
   }
 }
 
 export function getTagsForTask(userId: string, taskId: string) {
-  return db.select({ tag: schema.tags })
+  return db
+    .select({ tag: schema.tags })
     .from(schema.taskTags)
     .innerJoin(schema.tags, eq(schema.taskTags.tagId, schema.tags.id))
     .where(and(eq(schema.taskTags.taskId, taskId), eq(schema.taskTags.userId, userId)))

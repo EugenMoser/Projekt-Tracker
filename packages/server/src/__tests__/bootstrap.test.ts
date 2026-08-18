@@ -1,14 +1,16 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+import * as schema from '@projekt-tracker/schema/pg'
+import { drizzle } from 'drizzle-orm/postgres-js'
+import { migrate } from 'drizzle-orm/postgres-js/migrator'
 import { Hono } from 'hono'
 import { verify } from 'hono/jwt'
 import postgres from 'postgres'
-import { drizzle } from 'drizzle-orm/postgres-js'
-import { migrate } from 'drizzle-orm/postgres-js/migrator'
-import { join, dirname } from 'node:path'
-import { fileURLToPath } from 'node:url'
-import * as schema from '@projekt-tracker/schema/pg'
-import { createBootstrapRoute } from '../routes/auth.js'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+
 import type { AppVariables } from '../middleware/auth.js'
+import { createBootstrapRoute } from '../routes/auth.js'
 
 const DB_URL = process.env.DATABASE_URL
 const SECRET = 'integration-test-secret-32chars!!'
@@ -20,10 +22,7 @@ describe.skipIf(!DB_URL)('POST /v1/auth/bootstrap (integration)', () => {
   beforeAll(async () => {
     sql = postgres(DB_URL!, { max: 1 })
     db = drizzle(sql, { schema })
-    const migrationsFolder = join(
-      dirname(fileURLToPath(import.meta.url)),
-      '../../migrations'
-    )
+    const migrationsFolder = join(dirname(fileURLToPath(import.meta.url)), '../../migrations')
     const migrationSql = postgres(DB_URL!, { max: 1 })
     await migrate(drizzle(migrationSql), { migrationsFolder })
     await migrationSql.end()
@@ -44,7 +43,7 @@ describe.skipIf(!DB_URL)('POST /v1/auth/bootstrap (integration)', () => {
     })
 
     expect(res.status).toBe(201)
-    const body = await res.json() as { token: string; userId: string }
+    const body = (await res.json()) as { token: string; userId: string }
     expect(typeof body.token).toBe('string')
     expect(typeof body.userId).toBe('string')
 

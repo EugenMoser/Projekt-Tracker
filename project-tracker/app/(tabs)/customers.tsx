@@ -1,8 +1,10 @@
 import React from 'react'
-import { View, FlatList, Text, Pressable, StyleSheet, Alert } from 'react-native'
+
 import { router, useFocusEffect } from 'expo-router'
-import { listCustomers, deleteCustomer } from '../../src/repositories/customers'
+import { Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
+
 import { DotsButton, RowActionMenu, type RowAction } from '../../src/components/RowActionMenu'
+import { deleteCustomer, listCustomers } from '../../src/repositories/customers'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -13,25 +15,25 @@ export default function CustomersScreen() {
   const [menuCustomer, setMenuCustomer] = React.useState<Customer | null>(null)
 
   const load = () => setCustomers(listCustomers(OWNER_ID))
-  useFocusEffect(React.useCallback(() => { load() }, []))
+  useFocusEffect(
+    React.useCallback(() => {
+      load()
+    }, []),
+  )
 
   const handleDelete = (customer: Customer) => {
     setMenuCustomer(null)
-    Alert.alert(
-      'Kunde löschen?',
-      `„${customer.name}" wird unwiderruflich gelöscht.`,
-      [
-        { text: 'Abbrechen', style: 'cancel' },
-        {
-          text: 'Löschen',
-          style: 'destructive',
-          onPress: () => {
-            deleteCustomer(OWNER_ID, customer.id)
-            load()
-          },
+    Alert.alert('Kunde löschen?', `„${customer.name}" wird unwiderruflich gelöscht.`, [
+      { text: 'Abbrechen', style: 'cancel' },
+      {
+        text: 'Löschen',
+        style: 'destructive',
+        onPress: () => {
+          deleteCustomer(OWNER_ID, customer.id)
+          load()
         },
-      ],
-    )
+      },
+    ])
   }
 
   const menuActions: RowAction[] = menuCustomer
@@ -103,10 +105,15 @@ const styles = StyleSheet.create({
   name: { fontSize: 15, fontWeight: '600' },
   number: { fontSize: 12, color: '#666' },
   fab: {
-    position: 'absolute', bottom: 24, right: 24,
-    width: 56, height: 56, borderRadius: 28,
+    position: 'absolute',
+    bottom: 24,
+    right: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     backgroundColor: '#4A90D9',
-    alignItems: 'center', justifyContent: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   fabText: { color: '#FFF', fontSize: 28, lineHeight: 32 },
 })

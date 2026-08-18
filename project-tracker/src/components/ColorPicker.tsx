@@ -1,7 +1,8 @@
 import React from 'react'
-import { View, TouchableOpacity, Pressable, Modal, Text, StyleSheet } from 'react-native'
+
 import { Ionicons } from '@expo/vector-icons'
-import ReanimatedColorPicker, { Panel3, BrightnessSlider, Preview } from 'reanimated-color-picker'
+import { Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import ReanimatedColorPicker, { BrightnessSlider, Panel3, Preview } from 'reanimated-color-picker'
 
 const COLORS = ['#4A90D9', '#27AE60', '#E67E22', '#8E44AD', '#E74C3C', '#F1C40F']
 
@@ -51,7 +52,11 @@ export function ColorPicker({ value, onChange }: Props) {
         onPress={openWheel}
         accessibilityRole="button"
         accessibilityState={{ selected: isCustom }}
-        accessibilityLabel={isCustom ? `Eigene Farbe ${value}, ausgewählt. Antippen zum Ändern.` : 'Eigene Farbe wählen'}
+        accessibilityLabel={
+          isCustom
+            ? `Eigene Farbe ${value}, ausgewählt. Antippen zum Ändern.`
+            : 'Eigene Farbe wählen'
+        }
         style={[
           styles.swatch,
           styles.customSwatch,
@@ -70,11 +75,18 @@ export function ColorPicker({ value, onChange }: Props) {
         accessibilityViewIsModal
       >
         <Pressable style={styles.backdrop} onPress={handleCancel}>
-          <Pressable style={styles.dialog} onPress={() => { /* stop propagation */ }}>
+          <Pressable
+            style={styles.dialog}
+            onPress={() => {
+              /* stop propagation */
+            }}
+          >
             <Text style={styles.dialogTitle}>Eigene Farbe wählen</Text>
             <ReanimatedColorPicker
               value={value}
-              onChangeJS={(colors) => { pendingColorRef.current = colors.hex }}
+              onChangeJS={(colors) => {
+                pendingColorRef.current = colors.hex
+              }}
               style={styles.pickerWrapper}
             >
               <Panel3
@@ -149,13 +161,21 @@ const styles = StyleSheet.create({
   preview: { width: '100%', height: 32, borderRadius: 8 },
   dialogActions: { flexDirection: 'row', gap: 12, width: '100%' },
   cancelBtn: {
-    flex: 1, backgroundColor: '#F2F2F7', borderRadius: 8,
-    minHeight: 44, alignItems: 'center', justifyContent: 'center',
+    flex: 1,
+    backgroundColor: '#F2F2F7',
+    borderRadius: 8,
+    minHeight: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   cancelBtnText: { color: '#333', fontSize: 15, fontWeight: '600' },
   applyBtn: {
-    flex: 1, backgroundColor: '#4A90D9', borderRadius: 8,
-    minHeight: 44, alignItems: 'center', justifyContent: 'center',
+    flex: 1,
+    backgroundColor: '#4A90D9',
+    borderRadius: 8,
+    minHeight: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   applyBtnText: { color: '#FFF', fontSize: 15, fontWeight: '700' },
 })

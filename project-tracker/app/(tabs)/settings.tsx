@@ -1,15 +1,16 @@
-import React, { useState, useCallback } from 'react'
-import { View, Pressable, Text, StyleSheet, Alert } from 'react-native'
-import { router } from 'expo-router'
-import { useFocusEffect } from 'expo-router'
+import React, { useCallback, useState } from 'react'
+
 import * as LocalAuthentication from 'expo-local-authentication'
-import { SyncIndicator } from '../../src/components/SyncIndicator'
+import { router, useFocusEffect } from 'expo-router'
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native'
+
 import {
-  isPinSet,
   clearPin,
   isBiometryEnabled,
+  isPinSet,
   setBiometryEnabled,
 } from '../../src/auth/pinStorage'
+import { SyncIndicator } from '../../src/components/SyncIndicator'
 import { setUse12HourFormat as persistUse12HourFormat } from '../../src/settings/timeFormat'
 import { useLockStore } from '../../src/store/lockStore'
 import { useSettingsStore } from '../../src/store/settingsStore'
@@ -35,28 +36,24 @@ export default function SettingsScreen() {
         setBiometryEnabledState(bioEnabled)
         setBiometrySupported(hasHardware && isEnrolled)
       })()
-    }, [])
+    }, []),
   )
 
   const handleDisablePin = () => {
-    Alert.alert(
-      'PIN deaktivieren',
-      'Die App ist danach nicht mehr durch einen PIN geschützt.',
-      [
-        { text: 'Abbrechen', style: 'cancel' },
-        {
-          text: 'Deaktivieren',
-          style: 'destructive',
-          onPress: async () => {
-            await clearPin()
-            await setBiometryEnabled(false)
-            resetAttempts()
-            setPinEnabled(false)
-            setBiometryEnabledState(false)
-          },
+    Alert.alert('PIN deaktivieren', 'Die App ist danach nicht mehr durch einen PIN geschützt.', [
+      { text: 'Abbrechen', style: 'cancel' },
+      {
+        text: 'Deaktivieren',
+        style: 'destructive',
+        onPress: async () => {
+          await clearPin()
+          await setBiometryEnabled(false)
+          resetAttempts()
+          setPinEnabled(false)
+          setBiometryEnabledState(false)
         },
-      ]
-    )
+      },
+    ])
   }
 
   const handleBiometryToggle = async () => {
@@ -98,9 +95,7 @@ export default function SettingsScreen() {
           style={styles.row}
           onPress={() =>
             router.push(
-              pinEnabled
-                ? ('/pin-setup/index?mode=change' as any)
-                : ('/pin-setup/index' as any)
+              pinEnabled ? ('/pin-setup/index?mode=change' as any) : ('/pin-setup/index' as any),
             )
           }
           accessibilityRole="button"

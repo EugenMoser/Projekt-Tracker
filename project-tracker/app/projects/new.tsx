@@ -1,13 +1,15 @@
 import React from 'react'
-import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native'
+
 import { router } from 'expo-router'
-import { KeyboardAwareScrollView } from '../../src/components/KeyboardAwareView'
+import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
+
 import { ColorPicker } from '../../src/components/ColorPicker'
+import { KeyboardAwareScrollView } from '../../src/components/KeyboardAwareView'
 import { RowActionMenu, type RowAction } from '../../src/components/RowActionMenu'
 import { TaskPickerSheet } from '../../src/components/TaskPickerSheet'
 import { listCustomers } from '../../src/repositories/customers'
-import { listTasks } from '../../src/repositories/tasks'
 import { createProject } from '../../src/repositories/projects'
+import { listTasks } from '../../src/repositories/tasks'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 const DEFAULT_COLOR = '#4A90D9'
@@ -28,7 +30,7 @@ export default function NewProjectScreen() {
   const [selectedTaskIds, setSelectedTaskIds] = React.useState<string[]>([])
 
   const toggleTask = (id: string) =>
-    setSelectedTaskIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id])
+    setSelectedTaskIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
 
   const selectedCustomer = customers.find((c) => c.id === customerId)
 
@@ -62,20 +64,44 @@ export default function NewProjectScreen() {
   }
 
   const handleSave = () => {
-    if (!title.trim()) { Alert.alert('Pflichtfeld', 'Titel ist Pflicht.'); return }
-    if (!customerId) { Alert.alert('Pflichtfeld', 'Kunde ist Pflicht.'); return }
-    if (pricingMode === 'hourly' && !hourlyRate) { Alert.alert('Pflichtfeld', 'Stundensatz ist Pflicht.'); return }
-    if (pricingMode === 'fixed' && !fixedPrice) { Alert.alert('Pflichtfeld', 'Festpreis ist Pflicht.'); return }
+    if (!title.trim()) {
+      Alert.alert('Pflichtfeld', 'Titel ist Pflicht.')
+      return
+    }
+    if (!customerId) {
+      Alert.alert('Pflichtfeld', 'Kunde ist Pflicht.')
+      return
+    }
+    if (pricingMode === 'hourly' && !hourlyRate) {
+      Alert.alert('Pflichtfeld', 'Stundensatz ist Pflicht.')
+      return
+    }
+    if (pricingMode === 'fixed' && !fixedPrice) {
+      Alert.alert('Pflichtfeld', 'Festpreis ist Pflicht.')
+      return
+    }
 
     const hourlyRateCents = pricingMode === 'hourly' ? parseEurosToCents(hourlyRate) : undefined
     const fixedPriceCents = pricingMode === 'fixed' ? parseEurosToCents(fixedPrice) : undefined
 
-    if (pricingMode === 'hourly' && !hourlyRateCents) { Alert.alert('Ungültig', 'Stundensatz ungültig.'); return }
-    if (pricingMode === 'fixed' && !fixedPriceCents) { Alert.alert('Ungültig', 'Festpreis ungültig.'); return }
+    if (pricingMode === 'hourly' && !hourlyRateCents) {
+      Alert.alert('Ungültig', 'Stundensatz ungültig.')
+      return
+    }
+    if (pricingMode === 'fixed' && !fixedPriceCents) {
+      Alert.alert('Ungültig', 'Festpreis ungültig.')
+      return
+    }
 
     createProject(OWNER_ID, {
-      customerId, title: title.trim(), description: description.trim() || undefined,
-      color, pricingMode, hourlyRateCents, fixedPriceCents, taskIds: selectedTaskIds,
+      customerId,
+      title: title.trim(),
+      description: description.trim() || undefined,
+      color,
+      pricingMode,
+      hourlyRateCents,
+      fixedPriceCents,
+      taskIds: selectedTaskIds,
     })
     router.back()
   }
@@ -97,7 +123,10 @@ export default function NewProjectScreen() {
   }
 
   return (
-    <KeyboardAwareScrollView style={styles.container} contentContainerStyle={{ gap: 12, paddingBottom: 40 }}>
+    <KeyboardAwareScrollView
+      style={styles.container}
+      contentContainerStyle={{ gap: 12, paddingBottom: 40 }}
+    >
       <Text style={styles.label}>Titel *</Text>
       <TextInput
         style={styles.input}
@@ -120,7 +149,9 @@ export default function NewProjectScreen() {
         }
       >
         <Text style={styles.dropdownText}>
-          {selectedCustomer ? `${selectedCustomer.customerNumber} – ${selectedCustomer.name}` : 'Kunde auswählen'}
+          {selectedCustomer
+            ? `${selectedCustomer.customerNumber} – ${selectedCustomer.name}`
+            : 'Kunde auswählen'}
         </Text>
         <Text style={styles.dropdownChevron}>▾</Text>
       </Pressable>
@@ -224,22 +255,54 @@ const styles = StyleSheet.create({
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24, gap: 16 },
   emptyText: { fontSize: 16, color: '#555', textAlign: 'center' },
   emptyBtn: {
-    backgroundColor: '#4A90D9', borderRadius: 8,
-    paddingHorizontal: 24, paddingVertical: 14,
-    minHeight: 44, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: '#4A90D9',
+    borderRadius: 8,
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    minHeight: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   emptyBtnText: { color: '#FFF', fontWeight: '600', fontSize: 15 },
   label: { fontSize: 13, color: '#666' },
-  input: { borderWidth: 1, borderColor: '#DDD', borderRadius: 8, padding: 12, backgroundColor: '#FFF', color: '#000' },
+  input: {
+    borderWidth: 1,
+    borderColor: '#DDD',
+    borderRadius: 8,
+    padding: 12,
+    backgroundColor: '#FFF',
+    color: '#000',
+  },
   dropdown: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    borderWidth: 1, borderColor: '#DDD', borderRadius: 8, paddingHorizontal: 12,
-    backgroundColor: '#FFF', minHeight: 44,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: '#DDD',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    backgroundColor: '#FFF',
+    minHeight: 44,
   },
   dropdownText: { fontSize: 15, color: '#000', flexShrink: 1 },
   dropdownChevron: { fontSize: 14, color: '#666', marginLeft: 8 },
   pricingRow: { flexDirection: 'row', gap: 8 },
-  pricingBtn: { flex: 1, padding: 12, borderRadius: 8, backgroundColor: '#EEE', alignItems: 'center', minHeight: 44, justifyContent: 'center' },
+  pricingBtn: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 8,
+    backgroundColor: '#EEE',
+    alignItems: 'center',
+    minHeight: 44,
+    justifyContent: 'center',
+  },
   pricingBtnActive: { backgroundColor: '#4A90D9' },
-  btn: { backgroundColor: '#4A90D9', padding: 16, borderRadius: 8, alignItems: 'center', marginTop: 8, minHeight: 52 },
+  btn: {
+    backgroundColor: '#4A90D9',
+    padding: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 8,
+    minHeight: 52,
+  },
 })

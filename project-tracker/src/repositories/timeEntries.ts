@@ -1,43 +1,58 @@
-import { eq, and, isNull, desc } from 'drizzle-orm'
-import { db } from '../db/client'
 import * as schema from '@projekt-tracker/schema'
-import { buildTimeEntrySnapshot } from './tariffSnapshot'
+import { and, desc, eq, isNull } from 'drizzle-orm'
+
+import { db } from '../db/client'
 import { newId } from '../utils/uuid'
+import { buildTimeEntrySnapshot } from './tariffSnapshot'
 
 export function getTimeEntry(userId: string, id: string) {
-  return db.select().from(schema.timeEntries)
-    .where(and(eq(schema.timeEntries.id, id), eq(schema.timeEntries.userId, userId)))
-    .get() ?? null
+  return (
+    db
+      .select()
+      .from(schema.timeEntries)
+      .where(and(eq(schema.timeEntries.id, id), eq(schema.timeEntries.userId, userId)))
+      .get() ?? null
+  )
 }
 
 export function listTimeEntriesForProject(userId: string, projectId: string) {
-  return db.select().from(schema.timeEntries)
-    .where(and(
-      eq(schema.timeEntries.userId, userId),
-      eq(schema.timeEntries.projectId, projectId),
-      isNull(schema.timeEntries.deletedAt)
-    ))
+  return db
+    .select()
+    .from(schema.timeEntries)
+    .where(
+      and(
+        eq(schema.timeEntries.userId, userId),
+        eq(schema.timeEntries.projectId, projectId),
+        isNull(schema.timeEntries.deletedAt),
+      ),
+    )
     .orderBy(desc(schema.timeEntries.startedAt))
     .all()
 }
 
 export function updateTimeEntry(
-  userId: string, id: string,
-  data: { startedAt: Date; endedAt: Date; taskId: string; notes?: string }
+  userId: string,
+  id: string,
+  data: { startedAt: Date; endedAt: Date; taskId: string; notes?: string },
 ) {
   const duration = Math.round((data.endedAt.getTime() - data.startedAt.getTime()) / 1000)
-  return db.update(schema.timeEntries)
+  return db
+    .update(schema.timeEntries)
     .set({
-      startedAt: data.startedAt, endedAt: data.endedAt,
-      durationSeconds: duration, taskId: data.taskId,
-      notes: data.notes ?? null, updatedAt: new Date(),
+      startedAt: data.startedAt,
+      endedAt: data.endedAt,
+      durationSeconds: duration,
+      taskId: data.taskId,
+      notes: data.notes ?? null,
+      updatedAt: new Date(),
     })
     .where(and(eq(schema.timeEntries.id, id), eq(schema.timeEntries.userId, userId)))
     .run()
 }
 
 export function softDeleteTimeEntry(userId: string, id: string) {
-  return db.update(schema.timeEntries)
+  return db
+    .update(schema.timeEntries)
     .set({ deletedAt: new Date(), updatedAt: new Date() })
     .where(and(eq(schema.timeEntries.id, id), eq(schema.timeEntries.userId, userId)))
     .run()
@@ -66,7 +81,9 @@ export function createTimeEntry(
 
   // Use override rate if provided and project is hourly, otherwise use snapshot rate
   const rateSnapshotCents =
-    rateOverrideCents !== undefined && rateOverrideCents !== null && snapshot.pricingModeSnapshot === 'hourly'
+    rateOverrideCents !== undefined &&
+    rateOverrideCents !== null &&
+    snapshot.pricingModeSnapshot === 'hourly'
       ? rateOverrideCents
       : snapshot.rateSnapshotCents
 
@@ -78,20 +95,22 @@ export function createTimeEntry(
   const now = new Date()
 
   // Insert the time entry
-  db.insert(schema.timeEntries).values({
-    id,
-    userId,
-    projectId,
-    taskId,
-    startedAt,
-    endedAt,
-    durationSeconds,
-    rateSnapshotCents,
-    pricingModeSnapshot: snapshot.pricingModeSnapshot,
-    notes: notes ?? null,
-    createdAt: now,
-    updatedAt: now,
-  }).run()
+  db.insert(schema.timeEntries)
+    .values({
+      id,
+      userId,
+      projectId,
+      taskId,
+      startedAt,
+      endedAt,
+      durationSeconds,
+      rateSnapshotCents,
+      pricingModeSnapshot: snapshot.pricingModeSnapshot,
+      notes: notes ?? null,
+      createdAt: now,
+      updatedAt: now,
+    })
+    .run()
 
   return id
 }

@@ -1,19 +1,21 @@
 import React from 'react'
-import { AppState, SafeAreaView, StyleSheet, Text, View, type AppStateStatus } from 'react-native'
+
 import { Stack } from 'expo-router'
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import * as SecureStore from 'expo-secure-store'
+import { AppState, SafeAreaView, StyleSheet, Text, View, type AppStateStatus } from 'react-native'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
+
+import { isPinSet } from '../src/auth/pinStorage'
+import { LockScreen } from '../src/components/LockScreen'
 import { sqlite } from '../src/db/client'
 import { runMigrations } from '../src/db/migrate'
-import { useSyncStore } from '../src/store/syncStore'
+import { isUse12HourFormat } from '../src/settings/timeFormat'
 import { useLockStore } from '../src/store/lockStore'
-import { startSyncLoop, stopSyncLoop } from '../src/sync/service'
+import { useSettingsStore } from '../src/store/settingsStore'
+import { useSyncStore } from '../src/store/syncStore'
 import { apiBootstrap } from '../src/sync/api'
 import { API_BASE_URL, BOOTSTRAP_DISPLAY_NAME, SECURE_KEYS } from '../src/sync/config'
-import { isPinSet } from '../src/auth/pinStorage'
-import { isUse12HourFormat } from '../src/settings/timeFormat'
-import { useSettingsStore } from '../src/store/settingsStore'
-import { LockScreen } from '../src/components/LockScreen'
+import { startSyncLoop, stopSyncLoop } from '../src/sync/service'
 
 const AUTO_LOCK_THRESHOLD_MS = 60_000
 
@@ -59,7 +61,7 @@ async function initSync(forceFullSync: boolean): Promise<void> {
 export default function RootLayout() {
   const [isDbReady, setIsDbReady] = React.useState(false)
   const [migrationFailed, setMigrationFailed] = React.useState(false)
-  const isLocked = useLockStore(s => s.isLocked)
+  const isLocked = useLockStore((s) => s.isLocked)
   const { setLocked } = useLockStore()
   const backgroundTimeRef = React.useRef<number | null>(null)
 
@@ -97,7 +99,7 @@ export default function RootLayout() {
         if (backgroundTimeRef.current !== null) {
           const elapsed = Date.now() - backgroundTimeRef.current
           if (elapsed > AUTO_LOCK_THRESHOLD_MS) {
-            void isPinSet().then(pinEnabled => {
+            void isPinSet().then((pinEnabled) => {
               if (pinEnabled) setLocked(true)
             })
           }
@@ -118,17 +120,38 @@ export default function RootLayout() {
       ) : (
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="projects/new" options={{ title: 'Neues Projekt', presentation: 'modal' }} />
+          <Stack.Screen
+            name="projects/new"
+            options={{ title: 'Neues Projekt', presentation: 'modal' }}
+          />
           <Stack.Screen name="projects/[id]" options={{ title: 'Projekt-Detail' }} />
           <Stack.Screen name="projects/[id]/edit" options={{ title: 'Projekt bearbeiten' }} />
-          <Stack.Screen name="customers/new" options={{ title: 'Neuer Kunde', presentation: 'modal' }} />
-          <Stack.Screen name="customers/[id]/edit" options={{ title: 'Kunde bearbeiten', presentation: 'modal' }} />
+          <Stack.Screen
+            name="customers/new"
+            options={{ title: 'Neuer Kunde', presentation: 'modal' }}
+          />
+          <Stack.Screen
+            name="customers/[id]/edit"
+            options={{ title: 'Kunde bearbeiten', presentation: 'modal' }}
+          />
           <Stack.Screen name="order-types/index" options={{ title: 'Auftragsarten' }} />
-          <Stack.Screen name="archived-projects/index" options={{ title: 'Archivierte Projekte' }} />
-          <Stack.Screen name="time-entries/new" options={{ title: 'Zeiteintrag anlegen', presentation: 'modal' }} />
-          <Stack.Screen name="time-entries/[id]/edit" options={{ title: 'Zeiteintrag bearbeiten', presentation: 'modal' }} />
+          <Stack.Screen
+            name="archived-projects/index"
+            options={{ title: 'Archivierte Projekte' }}
+          />
+          <Stack.Screen
+            name="time-entries/new"
+            options={{ title: 'Zeiteintrag anlegen', presentation: 'modal' }}
+          />
+          <Stack.Screen
+            name="time-entries/[id]/edit"
+            options={{ title: 'Zeiteintrag bearbeiten', presentation: 'modal' }}
+          />
           <Stack.Screen name="export/index" options={{ title: 'Export', presentation: 'modal' }} />
-          <Stack.Screen name="pin-setup/index" options={{ title: 'PIN einrichten', presentation: 'modal' }} />
+          <Stack.Screen
+            name="pin-setup/index"
+            options={{ title: 'PIN einrichten', presentation: 'modal' }}
+          />
         </Stack>
       )}
     </GestureHandlerRootView>
@@ -146,12 +169,11 @@ function MigrationErrorScreen() {
       <View style={styles.container}>
         <Text style={styles.title}>Datenbank konnte nicht aktualisiert werden</Text>
         <Text style={styles.body}>
-          Bitte starte die App neu. Deine Daten sind unverändert — es wurde nichts
-          gespeichert und nichts gelöscht.
+          Bitte starte die App neu. Deine Daten sind unverändert — es wurde nichts gespeichert und
+          nichts gelöscht.
         </Text>
         <Text style={styles.body}>
-          Bleibt der Fehler bestehen, hilft ein Neustart des Geräts oder ein
-          Update der App.
+          Bleibt der Fehler bestehen, hilft ein Neustart des Geräts oder ein Update der App.
         </Text>
       </View>
     </SafeAreaView>

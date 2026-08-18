@@ -9,17 +9,15 @@ const KEYS = {
 
 function bytesToHex(bytes: Uint8Array): string {
   return Array.from(bytes)
-    .map(b => b.toString(16).padStart(2, '0'))
+    .map((b) => b.toString(16).padStart(2, '0'))
     .join('')
 }
 
 // expo-crypto only exposes SHA-256; PBKDF2/Argon2 unavailable in Expo SDK — offline brute-force risk if device is compromised
 async function hashPin(pin: string, salt: string): Promise<string> {
-  return Crypto.digestStringAsync(
-    Crypto.CryptoDigestAlgorithm.SHA256,
-    salt + pin,
-    { encoding: Crypto.CryptoEncoding.HEX }
-  )
+  return Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, salt + pin, {
+    encoding: Crypto.CryptoEncoding.HEX,
+  })
 }
 
 export async function savePin(pin: string): Promise<void> {

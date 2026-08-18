@@ -1,7 +1,10 @@
-import type { PushPayload, PullResponse } from './types'
+import type { PullResponse, PushPayload } from './types'
 
 export class ApiError extends Error {
-  constructor(readonly status: number, message: string) {
+  constructor(
+    readonly status: number,
+    message: string,
+  ) {
     super(`HTTP ${status}: ${message}`)
   }
 }

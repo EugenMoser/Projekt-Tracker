@@ -1,6 +1,7 @@
-import { and, eq, gte, lt, isNull, inArray, sql } from 'drizzle-orm'
-import type { Db } from '../db.js'
 import * as schema from '@projekt-tracker/schema/pg'
+import { and, eq, gte, inArray, isNull, lt, sql } from 'drizzle-orm'
+
+import type { Db } from '../db.js'
 
 export interface ExportRow {
   customerNumber: string
@@ -62,14 +63,10 @@ export async function queryExportData(
     .innerJoin(schema.customers, eq(schema.projects.customerId, schema.customers.id))
     .innerJoin(schema.tasks, eq(schema.timeEntries.taskId, schema.tasks.id))
     .where(and(...conditions))
-    .groupBy(
-      schema.customers.id,
-      schema.projects.id,
-      schema.tasks.id,
-    )
+    .groupBy(schema.customers.id, schema.projects.id, schema.tasks.id)
     .orderBy(schema.customers.customerNumber, schema.projects.title, schema.tasks.description)
 
-  const rows: ExportRow[] = rawRows.map(r => ({
+  const rows: ExportRow[] = rawRows.map((r) => ({
     customerNumber: r.customerNumber,
     customerName: r.customerName,
     street: r.street,
@@ -86,7 +83,7 @@ export async function queryExportData(
     totalAmountCents: Number(r.totalAmountCents),
   }))
 
-  const taskIds = [...new Set(rows.map(r => r.taskId))]
+  const taskIds = [...new Set(rows.map((r) => r.taskId))]
   const tagMap: TagMap = {}
 
   if (taskIds.length > 0) {
@@ -97,10 +94,7 @@ export async function queryExportData(
       })
       .from(schema.taskTags)
       .innerJoin(schema.tags, eq(schema.taskTags.tagId, schema.tags.id))
-      .where(and(
-        eq(schema.taskTags.userId, userId),
-        inArray(schema.taskTags.taskId, taskIds),
-      ))
+      .where(and(eq(schema.taskTags.userId, userId), inArray(schema.taskTags.taskId, taskIds)))
 
     for (const { taskId, tagTitle } of tagRows) {
       if (!tagMap[taskId]) tagMap[taskId] = []

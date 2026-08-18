@@ -1,7 +1,8 @@
-import { describe, it, expect } from 'vitest'
 import ExcelJS from 'exceljs'
-import { renderExcel } from '../services/excelRenderer.js'
+import { describe, expect, it } from 'vitest'
+
 import type { ExportRow, TagMap } from '../repositories/export.js'
+import { renderExcel } from '../services/excelRenderer.js'
 
 const hourlyRow: ExportRow = {
   customerNumber: '26101',

@@ -1,10 +1,11 @@
-import { AppState, type AppStateStatus } from 'react-native'
 import * as SecureStore from 'expo-secure-store'
+import { AppState, type AppStateStatus } from 'react-native'
+
 import { db } from '../db/client'
 import { useSyncStore } from '../store/syncStore'
-import { API_BASE_URL, LOCAL_USER_ID, SYNC_INTERVAL_MS, SECURE_KEYS } from './config'
-import { apiPush, apiPull } from './api'
-import { collectPushPayload, applyPull } from './syncRepository'
+import { apiPull, apiPush } from './api'
+import { API_BASE_URL, LOCAL_USER_ID, SECURE_KEYS, SYNC_INTERVAL_MS } from './config'
+import { applyPull, collectPushPayload } from './syncRepository'
 
 const BACKOFF_DELAYS = [1000, 2000, 4000, 8000, 16000, 30000]
 
@@ -14,12 +15,17 @@ let isSyncing = false
 
 function scheduleNextSync(delayMs: number): void {
   if (nextSyncTimeout) clearTimeout(nextSyncTimeout)
-  nextSyncTimeout = setTimeout(() => { void runSync() }, delayMs)
+  nextSyncTimeout = setTimeout(() => {
+    void runSync()
+  }, delayMs)
 }
 
 export async function runSync(): Promise<void> {
   if (isSyncing) return
-  if (nextSyncTimeout) { clearTimeout(nextSyncTimeout); nextSyncTimeout = null }
+  if (nextSyncTimeout) {
+    clearTimeout(nextSyncTimeout)
+    nextSyncTimeout = null
+  }
 
   const store = useSyncStore.getState()
   const token = store.token
@@ -72,7 +78,13 @@ export function startSyncLoop(): void {
 }
 
 export function stopSyncLoop(): void {
-  if (nextSyncTimeout) { clearTimeout(nextSyncTimeout); nextSyncTimeout = null }
-  if (appStateSubscription) { appStateSubscription.remove(); appStateSubscription = null }
+  if (nextSyncTimeout) {
+    clearTimeout(nextSyncTimeout)
+    nextSyncTimeout = null
+  }
+  if (appStateSubscription) {
+    appStateSubscription.remove()
+    appStateSubscription = null
+  }
   isSyncing = false
 }

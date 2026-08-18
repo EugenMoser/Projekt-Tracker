@@ -1,14 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react'
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  Alert,
-  SafeAreaView,
-} from 'react-native'
+import React, { useCallback, useEffect, useState } from 'react'
+
 import * as LocalAuthentication from 'expo-local-authentication'
-import { verifyPin, isBiometryEnabled } from '../auth/pinStorage'
+import { Alert, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native'
+
+import { isBiometryEnabled, verifyPin } from '../auth/pinStorage'
 import { useLockStore } from '../store/lockStore'
 
 interface Props {
@@ -23,7 +18,10 @@ export function LockScreen({ onUnlock }: Props) {
   const { lockoutUntil, recordFailedAttempt, resetAttempts } = useLockStore()
 
   useEffect(() => {
-    if (!lockoutUntil) { setLockoutRemaining(0); return }
+    if (!lockoutUntil) {
+      setLockoutRemaining(0)
+      return
+    }
     const update = () => {
       const remaining = Math.max(0, lockoutUntil - Date.now())
       setLockoutRemaining(Math.ceil(remaining / 1000))
@@ -49,16 +47,18 @@ export function LockScreen({ onUnlock }: Props) {
     }
   }, [onUnlock, resetAttempts])
 
-  useEffect(() => { void tryBiometry() }, [tryBiometry])
+  useEffect(() => {
+    void tryBiometry()
+  }, [tryBiometry])
 
   const handleKey = (key: string) => {
     if (lockoutRemaining > 0) return
     if (key === '⌫') {
-      setDigits(d => d.slice(0, -1))
+      setDigits((d) => d.slice(0, -1))
       return
     }
     if (digits.length >= 6) return
-    setDigits(d => d + key)
+    setDigits((d) => d + key)
   }
 
   const handleConfirm = async () => {
@@ -71,10 +71,7 @@ export function LockScreen({ onUnlock }: Props) {
       setDigits('')
       const { lockoutMs } = recordFailedAttempt()
       if (lockoutMs) {
-        Alert.alert(
-          'Zu viele Fehlversuche',
-          `Bitte warte ${Math.ceil(lockoutMs / 1000)} Sekunden.`
-        )
+        Alert.alert('Zu viele Fehlversuche', `Bitte warte ${Math.ceil(lockoutMs / 1000)} Sekunden.`)
       }
     }
   }
@@ -89,9 +86,7 @@ export function LockScreen({ onUnlock }: Props) {
           {dotRow}
         </Text>
         {lockoutRemaining > 0 && (
-          <Text style={styles.lockout}>
-            Gesperrt — noch {lockoutRemaining} s
-          </Text>
+          <Text style={styles.lockout}>Gesperrt — noch {lockoutRemaining} s</Text>
         )}
         <View style={styles.grid}>
           {KEYS.map((key, i) => (
@@ -112,7 +107,10 @@ export function LockScreen({ onUnlock }: Props) {
           ))}
         </View>
         <Pressable
-          style={[styles.confirm, (digits.length < 4 || lockoutRemaining > 0) && styles.confirmDisabled]}
+          style={[
+            styles.confirm,
+            (digits.length < 4 || lockoutRemaining > 0) && styles.confirmDisabled,
+          ]}
           onPress={handleConfirm}
           disabled={digits.length < 4 || lockoutRemaining > 0}
           accessibilityRole="button"

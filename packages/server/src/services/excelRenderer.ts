@@ -1,4 +1,5 @@
 import ExcelJS from 'exceljs'
+
 import type { ExportRow, TagMap } from '../repositories/export.js'
 
 function formatSeconds(s: number): string {
@@ -17,17 +18,17 @@ export async function renderExcel(rows: ExportRow[], tagMap: TagMap): Promise<Bu
   const sheet = wb.addWorksheet('Export')
 
   sheet.columns = [
-    { header: 'Kundennr.',   key: 'customerNumber',   width: 12 },
-    { header: 'Name',        key: 'customerName',      width: 25 },
-    { header: 'Straße',      key: 'street',            width: 25 },
-    { header: 'PLZ',         key: 'zip',               width:  8 },
-    { header: 'Ort',         key: 'city',              width: 20 },
-    { header: 'Projekt',     key: 'projectTitle',      width: 25 },
-    { header: 'Aufgabe',     key: 'taskDescription',   width: 25 },
-    { header: 'Stichworte',  key: 'tags',              width: 25 },
-    { header: 'Zeit',        key: 'time',              width: 12 },
-    { header: 'Stundensatz', key: 'rate',              width: 15 },
-    { header: 'Betrag',      key: 'amount',            width: 15 },
+    { header: 'Kundennr.', key: 'customerNumber', width: 12 },
+    { header: 'Name', key: 'customerName', width: 25 },
+    { header: 'Straße', key: 'street', width: 25 },
+    { header: 'PLZ', key: 'zip', width: 8 },
+    { header: 'Ort', key: 'city', width: 20 },
+    { header: 'Projekt', key: 'projectTitle', width: 25 },
+    { header: 'Aufgabe', key: 'taskDescription', width: 25 },
+    { header: 'Stichworte', key: 'tags', width: 25 },
+    { header: 'Zeit', key: 'time', width: 12 },
+    { header: 'Stundensatz', key: 'rate', width: 15 },
+    { header: 'Betrag', key: 'amount', width: 15 },
   ]
   sheet.getRow(1).font = { bold: true }
 
@@ -40,7 +41,7 @@ export async function renderExcel(rows: ExportRow[], tagMap: TagMap): Promise<Bu
     let amount = ''
 
     if (row.pricingMode === 'hourly') {
-      rate   = centsToEuroStr(row.hourlyRateCents ?? 0).replace(' €', ' €/h')
+      rate = centsToEuroStr(row.hourlyRateCents ?? 0).replace(' €', ' €/h')
       amount = centsToEuroStr(row.totalAmountCents)
     } else {
       if (!fixedPriceShown.has(row.projectId)) {
@@ -50,12 +51,12 @@ export async function renderExcel(rows: ExportRow[], tagMap: TagMap): Promise<Bu
     }
 
     sheet.addRow({
-      customerNumber:  row.customerNumber,
-      customerName:    row.customerName,
-      street:          row.street ?? '',
-      zip:             row.zip ?? '',
-      city:            row.city ?? '',
-      projectTitle:    row.projectTitle,
+      customerNumber: row.customerNumber,
+      customerName: row.customerName,
+      street: row.street ?? '',
+      zip: row.zip ?? '',
+      city: row.city ?? '',
+      projectTitle: row.projectTitle,
       taskDescription: row.taskDescription,
       tags,
       time,

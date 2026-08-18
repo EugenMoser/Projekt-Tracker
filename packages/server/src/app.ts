@@ -1,13 +1,14 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { secureHeaders } from 'hono/secure-headers'
-import { healthRoute } from './routes/health.js'
-import { createBootstrapRoute } from './routes/auth.js'
-import { createSyncRoute } from './routes/sync.js'
-import { createExportRoute } from './routes/export.js'
+
 import { db } from './db.js'
 import { env } from './env.js'
 import type { AppVariables } from './middleware/auth.js'
+import { createBootstrapRoute } from './routes/auth.js'
+import { createExportRoute } from './routes/export.js'
+import { healthRoute } from './routes/health.js'
+import { createSyncRoute } from './routes/sync.js'
 
 export function createApp(): Hono<{ Variables: AppVariables }> {
   const app = new Hono<{ Variables: AppVariables }>()
@@ -19,7 +20,11 @@ export function createApp(): Hono<{ Variables: AppVariables }> {
   if (env.ALLOWED_ORIGINS) {
     app.use(
       '*',
-      cors({ origin: env.ALLOWED_ORIGINS.split(',').map((s) => s.trim()).filter(Boolean) }),
+      cors({
+        origin: env.ALLOWED_ORIGINS.split(',')
+          .map((s) => s.trim())
+          .filter(Boolean),
+      }),
     )
   }
 

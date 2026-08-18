@@ -1,6 +1,6 @@
-import { describe, it, expect } from '@jest/globals'
-import BetterSQLite from 'better-sqlite3'
+import { describe, expect, it } from '@jest/globals'
 import { migrations } from '@projekt-tracker/schema'
+import BetterSQLite from 'better-sqlite3'
 
 const U = '00000000-0000-0000-0000-000000000001'
 const OT = '00000000-0000-0000-0000-000000000002'
@@ -17,10 +17,14 @@ function seedV1() {
   const sqlite = new BetterSQLite(':memory:')
   sqlite.exec(migrationSql(1))
   sqlite
-    .prepare(`INSERT INTO users (id, display_name, tier, created_at, updated_at) VALUES (?, 'Owner', 'pro', 0, 0)`)
+    .prepare(
+      `INSERT INTO users (id, display_name, tier, created_at, updated_at) VALUES (?, 'Owner', 'pro', 0, 0)`,
+    )
     .run(U)
   sqlite
-    .prepare(`INSERT INTO order_types (id, user_id, name, digit, created_at, updated_at) VALUES (?, ?, 'Foto', 1, 0, 0)`)
+    .prepare(
+      `INSERT INTO order_types (id, user_id, name, digit, created_at, updated_at) VALUES (?, ?, 'Foto', 1, 0, 0)`,
+    )
     .run(OT, U)
   sqlite
     .prepare(
@@ -70,7 +74,9 @@ describe('migration v2 — sort_order backfill', () => {
     const sqlite = seedV1()
     sqlite.exec(migrationSql(2))
     const idx = sqlite
-      .prepare(`SELECT name FROM sqlite_master WHERE type = 'index' AND name = 'projects_user_status_sort_idx'`)
+      .prepare(
+        `SELECT name FROM sqlite_master WHERE type = 'index' AND name = 'projects_user_status_sort_idx'`,
+      )
       .get()
     expect(idx).toBeDefined()
   })

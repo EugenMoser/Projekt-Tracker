@@ -8,8 +8,8 @@ Der Kern ist **Offline-First**: die App arbeitet vollständig gegen eine lokale 
 
 ## Screenshots
 
-| Projekte | Kunden | Aufgaben |
-| --- | --- | --- |
+| Projekte                                                        | Kunden                                         | Aufgaben                                           |
+| --------------------------------------------------------------- | ---------------------------------------------- | -------------------------------------------------- |
 | ![Startseite mit Projekt-Kacheln](docs/screenshots/01-home.png) | ![Kundenliste](docs/screenshots/02-kunden.png) | ![Aufgabenliste](docs/screenshots/03-aufgaben.png) |
 
 ## Wie es sich bedient
@@ -90,15 +90,15 @@ Was **nicht** getestet ist: die React-Komponenten. Es gibt keine Component-Test-
 
 ## Stand
 
-| Bereich | Stand |
-| --- | --- |
-| Lokale Erfassung (Projekte, Kunden, Aufgaben, Timer) | fertig |
-| Backend + Sync | fertig, **nicht deployt** |
-| Excel-Export | fertig |
-| App-PIN + Biometrie | fertig |
-| Android | getestet |
-| iOS | gebaut, **ungetestet** |
-| Rechnungserstellung | geplant |
+| Bereich                                              | Stand                     |
+| ---------------------------------------------------- | ------------------------- |
+| Lokale Erfassung (Projekte, Kunden, Aufgaben, Timer) | fertig                    |
+| Backend + Sync                                       | fertig, **nicht deployt** |
+| Excel-Export                                         | fertig                    |
+| App-PIN + Biometrie                                  | fertig                    |
+| Android                                              | getestet                  |
+| iOS                                                  | gebaut, **ungetestet**    |
+| Rechnungserstellung                                  | geplant                   |
 
 ## Tech-Stack
 

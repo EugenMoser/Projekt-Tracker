@@ -23,10 +23,7 @@ export const useLockStore = create<LockState>((set, get) => ({
     const { failedAttempts } = get()
     const next = failedAttempts + 1
     if (next >= MAX_ATTEMPTS_BEFORE_LOCKOUT) {
-      const stepIndex = Math.min(
-        next - MAX_ATTEMPTS_BEFORE_LOCKOUT,
-        LOCKOUT_STEPS_MS.length - 1
-      )
+      const stepIndex = Math.min(next - MAX_ATTEMPTS_BEFORE_LOCKOUT, LOCKOUT_STEPS_MS.length - 1)
       const lockoutMs = LOCKOUT_STEPS_MS[stepIndex]!
       set({ failedAttempts: next, lockoutUntil: Date.now() + lockoutMs })
       return { lockoutMs }

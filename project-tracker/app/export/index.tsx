@@ -1,13 +1,20 @@
 import React, { useState } from 'react'
-import {
-  View, Text, TextInput, Pressable,
-  StyleSheet, Alert, ActivityIndicator,
-} from 'react-native'
+
 // SDK 54 hat expo-file-system auf die neue File/Directory-API umgestellt;
 // cacheDirectory + writeAsStringAsync leben seitdem unter /legacy.
 import * as FileSystem from 'expo-file-system/legacy'
-import * as Sharing from 'expo-sharing'
 import { useFocusEffect } from 'expo-router'
+import * as Sharing from 'expo-sharing'
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native'
+
 import { KeyboardAwareScrollView } from '../../src/components/KeyboardAwareView'
 import { listCustomers } from '../../src/repositories/customers'
 import { useSyncStore } from '../../src/store/syncStore'
@@ -34,18 +41,18 @@ function arrayBufferToBase64(buf: ArrayBuffer): string {
 
 export default function ExportScreen() {
   const [from, setFrom] = useState(currentYYYYMM())
-  const [to, setTo]     = useState(currentYYYYMM())
+  const [to, setTo] = useState(currentYYYYMM())
   const [customers, setCustomers] = useState<Customer[]>([])
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-  const token = useSyncStore(s => s.token)
+  const token = useSyncStore((s) => s.token)
 
   useFocusEffect(
     React.useCallback(() => {
       const all = listCustomers(LOCAL_USER_ID)
-      setCustomers(all.map(c => ({ id: c.id, name: c.name, customerNumber: c.customerNumber })))
-    }, [])
+      setCustomers(all.map((c) => ({ id: c.id, name: c.name, customerNumber: c.customerNumber })))
+    }, []),
   )
 
   async function handleExport() {
@@ -130,7 +137,7 @@ export default function ExportScreen() {
         {selectedCustomerId === null && <Text style={styles.check}>✓</Text>}
       </Pressable>
 
-      {customers.map(c => (
+      {customers.map((c) => (
         <Pressable
           key={c.id}
           style={[styles.row, selectedCustomerId === c.id && styles.rowSelected]}
@@ -139,7 +146,9 @@ export default function ExportScreen() {
           accessibilityState={{ selected: selectedCustomerId === c.id }}
           accessibilityLabel={`${c.customerNumber} ${c.name}`}
         >
-          <Text style={styles.rowText}>{c.customerNumber} – {c.name}</Text>
+          <Text style={styles.rowText}>
+            {c.customerNumber} – {c.name}
+          </Text>
           {selectedCustomerId === c.id && <Text style={styles.check}>✓</Text>}
         </Pressable>
       ))}
@@ -151,24 +160,49 @@ export default function ExportScreen() {
         accessibilityRole="button"
         accessibilityLabel="Export erstellen"
       >
-        {loading
-          ? <ActivityIndicator color="#FFF" />
-          : <Text style={styles.btnText}>Export erstellen</Text>}
+        {loading ? (
+          <ActivityIndicator color="#FFF" />
+        ) : (
+          <Text style={styles.btnText}>Export erstellen</Text>
+        )}
       </Pressable>
     </KeyboardAwareScrollView>
   )
 }
 
 const styles = StyleSheet.create({
-  container:   { flex: 1, backgroundColor: '#F5F5F5' },
-  content:     { padding: 16, paddingBottom: 40 },
-  label:       { fontSize: 14, fontWeight: '600', color: '#555', marginTop: 16, marginBottom: 4 },
-  input:       { borderWidth: 1, borderColor: '#DDD', borderRadius: 8, padding: 12, backgroundColor: '#FFF', fontSize: 16 },
-  row:         { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 14, backgroundColor: '#FFF', borderRadius: 8, marginBottom: 6, minHeight: 44 },
+  container: { flex: 1, backgroundColor: '#F5F5F5' },
+  content: { padding: 16, paddingBottom: 40 },
+  label: { fontSize: 14, fontWeight: '600', color: '#555', marginTop: 16, marginBottom: 4 },
+  input: {
+    borderWidth: 1,
+    borderColor: '#DDD',
+    borderRadius: 8,
+    padding: 12,
+    backgroundColor: '#FFF',
+    fontSize: 16,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 14,
+    backgroundColor: '#FFF',
+    borderRadius: 8,
+    marginBottom: 6,
+    minHeight: 44,
+  },
   rowSelected: { borderWidth: 2, borderColor: '#4A90D9' },
-  rowText:     { fontSize: 15 },
-  check:       { color: '#4A90D9', fontWeight: '700' },
-  btn:         { backgroundColor: '#4A90D9', padding: 16, borderRadius: 8, alignItems: 'center', marginTop: 24, minHeight: 52 },
+  rowText: { fontSize: 15 },
+  check: { color: '#4A90D9', fontWeight: '700' },
+  btn: {
+    backgroundColor: '#4A90D9',
+    padding: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 24,
+    minHeight: 52,
+  },
   btnDisabled: { opacity: 0.6 },
-  btnText:     { color: '#FFF', fontSize: 16, fontWeight: '600' },
+  btnText: { color: '#FFF', fontSize: 16, fontWeight: '600' },
 })

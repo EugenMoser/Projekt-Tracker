@@ -1,7 +1,8 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
-import postgres from 'postgres'
-import { drizzle } from 'drizzle-orm/postgres-js'
 import * as schema from '@projekt-tracker/schema/pg'
+import { drizzle } from 'drizzle-orm/postgres-js'
+import postgres from 'postgres'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+
 import type { Db } from '../db.js'
 import { queryExportData } from '../repositories/export.js'
 import { exportQuerySchema } from '../routes/export.js'
@@ -9,16 +10,16 @@ import { exportQuerySchema } from '../routes/export.js'
 const DATABASE_URL = process.env.DATABASE_URL
 const skipIf = !DATABASE_URL
 
-const userId   = 'eeeeeeee-0000-0000-0000-000000000001'
-const otId     = 'eeeeeeee-0000-0000-0000-000000000002'
-const custId   = 'eeeeeeee-0000-0000-0000-000000000003'
-const taskId   = 'eeeeeeee-0000-0000-0000-000000000004'
-const projId   = 'eeeeeeee-0000-0000-0000-000000000005'
-const teId     = 'eeeeeeee-0000-0000-0000-000000000006'
-const cust2Id  = 'eeeeeeee-0000-0000-0000-000000000007'
-const proj2Id  = 'eeeeeeee-0000-0000-0000-000000000008'
-const task2Id  = 'eeeeeeee-0000-0000-0000-000000000009'
-const te2Id    = 'eeeeeeee-0000-0000-0000-000000000010'
+const userId = 'eeeeeeee-0000-0000-0000-000000000001'
+const otId = 'eeeeeeee-0000-0000-0000-000000000002'
+const custId = 'eeeeeeee-0000-0000-0000-000000000003'
+const taskId = 'eeeeeeee-0000-0000-0000-000000000004'
+const projId = 'eeeeeeee-0000-0000-0000-000000000005'
+const teId = 'eeeeeeee-0000-0000-0000-000000000006'
+const cust2Id = 'eeeeeeee-0000-0000-0000-000000000007'
+const proj2Id = 'eeeeeeee-0000-0000-0000-000000000008'
+const task2Id = 'eeeeeeee-0000-0000-0000-000000000009'
+const te2Id = 'eeeeeeee-0000-0000-0000-000000000010'
 
 describe.skipIf(skipIf)('queryExportData', () => {
   let client: ReturnType<typeof postgres>
@@ -55,13 +56,23 @@ describe.skipIf(skipIf)('queryExportData', () => {
   })
 
   it('returns one row per project+task combination', async () => {
-    const { rows } = await queryExportData(db, userId, new Date('2026-05-01Z'), new Date('2026-06-01Z'))
+    const { rows } = await queryExportData(
+      db,
+      userId,
+      new Date('2026-05-01Z'),
+      new Date('2026-06-01Z'),
+    )
     expect(rows).toHaveLength(2)
   })
 
   it('hourly row has correct aggregated seconds and amount', async () => {
-    const { rows } = await queryExportData(db, userId, new Date('2026-05-01Z'), new Date('2026-06-01Z'))
-    const hourly = rows.find(r => r.pricingMode === 'hourly')!
+    const { rows } = await queryExportData(
+      db,
+      userId,
+      new Date('2026-05-01Z'),
+      new Date('2026-06-01Z'),
+    )
+    const hourly = rows.find((r) => r.pricingMode === 'hourly')!
     expect(hourly.customerNumber).toBe('26901')
     expect(hourly.totalSeconds).toBe(7200)
     expect(hourly.totalAmountCents).toBe(16000)
@@ -69,26 +80,47 @@ describe.skipIf(skipIf)('queryExportData', () => {
   })
 
   it('fixed-price row has totalSeconds but zero amountCents', async () => {
-    const { rows } = await queryExportData(db, userId, new Date('2026-05-01Z'), new Date('2026-06-01Z'))
-    const fixed = rows.find(r => r.pricingMode === 'fixed')!
+    const { rows } = await queryExportData(
+      db,
+      userId,
+      new Date('2026-05-01Z'),
+      new Date('2026-06-01Z'),
+    )
+    const fixed = rows.find((r) => r.pricingMode === 'fixed')!
     expect(fixed.fixedPriceCents).toBe(50000)
     expect(fixed.totalSeconds).toBe(3600)
     expect(fixed.totalAmountCents).toBe(0)
   })
 
   it('excludes entries outside date range', async () => {
-    const { rows } = await queryExportData(db, userId, new Date('2026-04-01Z'), new Date('2026-05-01Z'))
+    const { rows } = await queryExportData(
+      db,
+      userId,
+      new Date('2026-04-01Z'),
+      new Date('2026-05-01Z'),
+    )
     expect(rows).toHaveLength(0)
   })
 
   it('filters by customerId', async () => {
-    const { rows } = await queryExportData(db, userId, new Date('2026-05-01Z'), new Date('2026-06-01Z'), custId)
+    const { rows } = await queryExportData(
+      db,
+      userId,
+      new Date('2026-05-01Z'),
+      new Date('2026-06-01Z'),
+      custId,
+    )
     expect(rows).toHaveLength(1)
     expect(rows[0].customerName).toBe('Müller')
   })
 
   it('tagMap is empty when no tags exist', async () => {
-    const { tagMap } = await queryExportData(db, userId, new Date('2026-05-01Z'), new Date('2026-06-01Z'))
+    const { tagMap } = await queryExportData(
+      db,
+      userId,
+      new Date('2026-05-01Z'),
+      new Date('2026-06-01Z'),
+    )
     expect(Object.keys(tagMap)).toHaveLength(0)
   })
 })
@@ -107,16 +139,22 @@ describe('exportQuerySchema', () => {
   })
 
   it('accepts optional valid customerId UUID', () => {
-    expect(exportQuerySchema.safeParse({
-      from: '2026-05', to: '2026-05',
-      customerId: 'ffffffff-ffff-ffff-ffff-ffffffffffff',
-    }).success).toBe(true)
+    expect(
+      exportQuerySchema.safeParse({
+        from: '2026-05',
+        to: '2026-05',
+        customerId: 'ffffffff-ffff-ffff-ffff-ffffffffffff',
+      }).success,
+    ).toBe(true)
   })
 
   it('rejects non-UUID customerId', () => {
-    expect(exportQuerySchema.safeParse({
-      from: '2026-05', to: '2026-05',
-      customerId: 'not-a-uuid',
-    }).success).toBe(false)
+    expect(
+      exportQuerySchema.safeParse({
+        from: '2026-05',
+        to: '2026-05',
+        customerId: 'not-a-uuid',
+      }).success,
+    ).toBe(false)
   })
 })

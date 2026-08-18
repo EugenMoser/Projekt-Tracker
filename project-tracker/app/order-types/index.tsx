@@ -1,9 +1,16 @@
 import React from 'react'
+
 import { Ionicons } from '@expo/vector-icons'
-import { View, Text, FlatList, Pressable, TextInput, Modal, StyleSheet, Alert } from 'react-native'
-import { listOrderTypes, createOrderType, updateOrderType, deleteOrderType } from '../../src/repositories/orderTypes'
 import { useFocusEffect } from 'expo-router'
+import { Alert, FlatList, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
+
 import { KeyboardAwareView } from '../../src/components/KeyboardAwareView'
+import {
+  createOrderType,
+  deleteOrderType,
+  listOrderTypes,
+  updateOrderType,
+} from '../../src/repositories/orderTypes'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 type OrderType = { id: string; name: string; digit: number }
@@ -16,18 +23,29 @@ export default function OrderTypesScreen() {
   const [digit, setDigit] = React.useState('')
 
   const load = () => setItems(listOrderTypes(OWNER_ID))
-  useFocusEffect(React.useCallback(() => { load() }, []))
+  useFocusEffect(
+    React.useCallback(() => {
+      load()
+    }, []),
+  )
 
   const openAdd = () => {
-    setName(''); setDigit(''); setShowAdd(true)
+    setName('')
+    setDigit('')
+    setShowAdd(true)
   }
 
   const openEdit = (item: OrderType) => {
-    setEditItem(item); setName(item.name); setDigit(String(item.digit))
+    setEditItem(item)
+    setName(item.name)
+    setDigit(String(item.digit))
   }
 
   const closeModal = () => {
-    setShowAdd(false); setEditItem(null); setName(''); setDigit('')
+    setShowAdd(false)
+    setEditItem(null)
+    setName('')
+    setDigit('')
   }
 
   const handleAdd = () => {
@@ -38,7 +56,8 @@ export default function OrderTypesScreen() {
     }
     try {
       createOrderType(OWNER_ID, { name: name.trim(), digit: d })
-      closeModal(); load()
+      closeModal()
+      load()
     } catch {
       Alert.alert('Fehler', 'Ziffer oder Name bereits vergeben.')
     }
@@ -53,7 +72,8 @@ export default function OrderTypesScreen() {
     }
     try {
       updateOrderType(OWNER_ID, editItem.id, { name: name.trim(), digit: d })
-      closeModal(); load()
+      closeModal()
+      load()
     } catch {
       Alert.alert('Fehler', 'Ziffer oder Name bereits vergeben.')
     }
@@ -73,10 +93,19 @@ export default function OrderTypesScreen() {
             onPress={() => openEdit(item)}
             accessibilityRole="button"
             accessibilityLabel={`Auftragsart ${item.digit} ${item.name} bearbeiten`}
-            onLongPress={() => Alert.alert('Löschen?', item.name, [
-              { text: 'Abbrechen', style: 'cancel' },
-              { text: 'Löschen', style: 'destructive', onPress: () => { deleteOrderType(OWNER_ID, item.id); load() } },
-            ])}
+            onLongPress={() =>
+              Alert.alert('Löschen?', item.name, [
+                { text: 'Abbrechen', style: 'cancel' },
+                {
+                  text: 'Löschen',
+                  style: 'destructive',
+                  onPress: () => {
+                    deleteOrderType(OWNER_ID, item.id)
+                    load()
+                  },
+                },
+              ])
+            }
           >
             <Text style={styles.digit}>{item.digit}</Text>
             <Text style={styles.name}>{item.name}</Text>
@@ -85,7 +114,11 @@ export default function OrderTypesScreen() {
         )}
       />
 
-      <Modal visible={showAdd || editItem !== null} animationType="slide" presentationStyle="formSheet">
+      <Modal
+        visible={showAdd || editItem !== null}
+        animationType="slide"
+        presentationStyle="formSheet"
+      >
         <KeyboardAwareView insideModal>
           <View style={styles.modal}>
             <Text style={styles.modalTitle}>
@@ -111,7 +144,15 @@ export default function OrderTypesScreen() {
             <Pressable style={styles.saveBtn} onPress={editItem ? handleEdit : handleAdd}>
               <Text style={{ color: '#FFF', fontWeight: '600' }}>Speichern</Text>
             </Pressable>
-            <Pressable onPress={closeModal} style={{ marginTop: 12, alignItems: 'center', minHeight: 44, justifyContent: 'center' }}>
+            <Pressable
+              onPress={closeModal}
+              style={{
+                marginTop: 12,
+                alignItems: 'center',
+                minHeight: 44,
+                justifyContent: 'center',
+              }}
+            >
               <Text style={{ color: '#666' }}>Abbrechen</Text>
             </Pressable>
           </View>
@@ -123,13 +164,34 @@ export default function OrderTypesScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
-  addBtn: { backgroundColor: '#4A90D9', padding: 14, borderRadius: 8, alignItems: 'center', marginBottom: 16 },
+  addBtn: {
+    backgroundColor: '#4A90D9',
+    padding: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 16,
+  },
   addBtnText: { color: '#FFF', fontWeight: '600' },
-  row: { flexDirection: 'row', alignItems: 'center', padding: 14, backgroundColor: '#FFF', borderRadius: 8, marginBottom: 8 },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 14,
+    backgroundColor: '#FFF',
+    borderRadius: 8,
+    marginBottom: 8,
+  },
   digit: { width: 32, fontWeight: '700', fontSize: 16, color: '#4A90D9' },
   name: { flex: 1, fontSize: 15 },
   modal: { flex: 1, padding: 24, backgroundColor: '#FFF' },
   modalTitle: { fontSize: 20, fontWeight: '700', marginBottom: 16 },
-  input: { borderWidth: 1, borderColor: '#DDD', borderRadius: 8, padding: 12, marginBottom: 12, backgroundColor: '#FFF', color: '#000' },
+  input: {
+    borderWidth: 1,
+    borderColor: '#DDD',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 12,
+    backgroundColor: '#FFF',
+    color: '#000',
+  },
   saveBtn: { backgroundColor: '#4A90D9', padding: 14, borderRadius: 8, alignItems: 'center' },
 })

@@ -1,5 +1,6 @@
-import { describe, it, expect, beforeAll } from 'vitest'
 import type { Hono } from 'hono'
+import { beforeAll, describe, expect, it } from 'vitest'
+
 import type { AppVariables } from '../middleware/auth.js'
 
 // env singleton is parsed at module load time, so set required vars before importing app

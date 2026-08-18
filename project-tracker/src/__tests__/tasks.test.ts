@@ -1,6 +1,14 @@
-import { jest, describe, it, expect, beforeEach } from '@jest/globals'
-import { eq, and } from 'drizzle-orm'
+import { beforeEach, describe, expect, it, jest } from '@jest/globals'
 import * as schema from '@projekt-tracker/schema'
+import { and, eq } from 'drizzle-orm'
+
+import { db as mockDb } from '../db/client'
+import {
+  addTaskToProject,
+  listTasks,
+  listTasksForProject,
+  removeTaskFromProject,
+} from '../repositories/tasks'
 
 // `../repositories/tasks` imports the singleton `db` from `../db/client`,
 // which normally opens a native expo-sqlite database. In tests we swap that
@@ -16,9 +24,6 @@ jest.mock('../db/client', () => {
   for (const m of schema.migrations) sqlite.exec(m.sql)
   return { db: drizzle(sqlite, { schema }) }
 })
-
-import { db as mockDb } from '../db/client'
-import { listTasks, listTasksForProject, removeTaskFromProject, addTaskToProject } from '../repositories/tasks'
 
 const NOW = new Date('2026-07-01T10:00:00Z')
 const U = '00000000-0000-0000-0000-000000000001'
@@ -43,21 +48,57 @@ beforeEach(() => {
 })
 
 function seedBase() {
-  mockDb.insert(schema.users).values({ id: U, displayName: 'Owner', tier: 'pro', createdAt: NOW, updatedAt: NOW }).run()
-  mockDb.insert(schema.users).values({ id: U2, displayName: 'Other', tier: 'pro', createdAt: NOW, updatedAt: NOW }).run()
-  mockDb.insert(schema.orderTypes).values({ id: OT1, userId: U, name: 'Hochzeit', digit: 1, createdAt: NOW, updatedAt: NOW }).run()
-  mockDb.insert(schema.customers).values({
-    id: CU, userId: U, customerNumber: '26101', orderTypeId: OT1,
-    name: 'Müller', createdAt: NOW, updatedAt: NOW,
-  }).run()
-  mockDb.insert(schema.projects).values({
-    id: PROJECT, userId: U, customerId: CU, title: 'Hochzeit Müller',
-    color: '#000000', pricingMode: 'hourly', hourlyRateCents: 5000,
-    status: 'active', createdAt: NOW, updatedAt: NOW,
-  }).run()
-  mockDb.insert(schema.tasks).values({ id: TASK_A, userId: U, description: 'Shooting', createdAt: NOW, updatedAt: NOW }).run()
-  mockDb.insert(schema.tasks).values({ id: TASK_B, userId: U, description: 'Schnitt', createdAt: NOW, updatedAt: NOW }).run()
-  mockDb.insert(schema.tasks).values({ id: TASK_C, userId: U, description: 'Farbkorrektur', createdAt: NOW, updatedAt: NOW }).run()
+  mockDb
+    .insert(schema.users)
+    .values({ id: U, displayName: 'Owner', tier: 'pro', createdAt: NOW, updatedAt: NOW })
+    .run()
+  mockDb
+    .insert(schema.users)
+    .values({ id: U2, displayName: 'Other', tier: 'pro', createdAt: NOW, updatedAt: NOW })
+    .run()
+  mockDb
+    .insert(schema.orderTypes)
+    .values({ id: OT1, userId: U, name: 'Hochzeit', digit: 1, createdAt: NOW, updatedAt: NOW })
+    .run()
+  mockDb
+    .insert(schema.customers)
+    .values({
+      id: CU,
+      userId: U,
+      customerNumber: '26101',
+      orderTypeId: OT1,
+      name: 'Müller',
+      createdAt: NOW,
+      updatedAt: NOW,
+    })
+    .run()
+  mockDb
+    .insert(schema.projects)
+    .values({
+      id: PROJECT,
+      userId: U,
+      customerId: CU,
+      title: 'Hochzeit Müller',
+      color: '#000000',
+      pricingMode: 'hourly',
+      hourlyRateCents: 5000,
+      status: 'active',
+      createdAt: NOW,
+      updatedAt: NOW,
+    })
+    .run()
+  mockDb
+    .insert(schema.tasks)
+    .values({ id: TASK_A, userId: U, description: 'Shooting', createdAt: NOW, updatedAt: NOW })
+    .run()
+  mockDb
+    .insert(schema.tasks)
+    .values({ id: TASK_B, userId: U, description: 'Schnitt', createdAt: NOW, updatedAt: NOW })
+    .run()
+  mockDb
+    .insert(schema.tasks)
+    .values({ id: TASK_C, userId: U, description: 'Farbkorrektur', createdAt: NOW, updatedAt: NOW })
+    .run()
   mockDb.insert(schema.projectTasks).values({ projectId: PROJECT, taskId: TASK_A, userId: U }).run()
   mockDb.insert(schema.projectTasks).values({ projectId: PROJECT, taskId: TASK_B, userId: U }).run()
 }
@@ -125,8 +166,12 @@ describe('addTaskToProject', () => {
     seedBase()
     addTaskToProject(U, PROJECT, TASK_C)
 
-    const row = mockDb.select().from(schema.projectTasks)
-      .where(and(eq(schema.projectTasks.projectId, PROJECT), eq(schema.projectTasks.taskId, TASK_C)))
+    const row = mockDb
+      .select()
+      .from(schema.projectTasks)
+      .where(
+        and(eq(schema.projectTasks.projectId, PROJECT), eq(schema.projectTasks.taskId, TASK_C)),
+      )
       .get()
     expect(row?.userId).toBe(U)
   })

@@ -1,6 +1,9 @@
-import { jest, describe, it, expect, beforeEach } from '@jest/globals'
-import { eq } from 'drizzle-orm'
+import { beforeEach, describe, expect, it, jest } from '@jest/globals'
 import * as schema from '@projekt-tracker/schema'
+import { eq } from 'drizzle-orm'
+
+import { db as testDb } from '../db/client'
+import { createTimeEntry } from '../repositories/timeEntries'
 
 // `../repositories/timeEntries` imports the singleton `db` from
 // `../db/client`, which normally opens a native expo-sqlite database. In
@@ -16,9 +19,6 @@ jest.mock('../db/client', () => {
   for (const m of schema.migrations) sqlite.exec(m.sql)
   return { db: drizzle(sqlite, { schema }) }
 })
-
-import { db as testDb } from '../db/client'
-import { createTimeEntry } from '../repositories/timeEntries'
 
 const NOW = new Date('2026-07-01T10:00:00Z')
 const U = '00000000-0000-0000-0000-000000000001'
@@ -41,11 +41,45 @@ function clearDb() {
 
 function seedBase() {
   clearDb()
-  testDb.insert(schema.users).values({ id: U, displayName: 'Owner', tier: 'pro', createdAt: NOW, updatedAt: NOW }).run()
-  testDb.insert(schema.orderTypes).values({ id: OT, userId: U, name: 'Hochzeit', digit: 1, createdAt: NOW, updatedAt: NOW }).run()
-  testDb.insert(schema.customers).values({ id: CU, userId: U, customerNumber: '26101', orderTypeId: OT, name: 'Müller', createdAt: NOW, updatedAt: NOW }).run()
-  testDb.insert(schema.projects).values({ id: P1, userId: U, customerId: CU, title: 'P1', color: '#000', pricingMode: 'hourly', hourlyRateCents: 8000, status: 'active', createdAt: NOW, updatedAt: NOW }).run()
-  testDb.insert(schema.tasks).values({ id: TK, userId: U, description: 'Aufbau', createdAt: NOW, updatedAt: NOW }).run()
+  testDb
+    .insert(schema.users)
+    .values({ id: U, displayName: 'Owner', tier: 'pro', createdAt: NOW, updatedAt: NOW })
+    .run()
+  testDb
+    .insert(schema.orderTypes)
+    .values({ id: OT, userId: U, name: 'Hochzeit', digit: 1, createdAt: NOW, updatedAt: NOW })
+    .run()
+  testDb
+    .insert(schema.customers)
+    .values({
+      id: CU,
+      userId: U,
+      customerNumber: '26101',
+      orderTypeId: OT,
+      name: 'Müller',
+      createdAt: NOW,
+      updatedAt: NOW,
+    })
+    .run()
+  testDb
+    .insert(schema.projects)
+    .values({
+      id: P1,
+      userId: U,
+      customerId: CU,
+      title: 'P1',
+      color: '#000',
+      pricingMode: 'hourly',
+      hourlyRateCents: 8000,
+      status: 'active',
+      createdAt: NOW,
+      updatedAt: NOW,
+    })
+    .run()
+  testDb
+    .insert(schema.tasks)
+    .values({ id: TK, userId: U, description: 'Aufbau', createdAt: NOW, updatedAt: NOW })
+    .run()
 }
 
 function getEntry(id: string) {
@@ -170,19 +204,22 @@ describe('createTimeEntry', () => {
 
   it('ignores rateOverrideCents for fixed-price projects', () => {
     // Seed a fixed-price project
-    testDb.insert(schema.projects).values({
-      id: P2,
-      userId: U,
-      customerId: CU,
-      title: 'P2 Fixed',
-      color: '#000',
-      pricingMode: 'fixed',
-      fixedPriceCents: 150000,
-      hourlyRateCents: null,
-      status: 'active',
-      createdAt: NOW,
-      updatedAt: NOW,
-    }).run()
+    testDb
+      .insert(schema.projects)
+      .values({
+        id: P2,
+        userId: U,
+        customerId: CU,
+        title: 'P2 Fixed',
+        color: '#000',
+        pricingMode: 'fixed',
+        fixedPriceCents: 150000,
+        hourlyRateCents: null,
+        status: 'active',
+        createdAt: NOW,
+        updatedAt: NOW,
+      })
+      .run()
 
     const startedAt = new Date('2026-07-01T10:00:00Z')
     const endedAt = new Date('2026-07-01T11:00:00Z')

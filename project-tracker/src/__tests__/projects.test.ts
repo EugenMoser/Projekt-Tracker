@@ -1,6 +1,16 @@
-import { jest, describe, it, expect, beforeEach } from '@jest/globals'
-import { eq } from 'drizzle-orm'
+import { beforeEach, describe, expect, it, jest } from '@jest/globals'
 import * as schema from '@projekt-tracker/schema'
+import { eq } from 'drizzle-orm'
+
+import { db as mockDb } from '../db/client'
+import {
+  createProject,
+  listActiveProjects,
+  listArchivedProjects,
+  moveProject,
+  restoreProject,
+} from '../repositories/projects'
+import { SORT_STEP } from '../utils/sortOrder'
 
 // Same pattern as tasks.test.ts: swap the expo-sqlite singleton for a real
 // in-memory better-sqlite3 database, so the repository runs against real SQL.
@@ -13,13 +23,6 @@ jest.mock('../db/client', () => {
   for (const m of schema.migrations) sqlite.exec(m.sql)
   return { db: drizzle(sqlite, { schema }) }
 })
-
-import { db as mockDb } from '../db/client'
-import {
-  listActiveProjects, createProject, moveProject,
-  listArchivedProjects, restoreProject,
-} from '../repositories/projects'
-import { SORT_STEP } from '../utils/sortOrder'
 
 const U = '00000000-0000-0000-0000-000000000001'
 const U2 = '00000000-0000-0000-0000-0000000000ff'
@@ -35,23 +38,50 @@ beforeEach(() => {
 
   const now = new Date('2026-08-01T10:00:00Z')
   for (const id of [U, U2]) {
-    mockDb.insert(schema.users).values({
-      id, displayName: 'Owner', tier: 'pro', createdAt: now, updatedAt: now,
-    }).run()
+    mockDb
+      .insert(schema.users)
+      .values({
+        id,
+        displayName: 'Owner',
+        tier: 'pro',
+        createdAt: now,
+        updatedAt: now,
+      })
+      .run()
   }
-  mockDb.insert(schema.orderTypes).values({
-    id: OT, userId: U, name: 'Foto', digit: 1, createdAt: now, updatedAt: now,
-  }).run()
-  mockDb.insert(schema.customers).values({
-    id: CU, userId: U, customerNumber: '26101', orderTypeId: OT,
-    name: 'Muster', createdAt: now, updatedAt: now,
-  }).run()
+  mockDb
+    .insert(schema.orderTypes)
+    .values({
+      id: OT,
+      userId: U,
+      name: 'Foto',
+      digit: 1,
+      createdAt: now,
+      updatedAt: now,
+    })
+    .run()
+  mockDb
+    .insert(schema.customers)
+    .values({
+      id: CU,
+      userId: U,
+      customerNumber: '26101',
+      orderTypeId: OT,
+      name: 'Muster',
+      createdAt: now,
+      updatedAt: now,
+    })
+    .run()
 })
 
 function makeProject(title: string): string {
   return createProject(U, {
-    customerId: CU, title, color: '#4A90D9',
-    pricingMode: 'hourly', hourlyRateCents: 8000, taskIds: [],
+    customerId: CU,
+    title,
+    color: '#4A90D9',
+    pricingMode: 'hourly',
+    hourlyRateCents: 8000,
+    taskIds: [],
   })
 }
 
@@ -60,8 +90,7 @@ function orderedTitles(): string[] {
 }
 
 function rowOf(id: string) {
-  return mockDb.select().from(schema.projects)
-    .where(eq(schema.projects.id, id)).get()!
+  return mockDb.select().from(schema.projects).where(eq(schema.projects.id, id)).get()!
 }
 
 function sortOrderOf(id: string): number {
@@ -125,8 +154,11 @@ describe('project ordering', () => {
     // Backdate the row we are about to move, so "was written" is provable:
     // without a real UPDATE its updated_at would still be the old value.
     const backdated = new Date('2026-01-01T00:00:00Z')
-    mockDb.update(schema.projects).set({ updatedAt: backdated })
-      .where(eq(schema.projects.id, c)).run()
+    mockDb
+      .update(schema.projects)
+      .set({ updatedAt: backdated })
+      .where(eq(schema.projects.id, c))
+      .run()
     const before = new Map([a, b, c].map((id) => [id, updatedAtOf(id)]))
 
     moveProject(U, c, null, a)
@@ -166,7 +198,8 @@ describe('project ordering', () => {
     const c = makeProject('C')
     const archivedOrder = sortOrderOf(archived)
 
-    mockDb.update(schema.projects)
+    mockDb
+      .update(schema.projects)
       .set({ status: 'archived' })
       .where(eq(schema.projects.id, archived))
       .run()
@@ -178,7 +211,8 @@ describe('project ordering', () => {
     expect(sortOrderOf(d)).toBeGreaterThan(archivedOrder)
 
     // Restoring puts it back between A and C, where it was.
-    mockDb.update(schema.projects)
+    mockDb
+      .update(schema.projects)
       .set({ status: 'active' })
       .where(eq(schema.projects.id, archived))
       .run()
@@ -199,7 +233,11 @@ describe('project ordering', () => {
 
 describe('archiving and restoring', () => {
   function archive(id: string) {
-    mockDb.update(schema.projects).set({ status: 'archived' }).where(eq(schema.projects.id, id)).run()
+    mockDb
+      .update(schema.projects)
+      .set({ status: 'archived' })
+      .where(eq(schema.projects.id, id))
+      .run()
   }
 
   it('lists only archived projects, most recently archived first', () => {
@@ -207,16 +245,22 @@ describe('archiving and restoring', () => {
     const b = makeProject('B')
     makeProject('C')
     archive(a)
-    mockDb.update(schema.projects).set({ updatedAt: new Date('2026-08-02T00:00:00Z') })
-      .where(eq(schema.projects.id, a)).run()
+    mockDb
+      .update(schema.projects)
+      .set({ updatedAt: new Date('2026-08-02T00:00:00Z') })
+      .where(eq(schema.projects.id, a))
+      .run()
     archive(b)
-    mockDb.update(schema.projects).set({ updatedAt: new Date('2026-08-03T00:00:00Z') })
-      .where(eq(schema.projects.id, b)).run()
+    mockDb
+      .update(schema.projects)
+      .set({ updatedAt: new Date('2026-08-03T00:00:00Z') })
+      .where(eq(schema.projects.id, b))
+      .run()
 
     expect(listArchivedProjects(U).map((p) => p.title)).toEqual(['B', 'A'])
   })
 
-  it('does not list another user\'s archived projects', () => {
+  it("does not list another user's archived projects", () => {
     const a = makeProject('A')
     archive(a)
 
@@ -238,7 +282,11 @@ describe('archiving and restoring', () => {
     const a = makeProject('A')
     archive(a)
     const backdated = new Date('2026-01-01T00:00:00Z')
-    mockDb.update(schema.projects).set({ updatedAt: backdated }).where(eq(schema.projects.id, a)).run()
+    mockDb
+      .update(schema.projects)
+      .set({ updatedAt: backdated })
+      .where(eq(schema.projects.id, a))
+      .run()
 
     restoreProject(U, a)
 

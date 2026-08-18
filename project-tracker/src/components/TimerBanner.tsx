@@ -1,5 +1,7 @@
 import React from 'react'
-import { View, Text, StyleSheet, Pressable } from 'react-native'
+
+import { Pressable, StyleSheet, Text } from 'react-native'
+
 import { useTimerStore } from '../store/timerStore'
 import { formatDuration } from '../utils/time'
 
@@ -28,7 +30,9 @@ export function TimerBanner({ projectTitle, onPress }: Props) {
       accessibilityLabel={`Active timer: ${projectTitle}, elapsed ${formatDuration(elapsed)}`}
     >
       <Text style={styles.icon}>▶</Text>
-      <Text style={styles.title} numberOfLines={1}>{projectTitle}</Text>
+      <Text style={styles.title} numberOfLines={1}>
+        {projectTitle}
+      </Text>
       <Text style={styles.time}>{formatDuration(elapsed)}</Text>
     </Pressable>
   )
