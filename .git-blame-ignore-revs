@@ -1,0 +1,5 @@
+# Formatierungs-Commits, die git blame ignorieren soll.
+# Aktivieren mit:  git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# style: apply prettier across the repo
+18707dde5d5464f9aff77789fb834631489cbe7d
