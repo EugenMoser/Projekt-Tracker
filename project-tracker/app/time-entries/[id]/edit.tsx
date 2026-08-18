@@ -1,72 +1,148 @@
-import React from 'react'
-import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native'
-import { useLocalSearchParams, router } from 'expo-router'
-import { TimerPickerModal } from 'react-native-timer-picker'
-import { KeyboardAwareScrollView } from '../../../src/components/KeyboardAwareView'
-import { listTasksForProject } from '../../../src/repositories/tasks'
-import { getTimeEntry, updateTimeEntry, softDeleteTimeEntry } from '../../../src/repositories/timeEntries'
-import { applyRateToTimeEntry } from '../../../src/repositories/rateAdjustments'
-import { db } from '../../../src/db/client'
-import { toTimeStr, toDateStr, parseDateTimeLocal, parseTimeStr, formatHoursMinutes } from '../../../src/utils/time'
-import { useSettingsStore } from '../../../src/store/settingsStore'
+import React from "react";
 
-const OWNER_ID = '00000000-0000-0000-0000-000000000001'
+import { router, useLocalSearchParams } from "expo-router";
+import {
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { TimerPickerModal } from "react-native-timer-picker";
 
-type PickerTarget = 'start' | 'end' | null
+import { KeyboardAwareScrollView } from "../../../src/components/KeyboardAwareView";
+import {
+  TIME_PICKER_CANCEL_BUTTON,
+  TIME_PICKER_CONFIRM_BUTTON,
+  TIME_PICKER_MODAL_STYLES,
+} from "../../../src/components/timePickerModalStyles";
+import { db } from "../../../src/db/client";
+import { applyRateToTimeEntry } from "../../../src/repositories/rateAdjustments";
+import { listTasksForProject } from "../../../src/repositories/tasks";
+import {
+  getTimeEntry,
+  softDeleteTimeEntry,
+  updateTimeEntry,
+} from "../../../src/repositories/timeEntries";
+import { useSettingsStore } from "../../../src/store/settingsStore";
+import {
+  formatHoursMinutes,
+  parseDateTimeLocal,
+  parseTimeStr,
+  toDateStr,
+  toTimeStr,
+} from "../../../src/utils/time";
+
+const OWNER_ID = "00000000-0000-0000-0000-000000000001";
+
+type PickerTarget = "start" | "end" | null;
 
 export default function EditTimeEntryScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>()
-  const entry = getTimeEntry(OWNER_ID, id)
-  const use12HourFormat = useSettingsStore((s) => s.use12HourFormat)
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const entry = getTimeEntry(OWNER_ID, id);
+  const use12HourFormat = useSettingsStore((s) => s.use12HourFormat);
 
-  const [dateStr, setDateStr] = React.useState(entry ? toDateStr(entry.startedAt) : '')
-  const [startStr, setStartStr] = React.useState(entry ? toTimeStr(entry.startedAt) : '')
-  const [endStr, setEndStr] = React.useState(entry ? toTimeStr(entry.endedAt) : '')
-  const [activePicker, setActivePicker] = React.useState<PickerTarget>(null)
-  const [taskId, setTaskId] = React.useState(entry?.taskId ?? '')
-  const [notes, setNotes] = React.useState(entry?.notes ?? '')
+  const [dateStr, setDateStr] = React.useState(
+    entry ? toDateStr(entry.startedAt) : "",
+  );
+  const [startStr, setStartStr] = React.useState(
+    entry ? toTimeStr(entry.startedAt) : "",
+  );
+  const [endStr, setEndStr] = React.useState(
+    entry ? toTimeStr(entry.endedAt) : "",
+  );
+  const [activePicker, setActivePicker] =
+    React.useState<PickerTarget>(null);
+  const [taskId, setTaskId] = React.useState(entry?.taskId ?? "");
+  const [notes, setNotes] = React.useState(entry?.notes ?? "");
 
-  const isHourly = entry?.pricingModeSnapshot === 'hourly'
+  const isHourly = entry?.pricingModeSnapshot === "hourly";
   const [rateStr, setRateStr] = React.useState(
-    entry?.rateSnapshotCents != null ? (entry.rateSnapshotCents / 100).toFixed(2).replace('.', ',') : '',
-  )
+    entry?.rateSnapshotCents != null
+      ? (entry.rateSnapshotCents / 100).toFixed(2).replace(".", ",")
+      : "",
+  );
 
-  const tasks = entry ? listTasksForProject(OWNER_ID, entry.projectId) : []
+  const tasks = entry
+    ? listTasksForProject(OWNER_ID, entry.projectId)
+    : [];
 
-  if (!entry) return <View style={s.c}><Text>Nicht gefunden</Text></View>
+  if (!entry)
+    return (
+      <View style={s.c}>
+        <Text>Nicht gefunden</Text>
+      </View>
+    );
 
   const handleSave = () => {
-    const startedAt = parseDateTimeLocal(dateStr, startStr)
-    const endedAt = parseDateTimeLocal(dateStr, endStr)
-    if (!startedAt || !endedAt) { Alert.alert('Ungültig', 'Datum/Uhrzeit ungültig.'); return }
-    if (endedAt <= startedAt) { Alert.alert('Ungültig', 'Ende muss nach Start liegen.'); return }
-    if (!taskId) { Alert.alert('Pflichtfeld', 'Aufgabe wählen.'); return }
-
-    let newRateCents: number | null = null
-    if (isHourly && rateStr.trim() !== '') {
-      const parsed = Math.round(parseFloat(rateStr.replace(',', '.')) * 100)
-      if (isNaN(parsed) || parsed <= 0) { Alert.alert('Ungültig', 'Stundensatz muss größer als 0 sein.'); return }
-      newRateCents = parsed
+    const startedAt = parseDateTimeLocal(dateStr, startStr);
+    const endedAt = parseDateTimeLocal(dateStr, endStr);
+    if (!startedAt || !endedAt) {
+      Alert.alert("Ungültig", "Datum/Uhrzeit ungültig.");
+      return;
+    }
+    if (endedAt <= startedAt) {
+      Alert.alert("Ungültig", "Ende muss nach Start liegen.");
+      return;
+    }
+    if (!taskId) {
+      Alert.alert("Pflichtfeld", "Aufgabe wählen.");
+      return;
     }
 
-    updateTimeEntry(OWNER_ID, id, { startedAt, endedAt, taskId, notes: notes.trim() || undefined })
-
-    if (newRateCents !== null && newRateCents !== entry!.rateSnapshotCents) {
-      applyRateToTimeEntry(db, OWNER_ID, id, newRateCents)
+    let newRateCents: number | null = null;
+    if (isHourly && rateStr.trim() !== "") {
+      const parsed = Math.round(
+        parseFloat(rateStr.replace(",", ".")) * 100,
+      );
+      if (isNaN(parsed) || parsed <= 0) {
+        Alert.alert("Ungültig", "Stundensatz muss größer als 0 sein.");
+        return;
+      }
+      newRateCents = parsed;
     }
 
-    router.back()
-  }
+    updateTimeEntry(OWNER_ID, id, {
+      startedAt,
+      endedAt,
+      taskId,
+      notes: notes.trim() || undefined,
+    });
+
+    if (
+      newRateCents !== null &&
+      newRateCents !== entry!.rateSnapshotCents
+    ) {
+      applyRateToTimeEntry(db, OWNER_ID, id, newRateCents);
+    }
+
+    router.back();
+  };
 
   const handleDelete = () => {
-    Alert.alert('Zeiteintrag löschen?', 'Diese Aktion kann nicht rückgängig gemacht werden.', [
-      { text: 'Abbrechen', style: 'cancel' },
-      { text: 'Löschen', style: 'destructive', onPress: () => { softDeleteTimeEntry(OWNER_ID, id); router.back() } },
-    ])
-  }
+    Alert.alert(
+      "Zeiteintrag löschen?",
+      "Diese Aktion kann nicht rückgängig gemacht werden.",
+      [
+        { text: "Abbrechen", style: "cancel" },
+        {
+          text: "Löschen",
+          style: "destructive",
+          onPress: () => {
+            softDeleteTimeEntry(OWNER_ID, id);
+            router.back();
+          },
+        },
+      ],
+    );
+  };
 
   return (
-    <KeyboardAwareScrollView style={s.c} contentContainerStyle={{ gap: 12, paddingBottom: 40 }}>
+    <KeyboardAwareScrollView
+      style={s.c}
+      contentContainerStyle={{ gap: 12, paddingBottom: 40 }}
+    >
       <Text style={s.label}>Datum (YYYY-MM-DD)</Text>
       <TextInput
         style={s.input}
@@ -78,7 +154,7 @@ export default function EditTimeEntryScreen() {
       <Text style={s.label}>Startzeit</Text>
       <Pressable
         style={s.dropdown}
-        onPress={() => setActivePicker('start')}
+        onPress={() => setActivePicker("start")}
         accessibilityRole="button"
         accessibilityLabel={`Startzeit ${startStr}. Antippen zum Ändern.`}
       >
@@ -88,7 +164,7 @@ export default function EditTimeEntryScreen() {
       <Text style={s.label}>Endzeit</Text>
       <Pressable
         style={s.dropdown}
-        onPress={() => setActivePicker('end')}
+        onPress={() => setActivePicker("end")}
         accessibilityRole="button"
         accessibilityLabel={`Endzeit ${endStr}. Antippen zum Ändern.`}
       >
@@ -97,19 +173,30 @@ export default function EditTimeEntryScreen() {
       </Pressable>
       <TimerPickerModal
         visible={activePicker !== null}
-        setIsVisible={(visible) => { if (!visible) setActivePicker(null) }}
-        modalTitle={activePicker === 'start' ? 'Startzeit wählen' : 'Endzeit wählen'}
+        setIsVisible={(visible) => {
+          if (!visible) setActivePicker(null);
+        }}
+        modalTitle={
+          activePicker === "start" ? "Startzeit wählen" : "Endzeit wählen"
+        }
         hideSeconds
         use12HourPicker={use12HourFormat}
         hourLimit={{ min: 0, max: 23 }}
-        initialValue={activePicker === 'start' ? parseTimeStr(startStr) : parseTimeStr(endStr)}
+        initialValue={
+          activePicker === "start"
+            ? parseTimeStr(startStr)
+            : parseTimeStr(endStr)
+        }
+        cancelButton={TIME_PICKER_CANCEL_BUTTON}
+        confirmButton={TIME_PICKER_CONFIRM_BUTTON}
+        styles={TIME_PICKER_MODAL_STYLES}
         onConfirm={({ hours, minutes }) => {
-          if (activePicker === 'start') {
-            setStartStr(formatHoursMinutes(hours, minutes))
-          } else if (activePicker === 'end') {
-            setEndStr(formatHoursMinutes(hours, minutes))
+          if (activePicker === "start") {
+            setStartStr(formatHoursMinutes(hours, minutes));
+          } else if (activePicker === "end") {
+            setEndStr(formatHoursMinutes(hours, minutes));
           }
-          setActivePicker(null)
+          setActivePicker(null);
         }}
         onCancel={() => setActivePicker(null)}
       />
@@ -123,11 +210,18 @@ export default function EditTimeEntryScreen() {
           accessibilityState={{ selected: t.id === taskId }}
           accessibilityLabel={t.description}
         >
-          <Text>{t.id === taskId ? '◉' : '○'} {t.description}</Text>
+          <Text>
+            {t.id === taskId ? "◉" : "○"} {t.description}
+          </Text>
         </Pressable>
       ))}
       <Text style={s.label}>Notiz</Text>
-      <TextInput style={[s.input, { height: 72 }]} value={notes} onChangeText={setNotes} multiline />
+      <TextInput
+        style={[s.input, { height: 72 }]}
+        value={notes}
+        onChangeText={setNotes}
+        multiline
+      />
       {isHourly && (
         <>
           <Text style={s.label}>Stundensatz (€/h)</Text>
@@ -147,7 +241,7 @@ export default function EditTimeEntryScreen() {
         accessibilityRole="button"
         accessibilityLabel="Zeiteintrag speichern"
       >
-        <Text style={{ color: '#FFF', fontWeight: '600' }}>Speichern</Text>
+        <Text style={{ color: "#FFF", fontWeight: "600" }}>Speichern</Text>
       </Pressable>
       <Pressable
         style={s.deleteBtn}
@@ -155,25 +249,56 @@ export default function EditTimeEntryScreen() {
         accessibilityRole="button"
         accessibilityLabel="Zeiteintrag löschen"
       >
-        <Text style={{ color: '#E74C3C', fontWeight: '600' }}>Zeiteintrag löschen</Text>
+        <Text style={{ color: "#E74C3C", fontWeight: "600" }}>
+          Zeiteintrag löschen
+        </Text>
       </Pressable>
     </KeyboardAwareScrollView>
-  )
+  );
 }
 
 const s = StyleSheet.create({
   c: { flex: 1, padding: 16 },
-  label: { fontSize: 13, color: '#666' },
-  input: { borderWidth: 1, borderColor: '#DDD', borderRadius: 8, padding: 12 },
-  dropdown: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    borderWidth: 1, borderColor: '#DDD', borderRadius: 8, paddingHorizontal: 12,
-    backgroundColor: '#FFF', minHeight: 44,
+  label: { fontSize: 13, color: "#666" },
+  input: {
+    borderWidth: 1,
+    borderColor: "#DDD",
+    borderRadius: 8,
+    padding: 12,
   },
-  dropdownText: { fontSize: 15, color: '#000', flexShrink: 1 },
-  dropdownChevron: { fontSize: 14, color: '#666', marginLeft: 8 },
-  taskRow: { padding: 10, borderRadius: 6, backgroundColor: '#F5F5F5', minHeight: 44 },
-  taskSelected: { backgroundColor: '#D0E8FF' },
-  btn: { backgroundColor: '#4A90D9', padding: 14, borderRadius: 8, alignItems: 'center', minHeight: 44 },
-  deleteBtn: { borderWidth: 1, borderColor: '#E74C3C', padding: 14, borderRadius: 8, alignItems: 'center', minHeight: 44 },
-})
+  dropdown: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderWidth: 1,
+    borderColor: "#DDD",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    backgroundColor: "#FFF",
+    minHeight: 44,
+  },
+  dropdownText: { fontSize: 15, color: "#000", flexShrink: 1 },
+  dropdownChevron: { fontSize: 14, color: "#666", marginLeft: 8 },
+  taskRow: {
+    padding: 10,
+    borderRadius: 6,
+    backgroundColor: "#F5F5F5",
+    minHeight: 44,
+  },
+  taskSelected: { backgroundColor: "#D0E8FF" },
+  btn: {
+    backgroundColor: "#4A90D9",
+    padding: 14,
+    borderRadius: 8,
+    alignItems: "center",
+    minHeight: 44,
+  },
+  deleteBtn: {
+    borderWidth: 1,
+    borderColor: "#E74C3C",
+    padding: 14,
+    borderRadius: 8,
+    alignItems: "center",
+    minHeight: 44,
+  },
+});

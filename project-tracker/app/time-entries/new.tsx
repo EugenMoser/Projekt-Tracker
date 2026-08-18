@@ -9,6 +9,7 @@ import { createTimeEntry } from '../../src/repositories/timeEntries'
 import { getProject } from '../../src/repositories/projects'
 import { toTimeStr, toDateStr, parseDateTimeLocal, parseTimeStr, formatHoursMinutes } from '../../src/utils/time'
 import { useSettingsStore } from '../../src/store/settingsStore'
+import { TIME_PICKER_MODAL_STYLES, TIME_PICKER_CANCEL_BUTTON, TIME_PICKER_CONFIRM_BUTTON } from '../../src/components/timePickerModalStyles'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -188,6 +189,9 @@ export default function NewTimeEntryScreen() {
         use12HourPicker={activePicker !== 'duration' && use12HourFormat}
         hourLimit={activePicker === 'duration' ? undefined : { min: 0, max: 23 }}
         initialValue={pickerInitialValue}
+        cancelButton={TIME_PICKER_CANCEL_BUTTON}
+        confirmButton={TIME_PICKER_CONFIRM_BUTTON}
+        styles={TIME_PICKER_MODAL_STYLES}
         onConfirm={({ hours, minutes }) => {
           if (activePicker === 'duration') {
             setDurationHours(hours)
