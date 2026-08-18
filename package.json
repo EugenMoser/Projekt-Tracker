@@ -6,9 +6,15 @@
     "postinstall": "pnpm --filter @projekt-tracker/schema build",
     "lint": "pnpm -r --filter='./packages/*' lint; pnpm --filter project-tracker lint",
     "typecheck": "pnpm -r typecheck",
-    "test": "pnpm -r test"
+    "test": "pnpm -r test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "engines": {
     "node": ">=22"
+  },
+  "devDependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
+    "prettier": "^3.9.6"
   }
 }
