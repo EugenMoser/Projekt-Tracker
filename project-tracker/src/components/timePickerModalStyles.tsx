@@ -46,9 +46,10 @@ export const TIME_PICKER_MODAL_STYLES = {
   modalTitle: styles.modalTitle,
   buttonContainer: styles.buttonRow,
   contentContainer: { width: '70%' as const },
+
   pickerColumnWidth: {
-    hours: 100,
-    minutes: 100,
+    hours: 120,
+    minutes: 120,
   },
 }
 
