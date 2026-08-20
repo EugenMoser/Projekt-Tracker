@@ -12,6 +12,9 @@ import { createProject } from '../../src/repositories/projects'
 import { listTasks } from '../../src/repositories/tasks'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
+// Startwert eines Datenfelds, nicht die Markenfarbe: Eine Änderung an
+// colors.primary darf die Vorgabefarbe neuer Projekte nicht mitziehen (Spec E6).
+// eslint-disable-next-line no-restricted-syntax
 const DEFAULT_COLOR = '#4A90D9'
 
 export default function NewProjectScreen() {

@@ -4,6 +4,10 @@ import { Ionicons } from '@expo/vector-icons'
 import { Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import ReanimatedColorPicker, { BrightnessSlider, Panel3, Preview } from 'reanimated-color-picker'
 
+// Projektfarben-Presets: Auswahlmöglichkeiten für ein Datenfeld, keine
+// Gestaltung der App. Dass das erste Preset denselben Wert wie
+// colors.primary hat, ist Zufall und soll einer bleiben (Spec E6).
+// eslint-disable-next-line no-restricted-syntax
 const COLORS = ['#4A90D9', '#27AE60', '#E67E22', '#8E44AD', '#E74C3C', '#F1C40F']
 
 interface Props {
@@ -130,6 +134,9 @@ export function ColorPicker({ value, onChange }: Props) {
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', gap: 12, flexWrap: 'wrap' },
   swatch: { width: 44, height: 44, borderRadius: 22 },
+  // Muss gegen alle sechs Presets und jede frei gewählte Farbe kontrastieren;
+  // ein Palette-Grau würde auf dunklen Presets verschwinden (Spec E6).
+  // eslint-disable-next-line no-restricted-syntax
   selected: { borderWidth: 3, borderColor: '#000' },
   customSwatch: {
     backgroundColor: '#F0F0F0',

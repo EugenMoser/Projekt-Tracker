@@ -16,6 +16,10 @@ interface Props {
 
 export function ProjectTile({ title, customerName, color, isActive, onPress, onEditPress }: Props) {
   const textColor = getContrastTextColor(color)
+  // Aus der Projektfarbe berechnet, nicht aus der Palette gewählt: Ein festes
+  // Token würde genau die Anpassung an eine zur Bauzeit unbekannte Nutzerfarbe
+  // zerstören (Spec E6). textColor stammt aus getContrastTextColor().
+  // eslint-disable-next-line no-restricted-syntax
   const secondaryTextColor = textColor === '#000000' ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.8)'
 
   const handlePress = () => {

@@ -45,6 +45,9 @@ export default function EditProjectScreen() {
   const [customerMenuVisible, setCustomerMenuVisible] = React.useState(false)
   const [taskMenuVisible, setTaskMenuVisible] = React.useState(false)
   const [description, setDescription] = React.useState(project?.description ?? '')
+  // Fallback auf die Vorgabefarbe neuer Projekte, nicht auf die Markenfarbe
+  // (Spec E6).
+  // eslint-disable-next-line no-restricted-syntax
   const [color, setColor] = React.useState(project?.color ?? '#4A90D9')
   const [pricingMode, setPricingMode] = React.useState<'hourly' | 'fixed'>(
     (project?.pricingMode as 'hourly' | 'fixed') ?? 'hourly',
