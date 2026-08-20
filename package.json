@@ -3,6 +3,7 @@
   "private": true,
   "packageManager": "pnpm@10.28.0",
   "scripts": {
+    "prepare": "git config core.hooksPath .githooks || true",
     "postinstall": "pnpm --filter @projekt-tracker/schema build",
     "lint": "pnpm -r --filter='./packages/*' lint; pnpm --filter project-tracker lint",
     "typecheck": "pnpm -r typecheck",

@@ -1,0 +1,38 @@
+#!/bin/sh
+# Formats staged files with prettier and stages the result, so unformatted
+# code cannot reach the history no matter which editor produced it.
+#
+# Activated by the root "prepare" script (git config core.hooksPath .githooks),
+# which pnpm runs after every install. Skip a single commit with --no-verify.
+set -eu
+set -f # no globbing: paths like app/(tabs)/index.tsx are passed unquoted
+
+staged=$(git diff --cached --name-only --diff-filter=ACMR)
+[ -z "$staged" ] && exit 0
+
+# A file with unstaged changes on top of its staged version is left alone:
+# re-adding it would pull those unstaged edits into the commit as well.
+unstaged=$(git diff --name-only)
+
+format=""
+skip=""
+for file in $staged; do
+  if printf '%s\n' "$unstaged" | grep -qxF "$file"; then
+    skip="$skip $file"
+  else
+    format="$format $file"
+  fi
+done
+
+if [ -n "$format" ]; then
+  # --ignore-unknown passes over file types prettier has no parser for
+  # (png, sql) instead of failing the commit on them.
+  ./node_modules/.bin/prettier --ignore-unknown --write $format >/dev/null
+  git add $format
+fi
+
+if [ -n "$skip" ]; then
+  echo "pre-commit: übersprungen, weil zusätzlich ungestagte Änderungen vorliegen:"
+  for file in $skip; do echo "  $file"; done
+  echo "  → 'pnpm format' und erneut stagen, falls die Formatierung nötig ist."
+fi
