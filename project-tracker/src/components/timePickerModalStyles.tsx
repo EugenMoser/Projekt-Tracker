@@ -2,6 +2,8 @@ import React from 'react'
 
 import { Pressable, StyleSheet, Text } from 'react-native'
 
+import { colors, fontSize, fontWeight } from '../theme'
+
 // Shared look for every react-native-timer-picker modal in the app (manual
 // time entry create + edit). The library's own button styling is TextStyle
 // merged onto an unstyled TouchableOpacity via a style ARRAY — fragile to
@@ -11,7 +13,11 @@ import { Pressable, StyleSheet, Text } from 'react-native'
 // ordinary app styling identical to the Abbrechen/Speichern buttons
 // elsewhere (e.g. StopModal).
 const styles = StyleSheet.create({
-  modalTitle: { fontSize: 18, fontWeight: '600', color: '#333' },
+  modalTitle: {
+    fontSize: fontSize.title,
+    fontWeight: fontWeight.semibold,
+    color: colors.textPrimary,
+  },
   buttonRow: {
     flexDirection: 'row',
     gap: 12,
@@ -26,20 +32,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 8,
-    backgroundColor: '#EEE',
+    backgroundColor: colors.surfaceMuted,
     minHeight: 44,
   },
-  cancelBtnText: { color: '#333', fontWeight: '600', fontSize: 14 },
+  cancelBtnText: {
+    color: colors.textPrimary,
+    fontWeight: fontWeight.semibold,
+    fontSize: fontSize.bodySmall,
+  },
   confirmBtn: {
     flex: 1,
     padding: 14,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 8,
-    backgroundColor: '#4A90D9',
+    backgroundColor: colors.primary,
     minHeight: 44,
   },
-  confirmBtnText: { color: '#FFF', fontWeight: '600', fontSize: 14 },
+  confirmBtnText: {
+    color: colors.textOnPrimary,
+    fontWeight: fontWeight.semibold,
+    fontSize: fontSize.bodySmall,
+  },
 })
 
 export const TIME_PICKER_MODAL_STYLES = {

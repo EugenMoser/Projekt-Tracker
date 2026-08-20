@@ -2,6 +2,7 @@ import React from 'react'
 
 import { Modal, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native'
 
+import { colors, fontSize, fontWeight } from '../theme'
 import { TaskPicker } from './TaskPicker'
 
 interface Props {
@@ -76,11 +77,11 @@ export function TaskPickerModal({
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: colors.overlay,
     justifyContent: 'flex-end',
   },
   sheet: {
-    backgroundColor: '#F2F2F7',
+    backgroundColor: colors.background,
     borderTopLeftRadius: 14,
     borderTopRightRadius: 14,
     paddingBottom: 34,
@@ -89,20 +90,20 @@ const styles = StyleSheet.create({
   handle: {
     width: 36,
     height: 4,
-    backgroundColor: '#C7C7CC',
+    backgroundColor: colors.buttonDisabled,
     borderRadius: 2,
     alignSelf: 'center',
     marginTop: 8,
     marginBottom: 16,
   },
   title: {
-    fontSize: 13,
-    color: '#666',
+    fontSize: fontSize.label,
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: 16,
   },
   done: {
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     borderRadius: 10,
     padding: 16,
     marginTop: 8,
@@ -110,9 +111,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   doneText: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: fontSize.bodyLarge,
+    fontWeight: fontWeight.semibold,
     textAlign: 'center',
-    color: '#333',
+    color: colors.textPrimary,
   },
 })

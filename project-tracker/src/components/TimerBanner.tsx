@@ -3,6 +3,7 @@ import React from 'react'
 import { Pressable, StyleSheet, Text } from 'react-native'
 
 import { useTimerStore } from '../store/timerStore'
+import { colors, fontSize, fontWeight } from '../theme'
 import { formatDuration } from '../utils/time'
 
 interface Props {
@@ -43,12 +44,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#1A1A1A',
+    backgroundColor: colors.surfaceInverse,
     padding: 12,
     paddingHorizontal: 16,
     minHeight: 44,
   },
-  icon: { color: '#4CD964', fontSize: 14 },
-  title: { flex: 1, color: '#FFF', fontWeight: '600' },
-  time: { color: '#FFF', fontFamily: 'monospace', fontSize: 16 },
+  icon: { color: colors.success, fontSize: fontSize.bodySmall },
+  title: { flex: 1, color: colors.textOnPrimary, fontWeight: fontWeight.semibold },
+  time: { color: colors.textOnPrimary, fontFamily: 'monospace', fontSize: fontSize.bodyLarge },
 })

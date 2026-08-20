@@ -5,6 +5,7 @@ import { Alert, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-na
 
 import { isBiometryEnabled, verifyPin } from '../auth/pinStorage'
 import { useLockStore } from '../store/lockStore'
+import { colors, fontSize, fontWeight } from '../theme'
 
 interface Props {
   onUnlock: () => void
@@ -132,11 +133,11 @@ export function LockScreen({ onUnlock }: Props) {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#F2F2F7' },
+  safe: { flex: 1, backgroundColor: colors.background },
   container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 },
-  title: { fontSize: 22, fontWeight: '600', marginBottom: 24 },
-  dots: { fontSize: 28, letterSpacing: 12, marginBottom: 16 },
-  lockout: { color: '#FF3B30', fontSize: 14, marginBottom: 16 },
+  title: { fontSize: fontSize.headline, fontWeight: fontWeight.semibold, marginBottom: 24 },
+  dots: { fontSize: fontSize.display, letterSpacing: 12, marginBottom: 16 },
+  lockout: { color: colors.danger, fontSize: fontSize.bodySmall, marginBottom: 16 },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -148,22 +149,26 @@ const styles = StyleSheet.create({
     height: 80,
     margin: 4,
     borderRadius: 40,
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
   keyInvisible: { backgroundColor: 'transparent' },
-  keyPressed: { backgroundColor: '#E5E5EA' },
-  keyText: { fontSize: 24, fontWeight: '400' },
+  keyPressed: { backgroundColor: colors.surfacePressed },
+  keyText: { fontSize: fontSize.keypad, fontWeight: fontWeight.regular },
   confirm: {
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.primary,
     borderRadius: 12,
     paddingHorizontal: 48,
     paddingVertical: 14,
     marginBottom: 16,
   },
-  confirmDisabled: { backgroundColor: '#C7C7CC' },
-  confirmText: { color: '#FFF', fontSize: 17, fontWeight: '600' },
+  confirmDisabled: { backgroundColor: colors.buttonDisabled },
+  confirmText: {
+    color: colors.textOnPrimary,
+    fontSize: fontSize.bodyXl,
+    fontWeight: fontWeight.semibold,
+  },
   biometry: { padding: 12 },
-  biometryText: { color: '#007AFF', fontSize: 16 },
+  biometryText: { color: colors.primary, fontSize: fontSize.bodyLarge },
 })

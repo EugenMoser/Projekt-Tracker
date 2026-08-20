@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { createTask } from '../repositories/tasks'
 import { discardTimer, stopTimer } from '../repositories/timers'
+import { colors, fontSize, fontWeight } from '../theme'
 import { KeyboardAwareView } from './KeyboardAwareView'
 import { TaskPicker } from './TaskPicker'
 
@@ -106,7 +107,9 @@ export function StopModal({ visible, projectId, onDone, onCancel, onDiscard }: P
                   : 'Timer speichern und stoppen'
               }
             >
-              <Text style={{ color: '#FFF', fontWeight: '600' }}>{saveLabel}</Text>
+              <Text style={{ color: colors.textOnPrimary, fontWeight: fontWeight.semibold }}>
+                {saveLabel}
+              </Text>
             </Pressable>
           </View>
           <Pressable
@@ -125,15 +128,15 @@ export function StopModal({ visible, projectId, onDone, onCancel, onDiscard }: P
 
 const styles = StyleSheet.create({
   container: { flex: 1, paddingTop: 24, paddingHorizontal: 24, paddingBottom: 24 },
-  heading: { fontSize: 20, fontWeight: '700', marginBottom: 16 },
-  label: { fontSize: 14, color: '#666', marginBottom: 8 },
+  heading: { fontSize: fontSize.titleLarge, fontWeight: fontWeight.bold, marginBottom: 16 },
+  label: { fontSize: fontSize.bodySmall, color: colors.textSecondary, marginBottom: 8 },
   actions: { flexDirection: 'row', gap: 12, marginTop: 24 },
   btnCancel: {
     flex: 1,
     padding: 14,
     alignItems: 'center',
     borderRadius: 8,
-    backgroundColor: '#EEE',
+    backgroundColor: colors.surfaceMuted,
     minHeight: 44,
     justifyContent: 'center',
   },
@@ -142,7 +145,7 @@ const styles = StyleSheet.create({
     padding: 14,
     alignItems: 'center',
     borderRadius: 8,
-    backgroundColor: '#4A90D9',
+    backgroundColor: colors.primary,
     minHeight: 44,
     justifyContent: 'center',
   },
@@ -155,7 +158,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   btnDiscardText: {
-    color: '#D32F2F',
-    fontWeight: '500',
+    color: colors.danger,
+    fontWeight: fontWeight.medium,
   },
 })

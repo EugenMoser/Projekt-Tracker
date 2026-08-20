@@ -3,6 +3,7 @@ import React from 'react'
 import { Pressable, SectionList, StyleSheet, Text, TextInput } from 'react-native'
 
 import { listTasks, listTasksForProject } from '../repositories/tasks'
+import { colors, fontSize, fontWeight } from '../theme'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -125,9 +126,9 @@ export function TaskPicker({
 
 const styles = StyleSheet.create({
   sectionHeader: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#999',
+    fontSize: fontSize.captionLarge,
+    fontWeight: fontWeight.semibold,
+    color: colors.textPlaceholder,
     textTransform: 'uppercase',
     marginTop: 12,
     marginBottom: 4,
@@ -136,18 +137,18 @@ const styles = StyleSheet.create({
     padding: 14,
     borderRadius: 8,
     marginBottom: 6,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: colors.background,
     minHeight: 44,
     justifyContent: 'center',
   },
-  taskSelected: { backgroundColor: '#D0E8FF' },
+  taskSelected: { backgroundColor: colors.primarySelected },
   input: {
     borderWidth: 1,
-    borderColor: '#DDD',
+    borderColor: colors.border,
     borderRadius: 8,
     padding: 12,
     marginTop: 8,
     minHeight: 44,
   },
-  emptyHint: { padding: 14, color: '#666', fontStyle: 'italic' },
+  emptyHint: { padding: 14, color: colors.textSecondary, fontStyle: 'italic' },
 })

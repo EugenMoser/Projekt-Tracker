@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native'
 
 import { useSyncStore } from '../store/syncStore'
+import { colors, fontSize } from '../theme'
 
 export function SyncIndicator() {
   const { status, lastError, lastSyncedAt } = useSyncStore()
@@ -39,9 +40,9 @@ export function SyncIndicator() {
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 4 },
-  dot: { fontSize: 10, color: '#999' },
-  okDot: { color: '#27AE60' },
-  errorDot: { color: '#C0392B' },
-  label: { fontSize: 13, color: '#666' },
-  error: { color: '#C0392B' },
+  dot: { fontSize: fontSize.micro, color: colors.textPlaceholder },
+  okDot: { color: colors.success },
+  errorDot: { color: colors.danger },
+  label: { fontSize: fontSize.label, color: colors.textSecondary },
+  error: { color: colors.danger },
 })

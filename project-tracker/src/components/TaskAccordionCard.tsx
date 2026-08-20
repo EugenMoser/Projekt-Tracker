@@ -2,6 +2,7 @@ import React from 'react'
 
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 
+import { colors, fontSize, fontWeight } from '../theme'
 import { lighten } from '../utils/color'
 import { taskAmountCents } from '../utils/money'
 import { formatDuration } from '../utils/time'
@@ -115,7 +116,7 @@ export function TaskAccordionCard({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     borderRadius: 10,
     marginHorizontal: 16,
     marginBottom: 8,
@@ -123,7 +124,7 @@ const styles = StyleSheet.create({
   },
   cardExpanded: {
     borderWidth: 1.5,
-    borderColor: '#4A90D9',
+    borderColor: colors.primary,
   },
   header: {
     flexDirection: 'row',
@@ -131,27 +132,27 @@ const styles = StyleSheet.create({
   },
   taskName: {
     flex: 1,
-    fontWeight: '700',
-    fontSize: 14,
-    color: '#333',
+    fontWeight: fontWeight.bold,
+    fontSize: fontSize.bodySmall,
+    color: colors.textPrimary,
   },
   headerRight: {
     alignItems: 'flex-end',
     marginRight: 6,
   },
   taskTime: {
-    fontWeight: '700',
-    fontSize: 14,
-    color: '#4A90D9',
+    fontWeight: fontWeight.bold,
+    fontSize: fontSize.bodySmall,
+    color: colors.primary,
   },
   taskCost: {
-    fontSize: 11,
-    color: '#888',
+    fontSize: fontSize.caption,
+    color: colors.textMuted,
     marginTop: 1,
   },
   chevron: {
-    fontSize: 14,
-    color: '#AAA',
+    fontSize: fontSize.bodySmall,
+    color: colors.textDisabled,
     width: 14,
     textAlign: 'center',
   },
@@ -168,7 +169,7 @@ const styles = StyleSheet.create({
   entriesList: {
     marginTop: 10,
     borderTopWidth: 1,
-    borderTopColor: '#F0F0F5',
+    borderTopColor: colors.borderSubtle,
     paddingTop: 8,
   },
   entryRow: {
@@ -176,19 +177,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 6,
     borderBottomWidth: 1,
-    borderBottomColor: '#F5F5F7',
+    borderBottomColor: colors.background,
   },
   entryInfo: {
     flex: 1,
   },
   entryDur: {
-    fontWeight: '600',
-    fontSize: 13,
-    color: '#333',
+    fontWeight: fontWeight.semibold,
+    fontSize: fontSize.label,
+    color: colors.textPrimary,
   },
   entryDate: {
-    fontSize: 11,
-    color: '#888',
+    fontSize: fontSize.caption,
+    color: colors.textMuted,
     marginTop: 2,
   },
 })

@@ -4,6 +4,8 @@ import { Ionicons } from '@expo/vector-icons'
 import { Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import ReanimatedColorPicker, { BrightnessSlider, Panel3, Preview } from 'reanimated-color-picker'
 
+import { colors, fontSize, fontWeight } from '../theme'
+
 // Projektfarben-Presets: Auswahlmöglichkeiten für ein Datenfeld, keine
 // Gestaltung der App. Dass das erste Preset denselben Wert wie
 // colors.primary hat, ist Zufall und soll einer bleiben (Spec E6).
@@ -68,7 +70,9 @@ export function ColorPicker({ value, onChange }: Props) {
           isCustom && styles.selected,
         ]}
       >
-        {!isCustom && <Ionicons name="color-palette-outline" size={22} color="#666" />}
+        {!isCustom && (
+          <Ionicons name="color-palette-outline" size={22} color={colors.textSecondary} />
+        )}
       </TouchableOpacity>
 
       <Modal
@@ -139,15 +143,15 @@ const styles = StyleSheet.create({
   // eslint-disable-next-line no-restricted-syntax
   selected: { borderWidth: 3, borderColor: '#000' },
   customSwatch: {
-    backgroundColor: '#F0F0F0',
+    backgroundColor: colors.background,
     borderWidth: 1,
-    borderColor: '#CCC',
+    borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: colors.overlay,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
@@ -155,13 +159,17 @@ const styles = StyleSheet.create({
   dialog: {
     width: '100%',
     maxWidth: 340,
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     borderRadius: 14,
     padding: 20,
     alignItems: 'center',
     gap: 16,
   },
-  dialogTitle: { fontSize: 16, fontWeight: '600', color: '#333' },
+  dialogTitle: {
+    fontSize: fontSize.bodyLarge,
+    fontWeight: fontWeight.semibold,
+    color: colors.textPrimary,
+  },
   pickerWrapper: { width: '100%', alignItems: 'center', gap: 16 },
   wheel: { width: 220 },
   brightnessSlider: { width: '100%', height: 28, borderRadius: 14 },
@@ -169,20 +177,28 @@ const styles = StyleSheet.create({
   dialogActions: { flexDirection: 'row', gap: 12, width: '100%' },
   cancelBtn: {
     flex: 1,
-    backgroundColor: '#F2F2F7',
+    backgroundColor: colors.background,
     borderRadius: 8,
     minHeight: 44,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  cancelBtnText: { color: '#333', fontSize: 15, fontWeight: '600' },
+  cancelBtnText: {
+    color: colors.textPrimary,
+    fontSize: fontSize.body,
+    fontWeight: fontWeight.semibold,
+  },
   applyBtn: {
     flex: 1,
-    backgroundColor: '#4A90D9',
+    backgroundColor: colors.primary,
     borderRadius: 8,
     minHeight: 44,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  applyBtnText: { color: '#FFF', fontSize: 15, fontWeight: '700' },
+  applyBtnText: {
+    color: colors.textOnPrimary,
+    fontSize: fontSize.body,
+    fontWeight: fontWeight.bold,
+  },
 })

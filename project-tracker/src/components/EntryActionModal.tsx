@@ -2,6 +2,7 @@ import React from 'react'
 
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native'
 
+import { colors, fontSize, fontWeight } from '../theme'
 import { formatDuration } from '../utils/time'
 
 interface Props {
@@ -76,11 +77,11 @@ export function EntryActionModal({ visible, taskName, entry, onEdit, onDelete, o
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: colors.overlay,
     justifyContent: 'flex-end',
   },
   sheet: {
-    backgroundColor: '#F2F2F7',
+    backgroundColor: colors.background,
     borderTopLeftRadius: 14,
     borderTopRightRadius: 14,
     paddingBottom: 34,
@@ -89,20 +90,20 @@ const styles = StyleSheet.create({
   handle: {
     width: 36,
     height: 4,
-    backgroundColor: '#C7C7CC',
+    backgroundColor: colors.buttonDisabled,
     borderRadius: 2,
     alignSelf: 'center',
     marginTop: 8,
     marginBottom: 16,
   },
   context: {
-    fontSize: 13,
-    color: '#666',
+    fontSize: fontSize.label,
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: 16,
   },
   action: {
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     borderRadius: 10,
     padding: 16,
     marginBottom: 8,
@@ -110,14 +111,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   actionText: {
-    fontSize: 16,
+    fontSize: fontSize.bodyLarge,
     textAlign: 'center',
   },
   danger: {
-    color: '#E74C3C',
+    color: colors.danger,
   },
   cancel: {
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     borderRadius: 10,
     padding: 16,
     marginTop: 8,
@@ -125,9 +126,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   cancelText: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: fontSize.bodyLarge,
+    fontWeight: fontWeight.semibold,
     textAlign: 'center',
-    color: '#333',
+    color: colors.textPrimary,
   },
 })
