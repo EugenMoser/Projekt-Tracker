@@ -2,6 +2,7 @@ import React from 'react'
 
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 
+import { lighten } from '../utils/color'
 import { taskAmountCents } from '../utils/money'
 import { formatDuration } from '../utils/time'
 import { EntryActionModal } from './EntryActionModal'
@@ -21,6 +22,8 @@ interface Props {
   entries: Entry[]
   projectTotalSeconds: number
   pricingMode: 'hourly' | 'fixed'
+  /** Project color the progress bar is drawn in; its track is a pale tint of it. */
+  accentColor: string
   onEditEntry: (entryId: string) => void
   onDeleteEntry: (entryId: string) => void
 }
@@ -30,6 +33,7 @@ export function TaskAccordionCard({
   entries,
   projectTotalSeconds,
   pricingMode,
+  accentColor,
   onEditEntry,
   onDeleteEntry,
 }: Props) {
@@ -72,8 +76,8 @@ export function TaskAccordionCard({
           </View>
           <Text style={styles.chevron}>{expanded ? '⌄' : '›'}</Text>
         </View>
-        <View style={styles.barBg}>
-          <View style={[styles.barFill, { width: `${pct}%` }]} />
+        <View style={[styles.barBg, { backgroundColor: lighten(accentColor, 0.88) }]}>
+          <View style={[styles.barFill, { width: `${pct}%`, backgroundColor: accentColor }]} />
         </View>
       </Pressable>
 
@@ -154,13 +158,11 @@ const styles = StyleSheet.create({
   barBg: {
     marginTop: 8,
     height: 5,
-    backgroundColor: '#E9EEF4',
     borderRadius: 4,
     overflow: 'hidden',
   },
   barFill: {
     height: 5,
-    backgroundColor: '#4A90D9',
     borderRadius: 4,
   },
   entriesList: {

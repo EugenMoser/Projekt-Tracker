@@ -11,6 +11,23 @@ export function getContrastTextColor(hexColor: string): '#000000' | '#FFFFFF' {
   return relativeLuminance(r, g, b) > 0.5 ? '#000000' : '#FFFFFF'
 }
 
+/**
+ * Mixes a hex color towards white and returns the result as `#RRGGBB`.
+ * `amount` is the share of white, from 0 (color unchanged) to 1 (pure white).
+ * Used for surfaces that need a washed-out variant of an arbitrary user-picked
+ * color — a progress-bar track behind a bar in the project color, for instance —
+ * where a fixed grey would clash with anything but the blue preset.
+ */
+export function lighten(hexColor: string, amount: number): string {
+  const { r, g, b } = hexToRgb(hexColor)
+  const mix = (channel: number) => Math.round(channel + (255 - channel) * amount)
+  return `#${[mix(r), mix(g), mix(b)].map(toHexPair).join('')}`
+}
+
+function toHexPair(channel: number): string {
+  return channel.toString(16).padStart(2, '0').toUpperCase()
+}
+
 function hexToRgb(hex: string): { r: number; g: number; b: number } {
   const normalized = hex.replace('#', '')
   const full =

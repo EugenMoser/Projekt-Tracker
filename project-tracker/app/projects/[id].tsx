@@ -181,6 +181,7 @@ export default function ProjectDetailScreen() {
               entries={taskEntries}
               projectTotalSeconds={totalSeconds}
               pricingMode={project.pricingMode as 'hourly' | 'fixed'}
+              accentColor={project.color}
               onEditEntry={handleEditEntry}
               onDeleteEntry={handleDeleteEntry}
             />
