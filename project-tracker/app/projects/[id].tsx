@@ -6,7 +6,13 @@ import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 
 import { TaskAccordionCard } from '../../src/components/TaskAccordionCard'
 import { getCustomer } from '../../src/repositories/customers'
-import { archiveProject, getProject, getProjectTotalSeconds } from '../../src/repositories/projects'
+import {
+  archiveProject,
+  getProject,
+  getProjectTimeEntrySummary,
+  getProjectTotalSeconds,
+  hardDeleteProject,
+} from '../../src/repositories/projects'
 import { listTasksByIds } from '../../src/repositories/tasks'
 import { listTimeEntriesForProject, softDeleteTimeEntry } from '../../src/repositories/timeEntries'
 import { colors, fontSize, fontWeight, radius, space } from '../../src/theme'
@@ -95,6 +101,25 @@ export default function ProjectDetailScreen() {
         text: 'Archivieren',
         onPress: () => {
           archiveProject(OWNER_ID, id)
+          router.back()
+        },
+      },
+    ])
+  }
+
+  const handleHardDelete = () => {
+    const { count, totalSeconds: entrySeconds } = getProjectTimeEntrySummary(OWNER_ID, id)
+    const message =
+      count > 0
+        ? `„${project.title}" wird zusammen mit ${count} Zeiteinträgen (${formatDuration(entrySeconds)}) unwiderruflich gelöscht. Das kann nicht rückgängig gemacht werden.`
+        : `„${project.title}" wird unwiderruflich gelöscht. Das kann nicht rückgängig gemacht werden.`
+    Alert.alert('Endgültig löschen?', message, [
+      { text: 'Abbrechen', style: 'cancel' },
+      {
+        text: 'Endgültig löschen',
+        style: 'destructive',
+        onPress: () => {
+          hardDeleteProject(OWNER_ID, id)
           router.back()
         },
       },
@@ -192,6 +217,9 @@ export default function ProjectDetailScreen() {
         <Pressable style={styles.archiveBtn} onPress={handleArchive}>
           <Text style={styles.archiveBtnText}>Archivieren</Text>
         </Pressable>
+        <Pressable style={styles.hardDeleteBtn} onPress={handleHardDelete}>
+          <Text style={styles.hardDeleteBtnText}>Endgültig löschen</Text>
+        </Pressable>
       </ScrollView>
       <Pressable
         style={styles.fab}
@@ -255,6 +283,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   archiveBtnText: { color: colors.danger, fontWeight: fontWeight.semibold },
+  hardDeleteBtn: {
+    margin: space.lg,
+    marginTop: space.sm,
+    padding: space.lg,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.danger,
+    alignItems: 'center',
+  },
+  hardDeleteBtnText: { color: colors.danger, fontWeight: fontWeight.semibold },
   fab: {
     position: 'absolute',
     bottom: 24,
