@@ -44,4 +44,12 @@ describe('typography', () => {
   it('uses the four weights React Native accepts as strings', () => {
     expect(Object.values(fontWeight)).toEqual(['400', '500', '600', '700'])
   })
+
+  it('keeps the thirteen sizes the migration was value-true to', () => {
+    // Spec E5: the migration renamed sizes, it did not change any. Pinning the
+    // set is what makes that promise fail loudly instead of on a device.
+    expect([...Object.values(fontSize)].sort((a, b) => a - b)).toEqual([
+      10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 22, 24, 28,
+    ])
+  })
 })
