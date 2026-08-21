@@ -111,7 +111,7 @@ export default function ProjectDetailScreen() {
     const { count, totalSeconds: entrySeconds } = getProjectTimeEntrySummary(OWNER_ID, id)
     const message =
       count > 0
-        ? `„${project.title}" wird zusammen mit ${count} Zeiteinträgen (${formatDuration(entrySeconds)}) unwiderruflich gelöscht. Das kann nicht rückgängig gemacht werden.`
+        ? `„${project.title}" wird zusammen mit ${count === 1 ? '1 Zeiteintrag' : `${count} Zeiteinträgen`} (${formatDuration(entrySeconds)}) unwiderruflich gelöscht. Das kann nicht rückgängig gemacht werden.`
         : `„${project.title}" wird unwiderruflich gelöscht. Das kann nicht rückgängig gemacht werden.`
     Alert.alert('Endgültig löschen?', message, [
       { text: 'Abbrechen', style: 'cancel' },
@@ -217,7 +217,12 @@ export default function ProjectDetailScreen() {
         <Pressable style={styles.archiveBtn} onPress={handleArchive}>
           <Text style={styles.archiveBtnText}>Archivieren</Text>
         </Pressable>
-        <Pressable style={styles.hardDeleteBtn} onPress={handleHardDelete}>
+        <Pressable
+          style={styles.hardDeleteBtn}
+          onPress={handleHardDelete}
+          accessibilityRole="button"
+          accessibilityLabel="Projekt endgültig löschen"
+        >
           <Text style={styles.hardDeleteBtnText}>Endgültig löschen</Text>
         </Pressable>
       </ScrollView>

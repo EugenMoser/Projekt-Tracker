@@ -35,6 +35,7 @@ const OT = '00000000-0000-0000-0000-000000000002'
 const CU = '00000000-0000-0000-0000-000000000003'
 
 beforeEach(() => {
+  mockDb.delete(schema.timers).run()
   mockDb.delete(schema.timeEntries).run()
   mockDb.delete(schema.projectTasks).run()
   mockDb.delete(schema.tasks).run()
@@ -393,6 +394,47 @@ describe('hard-deleting a project', () => {
     ).toEqual([])
   })
 
+  it('removes an active timer running on the deleted project', () => {
+    const a = makeProject('A')
+    mockDb
+      .insert(schema.timers)
+      .values({
+        id: '00000000-0000-0000-0000-0000000000bb',
+        userId: U,
+        projectId: a,
+        startedAt: new Date('2026-08-01T09:00:00Z'),
+        createdAt: new Date('2026-08-01T09:00:00Z'),
+        updatedAt: new Date('2026-08-01T09:00:00Z'),
+      })
+      .run()
+
+    hardDeleteProject(U, a)
+
+    expect(mockDb.select().from(schema.timers).where(eq(schema.timers.userId, U)).all()).toEqual([])
+  })
+
+  it('leaves an active timer on a different project untouched', () => {
+    const a = makeProject('A')
+    const b = makeProject('B')
+    mockDb
+      .insert(schema.timers)
+      .values({
+        id: '00000000-0000-0000-0000-0000000000cc',
+        userId: U,
+        projectId: b,
+        startedAt: new Date('2026-08-01T09:00:00Z'),
+        createdAt: new Date('2026-08-01T09:00:00Z'),
+        updatedAt: new Date('2026-08-01T09:00:00Z'),
+      })
+      .run()
+
+    hardDeleteProject(U, a)
+
+    expect(
+      mockDb.select().from(schema.timers).where(eq(schema.timers.userId, U)).all(),
+    ).toHaveLength(1)
+  })
+
   it('leaves the global task untouched', () => {
     const a = makeProject('A')
     const task = makeTask('Survives')
@@ -408,10 +450,17 @@ describe('hard-deleting a project', () => {
 
   it('ignores a hard-delete for a project belonging to another user', () => {
     const a = makeProject('A')
+    const task = makeTask('Task 1')
+    addTaskToProject(U, a, task)
+    makeTimeEntry(a, task, 9)
 
     hardDeleteProject(U2, a)
 
     expect(rowOf(a).deletedAt).toBeNull()
+    expect(listTimeEntriesForProject(U, a)).toHaveLength(1)
+    expect(
+      mockDb.select().from(schema.projectTasks).where(eq(schema.projectTasks.projectId, a)).all(),
+    ).toHaveLength(1)
   })
 
   it('is a no-op for an unknown project id', () => {

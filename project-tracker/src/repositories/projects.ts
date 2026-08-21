@@ -147,9 +147,12 @@ export function restoreProject(userId: string, id: string) {
  * cannot be undone through the UI — but it still only tombstones rows
  * (`deletedAt`), never a physical DELETE, so the app's soft-delete
  * convention (and the tombstone propagation a future sync needs) stays
- * intact. `project_tasks` is the one exception: it has no `deleted_at`
- * column, so its rows for this project are hard-deleted, same as the
- * existing `removeTaskFromProject`.
+ * intact. `project_tasks` and `timers` are the exceptions: neither has a
+ * `deleted_at` column, so their rows for this project are hard-deleted —
+ * `project_tasks` the same as the existing `removeTaskFromProject`, and
+ * `timers` the same as the existing `discardTimer`. Clearing an active timer
+ * here matters: `timers` is unique per user, so an orphaned row would block
+ * that user from starting any new timer, on any project, until cleared.
  */
 export function hardDeleteProject(userId: string, id: string): void {
   db.transaction(() => {
@@ -170,6 +173,9 @@ export function hardDeleteProject(userId: string, id: string): void {
       .run()
     db.delete(schema.projectTasks)
       .where(and(eq(schema.projectTasks.projectId, id), eq(schema.projectTasks.userId, userId)))
+      .run()
+    db.delete(schema.timers)
+      .where(and(eq(schema.timers.projectId, id), eq(schema.timers.userId, userId)))
       .run()
   })
 }

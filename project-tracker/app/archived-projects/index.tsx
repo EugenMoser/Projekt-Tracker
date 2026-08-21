@@ -42,7 +42,7 @@ export default function ArchivedProjectsScreen() {
     const { count, totalSeconds } = getProjectTimeEntrySummary(OWNER_ID, item.id)
     const message =
       count > 0
-        ? `„${item.title}" wird zusammen mit ${count} Zeiteinträgen (${formatDuration(totalSeconds)}) unwiderruflich gelöscht. Das kann nicht rückgängig gemacht werden.`
+        ? `„${item.title}" wird zusammen mit ${count === 1 ? '1 Zeiteintrag' : `${count} Zeiteinträgen`} (${formatDuration(totalSeconds)}) unwiderruflich gelöscht. Das kann nicht rückgängig gemacht werden.`
         : `„${item.title}" wird unwiderruflich gelöscht. Das kann nicht rückgängig gemacht werden.`
     Alert.alert('Endgültig löschen?', message, [
       { text: 'Abbrechen', style: 'cancel' },
