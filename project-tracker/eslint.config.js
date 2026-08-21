@@ -23,6 +23,18 @@ const noHardcodedDesignValues = [
     selector: 'Property[key.name="fontWeight"] > Literal',
     message: 'Schriftgewicht: fontWeight.* aus src/theme verwenden.',
   },
+  {
+    selector: 'Property[key.name=/^(padding|margin)/] > Literal',
+    message: 'Abstand: space.* aus src/theme verwenden.',
+  },
+  {
+    selector: 'Property[key.name=/^(gap|rowGap|columnGap)$/] > Literal',
+    message: 'Abstand: space.* aus src/theme verwenden.',
+  },
+  {
+    selector: 'Property[key.name="borderRadius"] > Literal',
+    message: 'Eckenrundung: radius.* aus src/theme verwenden.',
+  },
 ]
 
 module.exports = defineConfig([
