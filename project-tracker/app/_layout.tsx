@@ -183,7 +183,7 @@ function MigrationErrorScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: space.xl },
+  container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: space.xxl },
   title: {
     fontSize: fontSize.headline,
     fontWeight: fontWeight.semibold,

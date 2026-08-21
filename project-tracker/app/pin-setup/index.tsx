@@ -114,7 +114,7 @@ export default function PinSetupScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: space.xl },
+  container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: space.xxl },
   title: { fontSize: fontSize.titleLarge, fontWeight: fontWeight.semibold, marginBottom: space.xs },
   subtitle: { fontSize: fontSize.bodySmall, color: colors.textMuted, marginBottom: space.s20 },
   dots: { fontSize: fontSize.display, letterSpacing: 12, marginBottom: space.xl },
