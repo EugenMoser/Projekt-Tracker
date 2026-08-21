@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import ReanimatedColorPicker, { BrightnessSlider, Panel3, Preview } from 'reanimated-color-picker'
 
-import { colors, fontSize, fontWeight } from '../theme'
+import { colors, fontSize, fontWeight, radius, space } from '../theme'
 
 // Projektfarben-Presets: Auswahlmöglichkeiten für ein Datenfeld, keine
 // Gestaltung der App. Dass das erste Preset denselben Wert wie
@@ -136,8 +136,8 @@ export function ColorPicker({ value, onChange }: Props) {
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', gap: 12, flexWrap: 'wrap' },
-  swatch: { width: 44, height: 44, borderRadius: 22 },
+  row: { flexDirection: 'row', gap: space.md, flexWrap: 'wrap' },
+  swatch: { width: 44, height: 44, borderRadius: radius.full },
   // Muss gegen alle sechs Presets und jede frei gewählte Farbe kontrastieren;
   // ein Palette-Grau würde auf dunklen Presets verschwinden (Spec E6).
   // eslint-disable-next-line no-restricted-syntax
@@ -154,31 +154,31 @@ const styles = StyleSheet.create({
     backgroundColor: colors.overlay,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 24,
+    padding: space.xl,
   },
   dialog: {
     width: '100%',
     maxWidth: 340,
     backgroundColor: colors.surface,
-    borderRadius: 14,
-    padding: 20,
+    borderRadius: radius.r14,
+    padding: space.s20,
     alignItems: 'center',
-    gap: 16,
+    gap: space.lg,
   },
   dialogTitle: {
     fontSize: fontSize.bodyLarge,
     fontWeight: fontWeight.semibold,
     color: colors.textPrimary,
   },
-  pickerWrapper: { width: '100%', alignItems: 'center', gap: 16 },
+  pickerWrapper: { width: '100%', alignItems: 'center', gap: space.lg },
   wheel: { width: 220 },
-  brightnessSlider: { width: '100%', height: 28, borderRadius: 14 },
-  preview: { width: '100%', height: 32, borderRadius: 8 },
-  dialogActions: { flexDirection: 'row', gap: 12, width: '100%' },
+  brightnessSlider: { width: '100%', height: 28, borderRadius: radius.full },
+  preview: { width: '100%', height: 32, borderRadius: radius.md },
+  dialogActions: { flexDirection: 'row', gap: space.md, width: '100%' },
   cancelBtn: {
     flex: 1,
     backgroundColor: colors.background,
-    borderRadius: 8,
+    borderRadius: radius.md,
     minHeight: 44,
     alignItems: 'center',
     justifyContent: 'center',
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
   applyBtn: {
     flex: 1,
     backgroundColor: colors.primary,
-    borderRadius: 8,
+    borderRadius: radius.md,
     minHeight: 44,
     alignItems: 'center',
     justifyContent: 'center',

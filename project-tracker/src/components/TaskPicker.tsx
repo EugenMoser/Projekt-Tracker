@@ -3,7 +3,7 @@ import React from 'react'
 import { Pressable, SectionList, StyleSheet, Text, TextInput } from 'react-native'
 
 import { listTasks, listTasksForProject } from '../repositories/tasks'
-import { colors, fontSize, fontWeight } from '../theme'
+import { colors, fontSize, fontWeight, radius, space } from '../theme'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -130,13 +130,13 @@ const styles = StyleSheet.create({
     fontWeight: fontWeight.semibold,
     color: colors.textPlaceholder,
     textTransform: 'uppercase',
-    marginTop: 12,
-    marginBottom: 4,
+    marginTop: space.md,
+    marginBottom: space.xs,
   },
   taskRow: {
-    padding: 14,
-    borderRadius: 8,
-    marginBottom: 6,
+    padding: space.s14,
+    borderRadius: radius.md,
+    marginBottom: space.s6,
     backgroundColor: colors.background,
     minHeight: 44,
     justifyContent: 'center',
@@ -145,10 +145,10 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 8,
-    padding: 12,
-    marginTop: 8,
+    borderRadius: radius.md,
+    padding: space.md,
+    marginTop: space.sm,
     minHeight: 44,
   },
-  emptyHint: { padding: 14, color: colors.textSecondary, fontStyle: 'italic' },
+  emptyHint: { padding: space.s14, color: colors.textSecondary, fontStyle: 'italic' },
 })

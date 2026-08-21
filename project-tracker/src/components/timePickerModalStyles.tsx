@@ -2,7 +2,7 @@ import React from 'react'
 
 import { Pressable, StyleSheet, Text } from 'react-native'
 
-import { colors, fontSize, fontWeight } from '../theme'
+import { colors, fontSize, fontWeight, radius, space } from '../theme'
 
 // Shared look for every react-native-timer-picker modal in the app (manual
 // time entry create + edit). The library's own button styling is TextStyle
@@ -20,18 +20,18 @@ const styles = StyleSheet.create({
   },
   buttonRow: {
     flexDirection: 'row',
-    gap: 12,
-    marginTop: 24,
-    marginBottom: 24,
-    paddingHorizontal: 16,
+    gap: space.md,
+    marginTop: space.xl,
+    marginBottom: space.xl,
+    paddingHorizontal: space.lg,
     justifyContent: 'space-between',
   },
   cancelBtn: {
     flex: 1,
-    padding: 14,
+    padding: space.s14,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 8,
+    borderRadius: radius.md,
     backgroundColor: colors.surfaceMuted,
     minHeight: 44,
   },
@@ -42,10 +42,10 @@ const styles = StyleSheet.create({
   },
   confirmBtn: {
     flex: 1,
-    padding: 14,
+    padding: space.s14,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 8,
+    borderRadius: radius.md,
     backgroundColor: colors.primary,
     minHeight: 44,
   },

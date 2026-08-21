@@ -9,7 +9,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated'
 
-import { colors, fontSize, fontWeight } from '../theme'
+import { colors, fontSize, fontWeight, space } from '../theme'
 
 interface Props {
   children: React.ReactNode
@@ -59,7 +59,7 @@ export function SwipeToStop({ children, onStop, enabled = true }: Props) {
 
 const styles = StyleSheet.create({
   wrapper: { overflow: 'hidden' },
-  stopBg: { backgroundColor: colors.danger, justifyContent: 'center', paddingLeft: 24 },
+  stopBg: { backgroundColor: colors.danger, justifyContent: 'center', paddingLeft: space.xl },
   stopText: {
     color: colors.textOnPrimary,
     fontWeight: fontWeight.bold,

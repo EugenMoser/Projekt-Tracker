@@ -2,7 +2,7 @@ import React from 'react'
 
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 
-import { colors, fontSize, fontWeight } from '../theme'
+import { colors, fontSize, fontWeight, radius, space } from '../theme'
 import { lighten } from '../utils/color'
 import { taskAmountCents } from '../utils/money'
 import { formatDuration } from '../utils/time'
@@ -117,10 +117,10 @@ export function TaskAccordionCard({
 const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.surface,
-    borderRadius: 10,
-    marginHorizontal: 16,
-    marginBottom: 8,
-    padding: 12,
+    borderRadius: radius.r10,
+    marginHorizontal: space.lg,
+    marginBottom: space.sm,
+    padding: space.md,
   },
   cardExpanded: {
     borderWidth: 1.5,
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
   },
   headerRight: {
     alignItems: 'flex-end',
-    marginRight: 6,
+    marginRight: space.s6,
   },
   taskTime: {
     fontWeight: fontWeight.bold,
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
   taskCost: {
     fontSize: fontSize.caption,
     color: colors.textMuted,
-    marginTop: 1,
+    marginTop: space.hairline,
   },
   chevron: {
     fontSize: fontSize.bodySmall,
@@ -157,25 +157,25 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   barBg: {
-    marginTop: 8,
+    marginTop: space.sm,
     height: 5,
-    borderRadius: 4,
+    borderRadius: radius.sm,
     overflow: 'hidden',
   },
   barFill: {
     height: 5,
-    borderRadius: 4,
+    borderRadius: radius.sm,
   },
   entriesList: {
-    marginTop: 10,
+    marginTop: space.s10,
     borderTopWidth: 1,
     borderTopColor: colors.borderSubtle,
-    paddingTop: 8,
+    paddingTop: space.sm,
   },
   entryRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 6,
+    paddingVertical: space.s6,
     borderBottomWidth: 1,
     borderBottomColor: colors.background,
   },
@@ -190,6 +190,6 @@ const styles = StyleSheet.create({
   entryDate: {
     fontSize: fontSize.caption,
     color: colors.textMuted,
-    marginTop: 2,
+    marginTop: space.xxs,
   },
 })

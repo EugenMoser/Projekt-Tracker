@@ -5,7 +5,7 @@ import { Alert, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-na
 
 import { isBiometryEnabled, verifyPin } from '../auth/pinStorage'
 import { useLockStore } from '../store/lockStore'
-import { colors, fontSize, fontWeight } from '../theme'
+import { colors, fontSize, fontWeight, radius, space } from '../theme'
 
 interface Props {
   onUnlock: () => void
@@ -134,21 +134,21 @@ export function LockScreen({ onUnlock }: Props) {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 },
-  title: { fontSize: fontSize.headline, fontWeight: fontWeight.semibold, marginBottom: 24 },
-  dots: { fontSize: fontSize.display, letterSpacing: 12, marginBottom: 16 },
-  lockout: { color: colors.danger, fontSize: fontSize.bodySmall, marginBottom: 16 },
+  container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: space.xxl },
+  title: { fontSize: fontSize.headline, fontWeight: fontWeight.semibold, marginBottom: space.xl },
+  dots: { fontSize: fontSize.display, letterSpacing: 12, marginBottom: space.lg },
+  lockout: { color: colors.danger, fontSize: fontSize.bodySmall, marginBottom: space.lg },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     width: 264,
-    marginBottom: 24,
+    marginBottom: space.xl,
   },
   key: {
     width: 80,
     height: 80,
-    margin: 4,
-    borderRadius: 40,
+    margin: space.xs,
+    borderRadius: radius.full,
     backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
@@ -158,10 +158,10 @@ const styles = StyleSheet.create({
   keyText: { fontSize: fontSize.keypad, fontWeight: fontWeight.regular },
   confirm: {
     backgroundColor: colors.primary,
-    borderRadius: 12,
-    paddingHorizontal: 48,
-    paddingVertical: 14,
-    marginBottom: 16,
+    borderRadius: radius.lg,
+    paddingHorizontal: space.huge,
+    paddingVertical: space.s14,
+    marginBottom: space.lg,
   },
   confirmDisabled: { backgroundColor: colors.buttonDisabled },
   confirmText: {
@@ -169,6 +169,6 @@ const styles = StyleSheet.create({
     fontSize: fontSize.bodyXl,
     fontWeight: fontWeight.semibold,
   },
-  biometry: { padding: 12 },
+  biometry: { padding: space.md },
   biometryText: { color: colors.primary, fontSize: fontSize.bodyLarge },
 })

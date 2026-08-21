@@ -1,7 +1,7 @@
 import * as Haptics from 'expo-haptics'
 import { GestureResponderEvent, Pressable, StyleSheet, Text, View } from 'react-native'
 
-import { fontSize, fontWeight } from '../theme'
+import { fontSize, fontWeight, radius, space } from '../theme'
 import { getContrastTextColor } from '../utils/color'
 import { DotsButton } from './RowActionMenu'
 
@@ -64,9 +64,9 @@ export function ProjectTile({ title, customerName, color, isActive, onPress, onE
 }
 
 const styles = StyleSheet.create({
-  tile: { borderRadius: 12, padding: 14, flex: 1, margin: 6, height: 128 },
+  tile: { borderRadius: radius.lg, padding: space.s14, flex: 1, margin: space.s6, height: 128 },
   body: { flex: 1 },
-  title: { fontWeight: fontWeight.bold, fontSize: fontSize.body, marginBottom: 4 },
+  title: { fontWeight: fontWeight.bold, fontSize: fontSize.body, marginBottom: space.xs },
   customer: { fontSize: fontSize.captionLarge },
   footer: {
     flexDirection: 'row',

@@ -10,7 +10,7 @@ import {
   View,
 } from 'react-native'
 
-import { colors, fontSize, fontWeight } from '../theme'
+import { colors, fontSize, fontWeight, radius, space } from '../theme'
 
 interface Task {
   id: string
@@ -90,38 +90,38 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     borderTopLeftRadius: 14,
     borderTopRightRadius: 14,
-    paddingBottom: 34,
-    paddingHorizontal: 16,
+    paddingBottom: space.sheetBottom,
+    paddingHorizontal: space.lg,
   },
   handle: {
     width: 36,
     height: 4,
     backgroundColor: colors.buttonDisabled,
-    borderRadius: 2,
+    borderRadius: radius.xs,
     alignSelf: 'center',
-    marginTop: 8,
-    marginBottom: 16,
+    marginTop: space.sm,
+    marginBottom: space.lg,
   },
   title: {
     fontSize: fontSize.label,
     color: colors.textSecondary,
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: space.lg,
   },
   selectRow: {
-    padding: 10,
-    borderRadius: 6,
+    padding: space.s10,
+    borderRadius: radius.r6,
     backgroundColor: colors.background,
-    marginBottom: 4,
+    marginBottom: space.xs,
     minHeight: 44,
     justifyContent: 'center',
   },
   selectRowActive: { backgroundColor: colors.primarySelected },
   done: {
     backgroundColor: colors.surface,
-    borderRadius: 10,
-    padding: 16,
-    marginTop: 8,
+    borderRadius: radius.r10,
+    padding: space.lg,
+    marginTop: space.sm,
     minHeight: 44,
     justifyContent: 'center',
   },

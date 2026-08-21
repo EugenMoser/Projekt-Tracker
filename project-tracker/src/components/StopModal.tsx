@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { createTask } from '../repositories/tasks'
 import { discardTimer, stopTimer } from '../repositories/timers'
-import { colors, fontSize, fontWeight } from '../theme'
+import { colors, fontSize, fontWeight, radius, space } from '../theme'
 import { KeyboardAwareView } from './KeyboardAwareView'
 import { TaskPicker } from './TaskPicker'
 
@@ -127,33 +127,42 @@ export function StopModal({ visible, projectId, onDone, onCancel, onDiscard }: P
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingTop: 24, paddingHorizontal: 24, paddingBottom: 24 },
-  heading: { fontSize: fontSize.titleLarge, fontWeight: fontWeight.bold, marginBottom: 16 },
-  label: { fontSize: fontSize.bodySmall, color: colors.textSecondary, marginBottom: 8 },
-  actions: { flexDirection: 'row', gap: 12, marginTop: 24 },
+  container: {
+    flex: 1,
+    paddingTop: space.xl,
+    paddingHorizontal: space.xl,
+    paddingBottom: space.xl,
+  },
+  heading: {
+    fontSize: fontSize.titleLarge,
+    fontWeight: fontWeight.bold,
+    marginBottom: space.lg,
+  },
+  label: { fontSize: fontSize.bodySmall, color: colors.textSecondary, marginBottom: space.sm },
+  actions: { flexDirection: 'row', gap: space.md, marginTop: space.xl },
   btnCancel: {
     flex: 1,
-    padding: 14,
+    padding: space.s14,
     alignItems: 'center',
-    borderRadius: 8,
+    borderRadius: radius.md,
     backgroundColor: colors.surfaceMuted,
     minHeight: 44,
     justifyContent: 'center',
   },
   btnSave: {
     flex: 1,
-    padding: 14,
+    padding: space.s14,
     alignItems: 'center',
-    borderRadius: 8,
+    borderRadius: radius.md,
     backgroundColor: colors.primary,
     minHeight: 44,
     justifyContent: 'center',
   },
   btnDiscard: {
-    marginTop: 8,
-    padding: 14,
+    marginTop: space.sm,
+    padding: space.s14,
     alignItems: 'center',
-    borderRadius: 8,
+    borderRadius: radius.md,
     minHeight: 44,
     justifyContent: 'center',
   },

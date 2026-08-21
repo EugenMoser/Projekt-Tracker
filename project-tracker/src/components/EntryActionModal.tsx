@@ -2,7 +2,7 @@ import React from 'react'
 
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native'
 
-import { colors, fontSize, fontWeight } from '../theme'
+import { colors, fontSize, fontWeight, radius, space } from '../theme'
 import { formatDuration } from '../utils/time'
 
 interface Props {
@@ -84,29 +84,29 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     borderTopLeftRadius: 14,
     borderTopRightRadius: 14,
-    paddingBottom: 34,
-    paddingHorizontal: 16,
+    paddingBottom: space.sheetBottom,
+    paddingHorizontal: space.lg,
   },
   handle: {
     width: 36,
     height: 4,
     backgroundColor: colors.buttonDisabled,
-    borderRadius: 2,
+    borderRadius: radius.xs,
     alignSelf: 'center',
-    marginTop: 8,
-    marginBottom: 16,
+    marginTop: space.sm,
+    marginBottom: space.lg,
   },
   context: {
     fontSize: fontSize.label,
     color: colors.textSecondary,
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: space.lg,
   },
   action: {
     backgroundColor: colors.surface,
-    borderRadius: 10,
-    padding: 16,
-    marginBottom: 8,
+    borderRadius: radius.r10,
+    padding: space.lg,
+    marginBottom: space.sm,
     minHeight: 44,
     justifyContent: 'center',
   },
@@ -119,9 +119,9 @@ const styles = StyleSheet.create({
   },
   cancel: {
     backgroundColor: colors.surface,
-    borderRadius: 10,
-    padding: 16,
-    marginTop: 8,
+    borderRadius: radius.r10,
+    padding: space.lg,
+    marginTop: space.sm,
     minHeight: 44,
     justifyContent: 'center',
   },
