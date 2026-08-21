@@ -134,7 +134,7 @@ export default function HomeScreen() {
           scrollableRef={scrollableRef}
         />
       </Animated.ScrollView>
-      <Pressable style={styles.fab} onPress={() => router.push('/projects/new' as never)}>
+      <Pressable style={styles.fab} onPress={() => router.push('/projects/new')}>
         <Text style={styles.fabText}>+</Text>
       </Pressable>
       <StopModal

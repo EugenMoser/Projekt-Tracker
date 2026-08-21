@@ -133,7 +133,7 @@ export default function SettingsScreen() {
         <Text style={styles.sectionHeader}>Daten</Text>
         <Pressable
           style={styles.row}
-          onPress={() => router.push('/export' as any)}
+          onPress={() => router.push('/export')}
           accessibilityRole="button"
           accessibilityLabel="Export erstellen"
         >
@@ -144,7 +144,7 @@ export default function SettingsScreen() {
           <Text style={styles.label}>Auftragsarten</Text>
           <Text>›</Text>
         </Pressable>
-        <Pressable style={styles.row} onPress={() => router.push('/archived-projects' as any)}>
+        <Pressable style={styles.row} onPress={() => router.push('/archived-projects')}>
           <Text style={styles.label}>Archivierte Projekte</Text>
           <Text>›</Text>
         </Pressable>
