@@ -53,7 +53,13 @@ export function getProject(userId: string, id: string) {
   return db
     .select()
     .from(schema.projects)
-    .where(and(eq(schema.projects.id, id), eq(schema.projects.userId, userId)))
+    .where(
+      and(
+        eq(schema.projects.id, id),
+        eq(schema.projects.userId, userId),
+        isNull(schema.projects.deletedAt),
+      ),
+    )
     .get()
 }
 
@@ -134,6 +140,38 @@ export function restoreProject(userId: string, id: string) {
     .set({ status: 'active', updatedAt: new Date() })
     .where(and(eq(schema.projects.id, id), eq(schema.projects.userId, userId)))
     .run()
+}
+
+/**
+ * Permanently removes a project from every list. Unlike archive/restore this
+ * cannot be undone through the UI — but it still only tombstones rows
+ * (`deletedAt`), never a physical DELETE, so the app's soft-delete
+ * convention (and the tombstone propagation a future sync needs) stays
+ * intact. `project_tasks` is the one exception: it has no `deleted_at`
+ * column, so its rows for this project are hard-deleted, same as the
+ * existing `removeTaskFromProject`.
+ */
+export function hardDeleteProject(userId: string, id: string): void {
+  db.transaction(() => {
+    const now = new Date()
+    db.update(schema.projects)
+      .set({ deletedAt: now, updatedAt: now })
+      .where(and(eq(schema.projects.id, id), eq(schema.projects.userId, userId)))
+      .run()
+    db.update(schema.timeEntries)
+      .set({ deletedAt: now, updatedAt: now })
+      .where(
+        and(
+          eq(schema.timeEntries.projectId, id),
+          eq(schema.timeEntries.userId, userId),
+          isNull(schema.timeEntries.deletedAt),
+        ),
+      )
+      .run()
+    db.delete(schema.projectTasks)
+      .where(and(eq(schema.projectTasks.projectId, id), eq(schema.projectTasks.userId, userId)))
+      .run()
+  })
 }
 
 export function getProjectTotalSeconds(userId: string, projectId: string): number {

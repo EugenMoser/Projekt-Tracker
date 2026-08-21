@@ -5,11 +5,15 @@ import { eq } from 'drizzle-orm'
 import { db as mockDb } from '../db/client'
 import {
   createProject,
+  getProject,
+  hardDeleteProject,
   listActiveProjects,
   listArchivedProjects,
   moveProject,
   restoreProject,
 } from '../repositories/projects'
+import { addTaskToProject, createTask, listTasksForProject } from '../repositories/tasks'
+import { createTimeEntry, listTimeEntriesForProject } from '../repositories/timeEntries'
 import { SORT_STEP } from '../utils/sortOrder'
 
 // Same pattern as tasks.test.ts: swap the expo-sqlite singleton for a real
@@ -30,7 +34,9 @@ const OT = '00000000-0000-0000-0000-000000000002'
 const CU = '00000000-0000-0000-0000-000000000003'
 
 beforeEach(() => {
+  mockDb.delete(schema.timeEntries).run()
   mockDb.delete(schema.projectTasks).run()
+  mockDb.delete(schema.tasks).run()
   mockDb.delete(schema.projects).run()
   mockDb.delete(schema.customers).run()
   mockDb.delete(schema.orderTypes).run()
@@ -300,5 +306,124 @@ describe('archiving and restoring', () => {
     restoreProject(U2, a)
 
     expect(listArchivedProjects(U).map((p) => p.title)).toEqual(['A'])
+  })
+})
+
+describe('hard-deleting a project', () => {
+  function makeTask(description: string): string {
+    return createTask(U, description)
+  }
+
+  function makeTimeEntry(projectId: string, taskId: string, hour: number): string {
+    return createTimeEntry(U, {
+      projectId,
+      taskId,
+      startedAt: new Date(`2026-08-01T${String(hour).padStart(2, '0')}:00:00Z`),
+      endedAt: new Date(`2026-08-01T${String(hour).padStart(2, '0')}:30:00Z`),
+    })
+  }
+
+  it('tombstones the project row', () => {
+    const a = makeProject('A')
+
+    hardDeleteProject(U, a)
+
+    expect(rowOf(a).deletedAt).not.toBeNull()
+  })
+
+  it('removes the project from active and archived listings', () => {
+    const active = makeProject('Active')
+    const archived = makeProject('Archived')
+    mockDb
+      .update(schema.projects)
+      .set({ status: 'archived' })
+      .where(eq(schema.projects.id, archived))
+      .run()
+
+    hardDeleteProject(U, active)
+    hardDeleteProject(U, archived)
+
+    expect(listActiveProjects(U).map((p) => p.title)).not.toContain('Active')
+    expect(listArchivedProjects(U).map((p) => p.title)).not.toContain('Archived')
+  })
+
+  it('makes getProject return undefined afterwards', () => {
+    const a = makeProject('A')
+
+    hardDeleteProject(U, a)
+
+    expect(getProject(U, a)).toBeUndefined()
+  })
+
+  it("cascades to the project's time entries", () => {
+    const a = makeProject('A')
+    const task = makeTask('Task 1')
+    addTaskToProject(U, a, task)
+    makeTimeEntry(a, task, 9)
+    makeTimeEntry(a, task, 11)
+
+    hardDeleteProject(U, a)
+
+    expect(listTimeEntriesForProject(U, a)).toEqual([])
+  })
+
+  it('does not touch time entries of a different project', () => {
+    const a = makeProject('A')
+    const b = makeProject('B')
+    const task = makeTask('Task 1')
+    addTaskToProject(U, a, task)
+    addTaskToProject(U, b, task)
+    makeTimeEntry(b, task, 9)
+
+    hardDeleteProject(U, a)
+
+    expect(listTimeEntriesForProject(U, b)).toHaveLength(1)
+  })
+
+  it('removes the project_tasks join rows', () => {
+    const a = makeProject('A')
+    const task = makeTask('Task 1')
+    addTaskToProject(U, a, task)
+
+    hardDeleteProject(U, a)
+
+    expect(
+      mockDb.select().from(schema.projectTasks).where(eq(schema.projectTasks.projectId, a)).all(),
+    ).toEqual([])
+  })
+
+  it('leaves the global task untouched', () => {
+    const a = makeProject('A')
+    const task = makeTask('Survives')
+    addTaskToProject(U, a, task)
+
+    hardDeleteProject(U, a)
+
+    expect(listTasksForProject(U, a)).toEqual([])
+    const stillThere = mockDb.select().from(schema.tasks).where(eq(schema.tasks.id, task)).get()
+    expect(stillThere).toBeDefined()
+    expect(stillThere?.deletedAt).toBeNull()
+  })
+
+  it('ignores a hard-delete for a project belonging to another user', () => {
+    const a = makeProject('A')
+
+    hardDeleteProject(U2, a)
+
+    expect(rowOf(a).deletedAt).toBeNull()
+  })
+
+  it('is a no-op for an unknown project id', () => {
+    expect(() => hardDeleteProject(U, '00000000-0000-0000-0000-0000000000aa')).not.toThrow()
+  })
+
+  it('is a no-op when called again on an already hard-deleted project', () => {
+    const a = makeProject('A')
+    hardDeleteProject(U, a)
+    const firstDeletedAt = rowOf(a).deletedAt
+
+    expect(() => hardDeleteProject(U, a)).not.toThrow()
+    expect(rowOf(a).deletedAt).not.toBeNull()
+    expect(firstDeletedAt).not.toBeNull()
   })
 })
