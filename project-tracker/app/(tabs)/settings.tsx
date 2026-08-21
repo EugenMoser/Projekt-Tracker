@@ -94,11 +94,7 @@ export default function SettingsScreen() {
         <Text style={styles.sectionHeader}>Sicherheit</Text>
         <Pressable
           style={styles.row}
-          onPress={() =>
-            router.push(
-              pinEnabled ? ('/pin-setup/index?mode=change' as any) : ('/pin-setup/index' as any),
-            )
-          }
+          onPress={() => router.push(pinEnabled ? '/pin-setup?mode=change' : '/pin-setup')}
           accessibilityRole="button"
           accessibilityLabel={pinEnabled ? 'PIN ändern' : 'PIN einrichten'}
         >
