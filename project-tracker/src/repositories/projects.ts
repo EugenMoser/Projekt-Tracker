@@ -1,5 +1,5 @@
 import * as schema from '@projekt-tracker/schema'
-import { and, asc, desc, eq, isNull, max, sum } from 'drizzle-orm'
+import { and, asc, count, desc, eq, isNull, max, sum } from 'drizzle-orm'
 
 import { db } from '../db/client'
 import { keyBetween, SORT_STEP } from '../utils/sortOrder'
@@ -187,6 +187,24 @@ export function getProjectTotalSeconds(userId: string, projectId: string): numbe
     )
     .get()
   return Number(result?.total ?? 0)
+}
+
+export function getProjectTimeEntrySummary(
+  userId: string,
+  projectId: string,
+): { count: number; totalSeconds: number } {
+  const result = db
+    .select({ count: count(), total: sum(schema.timeEntries.durationSeconds) })
+    .from(schema.timeEntries)
+    .where(
+      and(
+        eq(schema.timeEntries.userId, userId),
+        eq(schema.timeEntries.projectId, projectId),
+        isNull(schema.timeEntries.deletedAt),
+      ),
+    )
+    .get()
+  return { count: result?.count ?? 0, totalSeconds: Number(result?.total ?? 0) }
 }
 
 /**
