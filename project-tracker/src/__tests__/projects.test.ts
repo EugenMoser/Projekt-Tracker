@@ -464,9 +464,13 @@ describe('getProjectTimeEntrySummary', () => {
       startedAt: new Date('2026-08-01T12:00:00Z'),
       endedAt: new Date('2026-08-01T13:00:00Z'),
     })
-    mockDb.delete(schema.timeEntries).where(eq(schema.timeEntries.id, e1)).run()
-    // e1 deleted outright to prove the summary only reads live rows — a
-    // softDeleteTimeEntry would work too, this is just simpler test setup.
+    mockDb
+      .update(schema.timeEntries)
+      .set({ deletedAt: new Date('2026-08-01T12:00:00Z') })
+      .where(eq(schema.timeEntries.id, e1))
+      .run()
+    // e1 soft-deleted to prove the summary filters via isNull(deletedAt),
+    // not by absence of the row — validates the actual filter works.
 
     expect(getProjectTimeEntrySummary(U, a)).toEqual({ count: 1, totalSeconds: 1800 })
   })
