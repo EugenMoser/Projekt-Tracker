@@ -34,10 +34,7 @@ module.exports = defineConfig([
     files: ['app/**/*.{ts,tsx}', 'src/**/*.{ts,tsx}'],
     ignores: ['src/theme/**', 'src/utils/color.ts', '**/__tests__/**'],
     rules: {
-      // Vorerst 'warn': zwischen dieser und der letzten Task der Migration
-      // wäre 'error' durchgehend rot und jeder Zwischencommit damit nicht
-      // mehr als grün verifizierbar. Wird am Ende hochgestuft.
-      'no-restricted-syntax': ['warn', ...noHardcodedDesignValues],
+      'no-restricted-syntax': ['error', ...noHardcodedDesignValues],
     },
   },
 ])

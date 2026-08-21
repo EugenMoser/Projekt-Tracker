@@ -230,7 +230,7 @@ export default function TasksScreen() {
       <Modal visible={!!editingTagsFor} animationType="slide" presentationStyle="formSheet">
         <KeyboardAwareView insideModal>
           <View style={styles.modal}>
-            <Text style={styles.modalTitle}>Stichworte für „{taskBeingTagged?.description}"</Text>
+            <Text style={styles.modalTitle}>Stichworte für „{taskBeingTagged?.description}“</Text>
             <View style={styles.tagRow}>
               {taskBeingTagged?.tags.map((tag) => (
                 <Pressable
