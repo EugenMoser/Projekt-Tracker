@@ -15,7 +15,7 @@ import { getProject } from '../../src/repositories/projects'
 import { createTask, listTasks } from '../../src/repositories/tasks'
 import { createTimeEntry } from '../../src/repositories/timeEntries'
 import { useSettingsStore } from '../../src/store/settingsStore'
-import { colors, fontSize, fontWeight } from '../../src/theme'
+import { colors, fontSize, fontWeight, radius, space } from '../../src/theme'
 import {
   formatHoursMinutes,
   parseDateTimeLocal,
@@ -148,7 +148,10 @@ export default function NewTimeEntryScreen() {
           : undefined
 
   return (
-    <KeyboardAwareScrollView style={s.c} contentContainerStyle={{ gap: 12, paddingBottom: 40 }}>
+    <KeyboardAwareScrollView
+      style={s.c}
+      contentContainerStyle={{ gap: space.md, paddingBottom: space.xxxl }}
+    >
       <Text style={s.label}>Datum (YYYY-MM-DD)</Text>
       <TextInput
         style={s.input}
@@ -309,27 +312,31 @@ export default function NewTimeEntryScreen() {
 }
 
 const s = StyleSheet.create({
-  c: { flex: 1, padding: 16 },
+  c: { flex: 1, padding: space.lg },
   label: { fontSize: fontSize.label, color: colors.textSecondary },
-  input: { borderWidth: 1, borderColor: colors.border, borderRadius: 8, padding: 12 },
+  input: { borderWidth: 1, borderColor: colors.border, borderRadius: radius.md, padding: space.md },
   dropdown: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 8,
-    paddingHorizontal: 12,
+    borderRadius: radius.md,
+    paddingHorizontal: space.md,
     backgroundColor: colors.surface,
     minHeight: 44,
   },
   dropdownText: { fontSize: fontSize.body, color: colors.textPrimary, flexShrink: 1 },
-  dropdownChevron: { fontSize: fontSize.bodySmall, color: colors.textSecondary, marginLeft: 8 },
-  modeRow: { flexDirection: 'row', gap: 8 },
+  dropdownChevron: {
+    fontSize: fontSize.bodySmall,
+    color: colors.textSecondary,
+    marginLeft: space.sm,
+  },
+  modeRow: { flexDirection: 'row', gap: space.sm },
   modeBtn: {
     flex: 1,
-    padding: 10,
-    borderRadius: 8,
+    padding: space.s10,
+    borderRadius: radius.md,
     backgroundColor: colors.background,
     alignItems: 'center',
     minHeight: 44,
@@ -340,8 +347,8 @@ const s = StyleSheet.create({
   modeTextSelected: { color: colors.textOnPrimary, fontWeight: fontWeight.semibold },
   btn: {
     backgroundColor: colors.primary,
-    padding: 14,
-    borderRadius: 8,
+    padding: space.s14,
+    borderRadius: radius.md,
     alignItems: 'center',
     minHeight: 44,
   },

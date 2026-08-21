@@ -6,7 +6,7 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
 
 import { listCustomers } from '../../src/repositories/customers'
 import { listArchivedProjects, restoreProject } from '../../src/repositories/projects'
-import { colors, fontSize, fontWeight } from '../../src/theme'
+import { colors, fontSize, fontWeight, radius, space } from '../../src/theme'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -68,21 +68,21 @@ export default function ArchivedProjectsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
+  container: { flex: 1, padding: space.lg },
   emptyContainer: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   emptyText: { color: colors.textMuted, fontSize: fontSize.body },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 14,
+    padding: space.s14,
     backgroundColor: colors.surface,
-    borderRadius: 8,
-    marginBottom: 8,
+    borderRadius: radius.md,
+    marginBottom: space.sm,
   },
-  info: { flex: 1, marginRight: 12 },
+  info: { flex: 1, marginRight: space.md },
   title: { fontSize: fontSize.bodyLarge, fontWeight: fontWeight.semibold },
-  customerName: { fontSize: fontSize.label, color: colors.textSecondary, marginTop: 2 },
-  restoreBtn: { flexDirection: 'row', alignItems: 'center', minHeight: 44, gap: 6 },
+  customerName: { fontSize: fontSize.label, color: colors.textSecondary, marginTop: space.xxs },
+  restoreBtn: { flexDirection: 'row', alignItems: 'center', minHeight: 44, gap: space.s6 },
   restoreBtnText: { color: colors.primary, fontWeight: fontWeight.semibold },
 })

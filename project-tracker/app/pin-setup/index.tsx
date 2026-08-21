@@ -4,7 +4,7 @@ import { router, useLocalSearchParams } from 'expo-router'
 import { Alert, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native'
 
 import { savePin, verifyPin } from '../../src/auth/pinStorage'
-import { colors, fontSize, fontWeight } from '../../src/theme'
+import { colors, fontSize, fontWeight, radius, space } from '../../src/theme'
 
 type Step = 'verify-current' | 'enter' | 'confirm'
 
@@ -114,16 +114,16 @@ export default function PinSetupScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 },
-  title: { fontSize: fontSize.titleLarge, fontWeight: fontWeight.semibold, marginBottom: 4 },
-  subtitle: { fontSize: fontSize.bodySmall, color: colors.textMuted, marginBottom: 20 },
-  dots: { fontSize: fontSize.display, letterSpacing: 12, marginBottom: 24 },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', width: 264, marginBottom: 24 },
+  container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: space.xl },
+  title: { fontSize: fontSize.titleLarge, fontWeight: fontWeight.semibold, marginBottom: space.xs },
+  subtitle: { fontSize: fontSize.bodySmall, color: colors.textMuted, marginBottom: space.s20 },
+  dots: { fontSize: fontSize.display, letterSpacing: 12, marginBottom: space.xl },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', width: 264, marginBottom: space.xl },
   key: {
     width: 80,
     height: 80,
-    margin: 4,
-    borderRadius: 40,
+    margin: space.xs,
+    borderRadius: radius.full,
     backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
@@ -133,9 +133,9 @@ const styles = StyleSheet.create({
   keyText: { fontSize: fontSize.keypad, fontWeight: fontWeight.regular },
   confirm: {
     backgroundColor: colors.primary,
-    borderRadius: 12,
-    paddingHorizontal: 48,
-    paddingVertical: 14,
+    borderRadius: radius.lg,
+    paddingHorizontal: space.huge,
+    paddingVertical: space.s14,
   },
   confirmDisabled: { backgroundColor: colors.buttonDisabled },
   confirmText: {

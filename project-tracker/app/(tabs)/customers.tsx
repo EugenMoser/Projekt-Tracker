@@ -5,7 +5,7 @@ import { Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native
 
 import { DotsButton, RowActionMenu, type RowAction } from '../../src/components/RowActionMenu'
 import { deleteCustomer, listCustomers } from '../../src/repositories/customers'
-import { colors, fontSize, fontWeight } from '../../src/theme'
+import { colors, fontSize, fontWeight, radius, space } from '../../src/theme'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -92,15 +92,15 @@ export default function CustomersScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
+  container: { flex: 1, padding: space.lg },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 14,
+    padding: space.s14,
     backgroundColor: colors.surface,
-    borderRadius: 8,
-    marginBottom: 8,
+    borderRadius: radius.md,
+    marginBottom: space.sm,
   },
   rowText: { flex: 1 },
   name: { fontSize: fontSize.body, fontWeight: fontWeight.semibold },
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     right: 24,
     width: 56,
     height: 56,
-    borderRadius: 28,
+    borderRadius: radius.full,
     backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',

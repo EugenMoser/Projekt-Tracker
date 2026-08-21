@@ -20,7 +20,7 @@ import { listCustomers } from '../../src/repositories/customers'
 import { useSyncStore } from '../../src/store/syncStore'
 import { apiExportExcel } from '../../src/sync/api'
 import { API_BASE_URL, LOCAL_USER_ID } from '../../src/sync/config'
-import { colors, fontSize, fontWeight } from '../../src/theme'
+import { colors, fontSize, fontWeight, radius, space } from '../../src/theme'
 
 type Customer = { id: string; name: string; customerNumber: string }
 
@@ -173,19 +173,19 @@ export default function ExportScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  content: { padding: 16, paddingBottom: 40 },
+  content: { padding: space.lg, paddingBottom: space.xxxl },
   label: {
     fontSize: fontSize.bodySmall,
     fontWeight: fontWeight.semibold,
     color: colors.textSecondary,
-    marginTop: 16,
-    marginBottom: 4,
+    marginTop: space.lg,
+    marginBottom: space.xs,
   },
   input: {
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 8,
-    padding: 12,
+    borderRadius: radius.md,
+    padding: space.md,
     backgroundColor: colors.surface,
     fontSize: fontSize.bodyLarge,
   },
@@ -193,10 +193,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 14,
+    padding: space.s14,
     backgroundColor: colors.surface,
-    borderRadius: 8,
-    marginBottom: 6,
+    borderRadius: radius.md,
+    marginBottom: space.s6,
     minHeight: 44,
   },
   rowSelected: { borderWidth: 2, borderColor: colors.primary },
@@ -204,10 +204,10 @@ const styles = StyleSheet.create({
   check: { color: colors.primary, fontWeight: fontWeight.bold },
   btn: {
     backgroundColor: colors.primary,
-    padding: 16,
-    borderRadius: 8,
+    padding: space.lg,
+    borderRadius: radius.md,
     alignItems: 'center',
-    marginTop: 24,
+    marginTop: space.xl,
     minHeight: 52,
   },
   btnDisabled: { opacity: 0.6 },

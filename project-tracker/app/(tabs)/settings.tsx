@@ -14,7 +14,7 @@ import { SyncIndicator } from '../../src/components/SyncIndicator'
 import { setUse12HourFormat as persistUse12HourFormat } from '../../src/settings/timeFormat'
 import { useLockStore } from '../../src/store/lockStore'
 import { useSettingsStore } from '../../src/store/settingsStore'
-import { colors, fontSize, fontWeight } from '../../src/theme'
+import { colors, fontSize, fontWeight, radius, space } from '../../src/theme'
 
 export default function SettingsScreen() {
   const [pinEnabled, setPinEnabled] = useState(false)
@@ -154,31 +154,31 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
+  container: { flex: 1, padding: space.lg },
   syncSection: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: space.lg,
+    paddingVertical: space.md,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.border,
-    marginBottom: 16,
+    marginBottom: space.lg,
   },
-  section: { marginBottom: 24 },
+  section: { marginBottom: space.xl },
   sectionHeader: {
     fontSize: fontSize.label,
     fontWeight: fontWeight.semibold,
     color: colors.textMuted,
     textTransform: 'uppercase',
-    marginBottom: 8,
-    paddingHorizontal: 4,
+    marginBottom: space.sm,
+    paddingHorizontal: space.xs,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
+    padding: space.lg,
     backgroundColor: colors.surface,
-    borderRadius: 8,
-    marginBottom: 8,
+    borderRadius: radius.md,
+    marginBottom: space.sm,
     minHeight: 44,
   },
   label: { fontSize: fontSize.bodyLarge },

@@ -14,7 +14,7 @@ import { listCustomers } from '../../src/repositories/customers'
 import { listActiveProjects, moveProject } from '../../src/repositories/projects'
 import { getActiveTimer, startTimer } from '../../src/repositories/timers'
 import { useTimerStore } from '../../src/store/timerStore'
-import { colors, fontSize } from '../../src/theme'
+import { colors, fontSize, radius, space } from '../../src/theme'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -157,14 +157,14 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   scroll: { flex: 1 },
-  list: { padding: 6 },
+  list: { padding: space.s6 },
   fab: {
     position: 'absolute',
     bottom: 24,
     right: 24,
     width: 56,
     height: 56,
-    borderRadius: 28,
+    borderRadius: radius.full,
     backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
