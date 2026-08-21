@@ -20,6 +20,7 @@ import { listCustomers } from '../../src/repositories/customers'
 import { useSyncStore } from '../../src/store/syncStore'
 import { apiExportExcel } from '../../src/sync/api'
 import { API_BASE_URL, LOCAL_USER_ID } from '../../src/sync/config'
+import { colors, fontSize, fontWeight } from '../../src/theme'
 
 type Customer = { id: string; name: string; customerNumber: string }
 
@@ -161,7 +162,7 @@ export default function ExportScreen() {
         accessibilityLabel="Export erstellen"
       >
         {loading ? (
-          <ActivityIndicator color="#FFF" />
+          <ActivityIndicator color={colors.textOnPrimary} />
         ) : (
           <Text style={styles.btnText}>Export erstellen</Text>
         )}
@@ -171,32 +172,38 @@ export default function ExportScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F5F5' },
+  container: { flex: 1, backgroundColor: colors.background },
   content: { padding: 16, paddingBottom: 40 },
-  label: { fontSize: 14, fontWeight: '600', color: '#555', marginTop: 16, marginBottom: 4 },
+  label: {
+    fontSize: fontSize.bodySmall,
+    fontWeight: fontWeight.semibold,
+    color: colors.textSecondary,
+    marginTop: 16,
+    marginBottom: 4,
+  },
   input: {
     borderWidth: 1,
-    borderColor: '#DDD',
+    borderColor: colors.border,
     borderRadius: 8,
     padding: 12,
-    backgroundColor: '#FFF',
-    fontSize: 16,
+    backgroundColor: colors.surface,
+    fontSize: fontSize.bodyLarge,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 14,
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     borderRadius: 8,
     marginBottom: 6,
     minHeight: 44,
   },
-  rowSelected: { borderWidth: 2, borderColor: '#4A90D9' },
-  rowText: { fontSize: 15 },
-  check: { color: '#4A90D9', fontWeight: '700' },
+  rowSelected: { borderWidth: 2, borderColor: colors.primary },
+  rowText: { fontSize: fontSize.body },
+  check: { color: colors.primary, fontWeight: fontWeight.bold },
   btn: {
-    backgroundColor: '#4A90D9',
+    backgroundColor: colors.primary,
     padding: 16,
     borderRadius: 8,
     alignItems: 'center',
@@ -204,5 +211,9 @@ const styles = StyleSheet.create({
     minHeight: 52,
   },
   btnDisabled: { opacity: 0.6 },
-  btnText: { color: '#FFF', fontSize: 16, fontWeight: '600' },
+  btnText: {
+    color: colors.textOnPrimary,
+    fontSize: fontSize.bodyLarge,
+    fontWeight: fontWeight.semibold,
+  },
 })

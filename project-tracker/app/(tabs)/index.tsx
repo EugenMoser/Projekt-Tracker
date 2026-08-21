@@ -14,6 +14,7 @@ import { listCustomers } from '../../src/repositories/customers'
 import { listActiveProjects, moveProject } from '../../src/repositories/projects'
 import { getActiveTimer, startTimer } from '../../src/repositories/timers'
 import { useTimerStore } from '../../src/store/timerStore'
+import { colors, fontSize } from '../../src/theme'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -154,7 +155,7 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F5F5' },
+  container: { flex: 1, backgroundColor: colors.background },
   scroll: { flex: 1 },
   list: { padding: 6 },
   fab: {
@@ -164,13 +165,13 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#4A90D9',
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 4,
   },
-  fabText: { color: '#FFF', fontSize: 28, lineHeight: 32 },
+  fabText: { color: colors.textOnPrimary, fontSize: fontSize.display, lineHeight: 32 },
 })

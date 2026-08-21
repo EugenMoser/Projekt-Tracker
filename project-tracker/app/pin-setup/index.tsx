@@ -4,6 +4,7 @@ import { router, useLocalSearchParams } from 'expo-router'
 import { Alert, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native'
 
 import { savePin, verifyPin } from '../../src/auth/pinStorage'
+import { colors, fontSize, fontWeight } from '../../src/theme'
 
 type Step = 'verify-current' | 'enter' | 'confirm'
 
@@ -112,30 +113,34 @@ export default function PinSetupScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#F2F2F7' },
+  safe: { flex: 1, backgroundColor: colors.background },
   container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 },
-  title: { fontSize: 20, fontWeight: '600', marginBottom: 4 },
-  subtitle: { fontSize: 14, color: '#8E8E93', marginBottom: 20 },
-  dots: { fontSize: 28, letterSpacing: 12, marginBottom: 24 },
+  title: { fontSize: fontSize.titleLarge, fontWeight: fontWeight.semibold, marginBottom: 4 },
+  subtitle: { fontSize: fontSize.bodySmall, color: colors.textMuted, marginBottom: 20 },
+  dots: { fontSize: fontSize.display, letterSpacing: 12, marginBottom: 24 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', width: 264, marginBottom: 24 },
   key: {
     width: 80,
     height: 80,
     margin: 4,
     borderRadius: 40,
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
   keyInvisible: { backgroundColor: 'transparent' },
-  keyPressed: { backgroundColor: '#E5E5EA' },
-  keyText: { fontSize: 24, fontWeight: '400' },
+  keyPressed: { backgroundColor: colors.surfacePressed },
+  keyText: { fontSize: fontSize.keypad, fontWeight: fontWeight.regular },
   confirm: {
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.primary,
     borderRadius: 12,
     paddingHorizontal: 48,
     paddingVertical: 14,
   },
-  confirmDisabled: { backgroundColor: '#C7C7CC' },
-  confirmText: { color: '#FFF', fontSize: 17, fontWeight: '600' },
+  confirmDisabled: { backgroundColor: colors.buttonDisabled },
+  confirmText: {
+    color: colors.textOnPrimary,
+    fontSize: fontSize.bodyXl,
+    fontWeight: fontWeight.semibold,
+  },
 })

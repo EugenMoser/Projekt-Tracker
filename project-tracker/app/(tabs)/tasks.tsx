@@ -14,6 +14,7 @@ import {
   updateTask,
   upsertTag,
 } from '../../src/repositories/tasks'
+import { colors, fontSize, fontWeight } from '../../src/theme'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -174,13 +175,15 @@ export default function TasksScreen() {
             <TextInput
               style={styles.input}
               placeholder="Bildbearbeitung"
-              placeholderTextColor="#999"
+              placeholderTextColor={colors.textPlaceholder}
               value={newDesc}
               onChangeText={setNewDesc}
               autoFocus
             />
             <Pressable style={styles.saveBtn} onPress={handleAddTask}>
-              <Text style={{ color: '#FFF', fontWeight: '600' }}>Anlegen</Text>
+              <Text style={{ color: colors.textOnPrimary, fontWeight: fontWeight.semibold }}>
+                Anlegen
+              </Text>
             </Pressable>
             <Pressable
               onPress={() => setShowAdd(false)}
@@ -200,13 +203,15 @@ export default function TasksScreen() {
             <TextInput
               style={styles.input}
               placeholder="Beschreibung"
-              placeholderTextColor="#999"
+              placeholderTextColor={colors.textPlaceholder}
               value={editDesc}
               onChangeText={setEditDesc}
               autoFocus
             />
             <Pressable style={styles.saveBtn} onPress={handleSaveEdit}>
-              <Text style={{ color: '#FFF', fontWeight: '600' }}>Speichern</Text>
+              <Text style={{ color: colors.textOnPrimary, fontWeight: fontWeight.semibold }}>
+                Speichern
+              </Text>
             </Pressable>
             <Pressable
               onPress={() => {
@@ -246,7 +251,7 @@ export default function TasksScreen() {
             <TextInput
               style={[styles.input, { marginTop: 12 }]}
               placeholder="Neues Stichwort"
-              placeholderTextColor="#999"
+              placeholderTextColor={colors.textPlaceholder}
               value={newTagText}
               onChangeText={setNewTagText}
             />
@@ -256,7 +261,9 @@ export default function TasksScreen() {
                 handleAddTag(editingTagsFor!, taskBeingTagged?.tags.map((t) => t.id) ?? [])
               }
             >
-              <Text style={{ color: '#FFF', fontWeight: '600' }}>Stichwort hinzufügen</Text>
+              <Text style={{ color: colors.textOnPrimary, fontWeight: fontWeight.semibold }}>
+                Stichwort hinzufügen
+              </Text>
             </Pressable>
             <Pressable
               onPress={() => {
@@ -277,40 +284,45 @@ export default function TasksScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
   addBtn: {
-    backgroundColor: '#4A90D9',
+    backgroundColor: colors.primary,
     padding: 14,
     borderRadius: 8,
     alignItems: 'center',
     marginBottom: 16,
   },
-  addBtnText: { color: '#FFF', fontWeight: '600' },
+  addBtnText: { color: colors.textOnPrimary, fontWeight: fontWeight.semibold },
   taskRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     borderRadius: 8,
     padding: 14,
     marginBottom: 8,
   },
   taskRowContent: { flex: 1, marginRight: 8 },
-  taskDesc: { fontSize: 15, fontWeight: '600', marginBottom: 6 },
+  taskDesc: { fontSize: fontSize.body, fontWeight: fontWeight.semibold, marginBottom: 6 },
   tagRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  tag: { backgroundColor: '#E8F4FE', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
-  tagAdd: { backgroundColor: '#EEE' },
-  tagText: { fontSize: 12, color: '#4A90D9' },
-  modal: { flex: 1, padding: 24, backgroundColor: '#FFF' },
-  modalTitle: { fontSize: 18, fontWeight: '700', marginBottom: 16 },
+  tag: {
+    backgroundColor: colors.primarySubtle,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  tagAdd: { backgroundColor: colors.surfaceMuted },
+  tagText: { fontSize: fontSize.captionLarge, color: colors.primary },
+  modal: { flex: 1, padding: 24, backgroundColor: colors.surface },
+  modalTitle: { fontSize: fontSize.title, fontWeight: fontWeight.bold, marginBottom: 16 },
   input: {
     borderWidth: 1,
-    borderColor: '#DDD',
+    borderColor: colors.border,
     borderRadius: 8,
     padding: 12,
-    backgroundColor: '#FFF',
-    color: '#000',
+    backgroundColor: colors.surface,
+    color: colors.textPrimary,
   },
   saveBtn: {
-    backgroundColor: '#4A90D9',
+    backgroundColor: colors.primary,
     padding: 14,
     borderRadius: 8,
     alignItems: 'center',

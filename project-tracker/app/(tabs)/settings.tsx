@@ -14,6 +14,7 @@ import { SyncIndicator } from '../../src/components/SyncIndicator'
 import { setUse12HourFormat as persistUse12HourFormat } from '../../src/settings/timeFormat'
 import { useLockStore } from '../../src/store/lockStore'
 import { useSettingsStore } from '../../src/store/settingsStore'
+import { colors, fontSize, fontWeight } from '../../src/theme'
 
 export default function SettingsScreen() {
   const [pinEnabled, setPinEnabled] = useState(false)
@@ -84,7 +85,7 @@ export default function SettingsScreen() {
           accessibilityLabel={`Uhrzeitformat: ${use12HourFormat ? '12-Stunden mit AM/PM' : '24-Stunden'}. Antippen zum Ändern.`}
         >
           <Text style={styles.label}>Uhrzeitformat</Text>
-          <Text style={{ color: '#8E8E93' }}>{use12HourFormat ? '12h (AM/PM)' : '24h'}</Text>
+          <Text style={{ color: colors.textMuted }}>{use12HourFormat ? '12h (AM/PM)' : '24h'}</Text>
         </Pressable>
       </View>
 
@@ -124,7 +125,7 @@ export default function SettingsScreen() {
             <Text style={styles.label}>
               Biometrie {biometryEnabled ? 'deaktivieren' : 'aktivieren'}
             </Text>
-            <Text style={{ color: biometryEnabled ? '#34C759' : '#8E8E93' }}>
+            <Text style={{ color: biometryEnabled ? colors.success : colors.textMuted }}>
               {biometryEnabled ? 'An' : 'Aus'}
             </Text>
           </Pressable>
@@ -162,14 +163,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#DDD',
+    borderBottomColor: colors.border,
     marginBottom: 16,
   },
   section: { marginBottom: 24 },
   sectionHeader: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#8E8E93',
+    fontSize: fontSize.label,
+    fontWeight: fontWeight.semibold,
+    color: colors.textMuted,
     textTransform: 'uppercase',
     marginBottom: 8,
     paddingHorizontal: 4,
@@ -179,11 +180,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     borderRadius: 8,
     marginBottom: 8,
     minHeight: 44,
   },
-  label: { fontSize: 16 },
-  destructive: { color: '#FF3B30' },
+  label: { fontSize: fontSize.bodyLarge },
+  destructive: { color: colors.danger },
 })

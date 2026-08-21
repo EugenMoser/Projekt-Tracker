@@ -5,6 +5,7 @@ import { Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native
 
 import { DotsButton, RowActionMenu, type RowAction } from '../../src/components/RowActionMenu'
 import { deleteCustomer, listCustomers } from '../../src/repositories/customers'
+import { colors, fontSize, fontWeight } from '../../src/theme'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -97,13 +98,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 14,
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     borderRadius: 8,
     marginBottom: 8,
   },
   rowText: { flex: 1 },
-  name: { fontSize: 15, fontWeight: '600' },
-  number: { fontSize: 12, color: '#666' },
+  name: { fontSize: fontSize.body, fontWeight: fontWeight.semibold },
+  number: { fontSize: fontSize.captionLarge, color: colors.textSecondary },
   fab: {
     position: 'absolute',
     bottom: 24,
@@ -111,9 +112,9 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#4A90D9',
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  fabText: { color: '#FFF', fontSize: 28, lineHeight: 32 },
+  fabText: { color: colors.textOnPrimary, fontSize: fontSize.display, lineHeight: 32 },
 })

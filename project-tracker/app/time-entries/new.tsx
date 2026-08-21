@@ -15,6 +15,7 @@ import { getProject } from '../../src/repositories/projects'
 import { createTask, listTasks } from '../../src/repositories/tasks'
 import { createTimeEntry } from '../../src/repositories/timeEntries'
 import { useSettingsStore } from '../../src/store/settingsStore'
+import { colors, fontSize, fontWeight } from '../../src/theme'
 import {
   formatHoursMinutes,
   parseDateTimeLocal,
@@ -299,7 +300,9 @@ export default function NewTimeEntryScreen() {
         accessibilityRole="button"
         accessibilityLabel="Zeiteintrag speichern"
       >
-        <Text style={{ color: '#FFF', fontWeight: '600' }}>Speichern</Text>
+        <Text style={{ color: colors.textOnPrimary, fontWeight: fontWeight.semibold }}>
+          Speichern
+        </Text>
       </Pressable>
     </KeyboardAwareScrollView>
   )
@@ -307,36 +310,36 @@ export default function NewTimeEntryScreen() {
 
 const s = StyleSheet.create({
   c: { flex: 1, padding: 16 },
-  label: { fontSize: 13, color: '#666' },
-  input: { borderWidth: 1, borderColor: '#DDD', borderRadius: 8, padding: 12 },
+  label: { fontSize: fontSize.label, color: colors.textSecondary },
+  input: { borderWidth: 1, borderColor: colors.border, borderRadius: 8, padding: 12 },
   dropdown: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: 1,
-    borderColor: '#DDD',
+    borderColor: colors.border,
     borderRadius: 8,
     paddingHorizontal: 12,
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     minHeight: 44,
   },
-  dropdownText: { fontSize: 15, color: '#000', flexShrink: 1 },
-  dropdownChevron: { fontSize: 14, color: '#666', marginLeft: 8 },
+  dropdownText: { fontSize: fontSize.body, color: colors.textPrimary, flexShrink: 1 },
+  dropdownChevron: { fontSize: fontSize.bodySmall, color: colors.textSecondary, marginLeft: 8 },
   modeRow: { flexDirection: 'row', gap: 8 },
   modeBtn: {
     flex: 1,
     padding: 10,
     borderRadius: 8,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: colors.background,
     alignItems: 'center',
     minHeight: 44,
     justifyContent: 'center',
   },
-  modeBtnSelected: { backgroundColor: '#4A90D9' },
-  modeText: { color: '#333', fontWeight: '500' },
-  modeTextSelected: { color: '#FFF', fontWeight: '600' },
+  modeBtnSelected: { backgroundColor: colors.primary },
+  modeText: { color: colors.textPrimary, fontWeight: fontWeight.medium },
+  modeTextSelected: { color: colors.textOnPrimary, fontWeight: fontWeight.semibold },
   btn: {
-    backgroundColor: '#4A90D9',
+    backgroundColor: colors.primary,
     padding: 14,
     borderRadius: 8,
     alignItems: 'center',

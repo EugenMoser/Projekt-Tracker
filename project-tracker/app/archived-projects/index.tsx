@@ -6,6 +6,7 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
 
 import { listCustomers } from '../../src/repositories/customers'
 import { listArchivedProjects, restoreProject } from '../../src/repositories/projects'
+import { colors, fontSize, fontWeight } from '../../src/theme'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -56,7 +57,7 @@ export default function ArchivedProjectsScreen() {
               accessibilityRole="button"
               accessibilityLabel={`${item.title} wiederherstellen`}
             >
-              <Ionicons name="arrow-undo-outline" size={20} color="#4A90D9" />
+              <Ionicons name="arrow-undo-outline" size={20} color={colors.primary} />
               <Text style={styles.restoreBtnText}>Wiederherstellen</Text>
             </Pressable>
           </View>
@@ -69,19 +70,19 @@ export default function ArchivedProjectsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
   emptyContainer: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  emptyText: { color: '#8E8E93', fontSize: 15 },
+  emptyText: { color: colors.textMuted, fontSize: fontSize.body },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 14,
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     borderRadius: 8,
     marginBottom: 8,
   },
   info: { flex: 1, marginRight: 12 },
-  title: { fontSize: 16, fontWeight: '600' },
-  customerName: { fontSize: 13, color: '#666', marginTop: 2 },
+  title: { fontSize: fontSize.bodyLarge, fontWeight: fontWeight.semibold },
+  customerName: { fontSize: fontSize.label, color: colors.textSecondary, marginTop: 2 },
   restoreBtn: { flexDirection: 'row', alignItems: 'center', minHeight: 44, gap: 6 },
-  restoreBtnText: { color: '#4A90D9', fontWeight: '600' },
+  restoreBtnText: { color: colors.primary, fontWeight: fontWeight.semibold },
 })

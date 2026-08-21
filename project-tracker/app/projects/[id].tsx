@@ -9,6 +9,7 @@ import { getCustomer } from '../../src/repositories/customers'
 import { archiveProject, getProject, getProjectTotalSeconds } from '../../src/repositories/projects'
 import { listTasksByIds } from '../../src/repositories/tasks'
 import { listTimeEntriesForProject, softDeleteTimeEntry } from '../../src/repositories/timeEntries'
+import { colors, fontSize, fontWeight } from '../../src/theme'
 import { taskAmountCents } from '../../src/utils/money'
 import { formatDuration } from '../../src/utils/time'
 
@@ -134,7 +135,7 @@ export default function ProjectDetailScreen() {
               accessibilityLabel="Projekt bearbeiten"
               hitSlop={8}
             >
-              <Ionicons name="create-outline" size={22} color="#4A90D9" />
+              <Ionicons name="create-outline" size={22} color={colors.primary} />
             </Pressable>
           </View>
           <Text style={styles.meta}>
@@ -213,37 +214,42 @@ const styles = StyleSheet.create({
     padding: 16,
     borderLeftWidth: 5,
     margin: 16,
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     borderRadius: 8,
   },
   headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   headerTitleGroup: { flex: 1, marginRight: 8 },
   editBtn: { minHeight: 44, minWidth: 44, justifyContent: 'center', alignItems: 'flex-end' },
-  customerName: { fontSize: 13, color: '#666', marginBottom: 2 },
-  title: { fontSize: 20, fontWeight: '700' },
-  meta: { color: '#666', marginTop: 4 },
+  customerName: { fontSize: fontSize.label, color: colors.textSecondary, marginBottom: 2 },
+  title: { fontSize: fontSize.titleLarge, fontWeight: fontWeight.bold },
+  meta: { color: colors.textSecondary, marginTop: 4 },
   stats: { flexDirection: 'row', paddingHorizontal: 16, paddingBottom: 8, gap: 16 },
   stat: {
     flex: 1,
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     borderRadius: 8,
     padding: 12,
     alignItems: 'center',
   },
-  statVal: { fontSize: 18, fontWeight: '700', color: '#4A90D9' },
-  statLabel: { fontSize: 11, color: '#666', marginTop: 4, textAlign: 'center' },
+  statVal: { fontSize: fontSize.title, fontWeight: fontWeight.bold, color: colors.primary },
+  statLabel: {
+    fontSize: fontSize.caption,
+    color: colors.textSecondary,
+    marginTop: 4,
+    textAlign: 'center',
+  },
   empty: { padding: 32, alignItems: 'center' },
-  emptyText: { color: '#888', fontSize: 14 },
+  emptyText: { color: colors.textMuted, fontSize: fontSize.bodySmall },
   archiveBtn: {
     margin: 16,
     marginTop: 24,
     padding: 14,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#E74C3C',
+    borderColor: colors.danger,
     alignItems: 'center',
   },
-  archiveBtnText: { color: '#E74C3C', fontWeight: '600' },
+  archiveBtnText: { color: colors.danger, fontWeight: fontWeight.semibold },
   fab: {
     position: 'absolute',
     bottom: 24,
@@ -251,13 +257,13 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#4A90D9',
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 4,
   },
-  fabText: { color: '#FFF', fontSize: 28, lineHeight: 32 },
+  fabText: { color: colors.textOnPrimary, fontSize: fontSize.display, lineHeight: 32 },
 })

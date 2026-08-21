@@ -21,6 +21,7 @@ import {
   listTasksForProject,
   removeTaskFromProject,
 } from '../../../src/repositories/tasks'
+import { colors, fontSize, fontWeight } from '../../../src/theme'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -237,7 +238,7 @@ export default function EditProjectScreen() {
             accessibilityState={{ checked: pricingMode === mode }}
             accessibilityLabel={mode === 'hourly' ? 'Stundensatz' : 'Festpreis'}
           >
-            <Text style={pricingMode === mode ? { color: '#FFF' } : undefined}>
+            <Text style={pricingMode === mode ? { color: colors.textOnPrimary } : undefined}>
               {mode === 'hourly' ? 'Stundensatz' : 'Festpreis'}
             </Text>
           </Pressable>
@@ -249,7 +250,7 @@ export default function EditProjectScreen() {
           value={hourlyRate}
           onChangeText={setHourlyRate}
           placeholder="80,00"
-          placeholderTextColor="#999"
+          placeholderTextColor={colors.textPlaceholder}
           keyboardType="decimal-pad"
           accessibilityLabel="Stundensatz in Euro"
         />
@@ -260,7 +261,7 @@ export default function EditProjectScreen() {
           value={fixedPrice}
           onChangeText={setFixedPrice}
           placeholder="1.500,00"
-          placeholderTextColor="#999"
+          placeholderTextColor={colors.textPlaceholder}
           keyboardType="decimal-pad"
           accessibilityLabel="Festpreis in Euro"
         />
@@ -294,7 +295,15 @@ export default function EditProjectScreen() {
         accessibilityRole="button"
         accessibilityLabel="Änderungen speichern"
       >
-        <Text style={{ color: '#FFF', fontWeight: '600', fontSize: 16 }}>Speichern</Text>
+        <Text
+          style={{
+            color: colors.textOnPrimary,
+            fontWeight: fontWeight.semibold,
+            fontSize: fontSize.bodyLarge,
+          }}
+        >
+          Speichern
+        </Text>
       </Pressable>
     </KeyboardAwareScrollView>
   )
@@ -303,41 +312,41 @@ export default function EditProjectScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
-  label: { fontSize: 13, color: '#666' },
+  label: { fontSize: fontSize.label, color: colors.textSecondary },
   input: {
     borderWidth: 1,
-    borderColor: '#DDD',
+    borderColor: colors.border,
     borderRadius: 8,
     padding: 12,
-    backgroundColor: '#FFF',
-    color: '#000',
+    backgroundColor: colors.surface,
+    color: colors.textPrimary,
   },
   dropdown: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: 1,
-    borderColor: '#DDD',
+    borderColor: colors.border,
     borderRadius: 8,
     paddingHorizontal: 12,
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     minHeight: 44,
   },
-  dropdownText: { fontSize: 15, color: '#000', flexShrink: 1 },
-  dropdownChevron: { fontSize: 14, color: '#666', marginLeft: 8 },
+  dropdownText: { fontSize: fontSize.body, color: colors.textPrimary, flexShrink: 1 },
+  dropdownChevron: { fontSize: fontSize.bodySmall, color: colors.textSecondary, marginLeft: 8 },
   pricingRow: { flexDirection: 'row', gap: 8 },
   pricingBtn: {
     flex: 1,
     padding: 12,
     borderRadius: 8,
-    backgroundColor: '#EEE',
+    backgroundColor: colors.surfaceMuted,
     alignItems: 'center',
     minHeight: 44,
     justifyContent: 'center',
   },
-  pricingBtnActive: { backgroundColor: '#4A90D9' },
+  pricingBtnActive: { backgroundColor: colors.primary },
   btn: {
-    backgroundColor: '#4A90D9',
+    backgroundColor: colors.primary,
     padding: 16,
     borderRadius: 8,
     alignItems: 'center',

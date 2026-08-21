@@ -11,6 +11,7 @@ import {
   listOrderTypes,
   updateOrderType,
 } from '../../src/repositories/orderTypes'
+import { colors, fontSize, fontWeight } from '../../src/theme'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 type OrderType = { id: string; name: string; digit: number }
@@ -109,7 +110,7 @@ export default function OrderTypesScreen() {
           >
             <Text style={styles.digit}>{item.digit}</Text>
             <Text style={styles.name}>{item.name}</Text>
-            <Ionicons name="create-outline" size={20} color="#4A90D9" />
+            <Ionicons name="create-outline" size={20} color={colors.primary} />
           </Pressable>
         )}
       />
@@ -127,7 +128,7 @@ export default function OrderTypesScreen() {
             <TextInput
               style={styles.input}
               placeholder="Name (z.B. Hochzeitsfotografie)"
-              placeholderTextColor="#999"
+              placeholderTextColor={colors.textPlaceholder}
               value={name}
               onChangeText={setName}
               accessibilityLabel="Name der Auftragsart"
@@ -135,14 +136,16 @@ export default function OrderTypesScreen() {
             <TextInput
               style={styles.input}
               placeholder="Ziffer 1–9"
-              placeholderTextColor="#999"
+              placeholderTextColor={colors.textPlaceholder}
               value={digit}
               onChangeText={setDigit}
               keyboardType="numeric"
               accessibilityLabel="Ziffer der Auftragsart"
             />
             <Pressable style={styles.saveBtn} onPress={editItem ? handleEdit : handleAdd}>
-              <Text style={{ color: '#FFF', fontWeight: '600' }}>Speichern</Text>
+              <Text style={{ color: colors.textOnPrimary, fontWeight: fontWeight.semibold }}>
+                Speichern
+              </Text>
             </Pressable>
             <Pressable
               onPress={closeModal}
@@ -153,7 +156,7 @@ export default function OrderTypesScreen() {
                 justifyContent: 'center',
               }}
             >
-              <Text style={{ color: '#666' }}>Abbrechen</Text>
+              <Text style={{ color: colors.textSecondary }}>Abbrechen</Text>
             </Pressable>
           </View>
         </KeyboardAwareView>
@@ -165,33 +168,38 @@ export default function OrderTypesScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
   addBtn: {
-    backgroundColor: '#4A90D9',
+    backgroundColor: colors.primary,
     padding: 14,
     borderRadius: 8,
     alignItems: 'center',
     marginBottom: 16,
   },
-  addBtnText: { color: '#FFF', fontWeight: '600' },
+  addBtnText: { color: colors.textOnPrimary, fontWeight: fontWeight.semibold },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 14,
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     borderRadius: 8,
     marginBottom: 8,
   },
-  digit: { width: 32, fontWeight: '700', fontSize: 16, color: '#4A90D9' },
-  name: { flex: 1, fontSize: 15 },
-  modal: { flex: 1, padding: 24, backgroundColor: '#FFF' },
-  modalTitle: { fontSize: 20, fontWeight: '700', marginBottom: 16 },
+  digit: {
+    width: 32,
+    fontWeight: fontWeight.bold,
+    fontSize: fontSize.bodyLarge,
+    color: colors.primary,
+  },
+  name: { flex: 1, fontSize: fontSize.body },
+  modal: { flex: 1, padding: 24, backgroundColor: colors.surface },
+  modalTitle: { fontSize: fontSize.titleLarge, fontWeight: fontWeight.bold, marginBottom: 16 },
   input: {
     borderWidth: 1,
-    borderColor: '#DDD',
+    borderColor: colors.border,
     borderRadius: 8,
     padding: 12,
     marginBottom: 12,
-    backgroundColor: '#FFF',
-    color: '#000',
+    backgroundColor: colors.surface,
+    color: colors.textPrimary,
   },
-  saveBtn: { backgroundColor: '#4A90D9', padding: 14, borderRadius: 8, alignItems: 'center' },
+  saveBtn: { backgroundColor: colors.primary, padding: 14, borderRadius: 8, alignItems: 'center' },
 })

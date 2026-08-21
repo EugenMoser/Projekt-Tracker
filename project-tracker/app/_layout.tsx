@@ -16,6 +16,7 @@ import { useSyncStore } from '../src/store/syncStore'
 import { apiBootstrap } from '../src/sync/api'
 import { API_BASE_URL, BOOTSTRAP_DISPLAY_NAME, SECURE_KEYS } from '../src/sync/config'
 import { startSyncLoop, stopSyncLoop } from '../src/sync/service'
+import { colors, fontSize, fontWeight } from '../src/theme'
 
 const AUTO_LOCK_THRESHOLD_MS = 60_000
 
@@ -181,8 +182,19 @@ function MigrationErrorScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#F2F2F7' },
+  safe: { flex: 1, backgroundColor: colors.background },
   container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 },
-  title: { fontSize: 22, fontWeight: '600', marginBottom: 16, textAlign: 'center' },
-  body: { fontSize: 16, color: '#3C3C43', textAlign: 'center', marginBottom: 12, lineHeight: 22 },
+  title: {
+    fontSize: fontSize.headline,
+    fontWeight: fontWeight.semibold,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  body: {
+    fontSize: fontSize.bodyLarge,
+    color: colors.textPrimary,
+    textAlign: 'center',
+    marginBottom: 12,
+    lineHeight: 22,
+  },
 })
