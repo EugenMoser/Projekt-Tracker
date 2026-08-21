@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     fontSize: fontSize.label,
     fontWeight: fontWeight.semibold,
     color: colors.textSecondary,
-    marginBottom: space.s6,
+    marginBottom: space.sm,
     marginTop: space.lg,
   },
   required: { color: colors.danger },
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   emptyHint: {
     backgroundColor: colors.warningSurface,
     borderRadius: radius.md,
-    padding: space.s14,
+    padding: space.lg,
     borderWidth: 1,
     borderColor: colors.warningAccent,
   },
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     fontSize: fontSize.bodySmall,
     color: colors.warningText,
     lineHeight: 20,
-    marginBottom: space.s10,
+    marginBottom: space.md,
   },
   emptyHintBtn: {
     backgroundColor: colors.warningAccent,
@@ -219,10 +219,10 @@ const styles = StyleSheet.create({
   orderTypeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: space.s14,
+    padding: space.lg,
     backgroundColor: colors.surface,
     borderRadius: radius.md,
-    marginBottom: space.s6,
+    marginBottom: space.sm,
     borderWidth: 1,
     borderColor: colors.border,
     minHeight: 44,
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
   radioCircle: {
     width: 20,
     height: 20,
-    borderRadius: radius.r10,
+    borderRadius: radius.lg,
     borderWidth: 2,
     borderColor: colors.borderStrong,
     alignItems: 'center',
@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
   radioDot: {
     width: 10,
     height: 10,
-    borderRadius: radius.r5,
+    borderRadius: radius.md,
     backgroundColor: colors.primary,
   },
   orderTypeName: { fontSize: fontSize.body, color: colors.textPrimary },

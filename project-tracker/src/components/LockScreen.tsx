@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     borderRadius: radius.lg,
     paddingHorizontal: space.huge,
-    paddingVertical: space.s14,
+    paddingVertical: space.lg,
     marginBottom: space.lg,
   },
   confirmDisabled: { backgroundColor: colors.buttonDisabled },

@@ -256,15 +256,15 @@ const s = StyleSheet.create({
     marginLeft: space.sm,
   },
   taskRow: {
-    padding: space.s10,
-    borderRadius: radius.r6,
+    padding: space.md,
+    borderRadius: radius.md,
     backgroundColor: colors.background,
     minHeight: 44,
   },
   taskSelected: { backgroundColor: colors.primarySelected },
   btn: {
     backgroundColor: colors.primary,
-    padding: space.s14,
+    padding: space.lg,
     borderRadius: radius.md,
     alignItems: 'center',
     minHeight: 44,
@@ -272,7 +272,7 @@ const s = StyleSheet.create({
   deleteBtn: {
     borderWidth: 1,
     borderColor: colors.danger,
-    padding: space.s14,
+    padding: space.lg,
     borderRadius: radius.md,
     alignItems: 'center',
     minHeight: 44,

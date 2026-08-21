@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
   actions: { flexDirection: 'row', gap: space.md, marginTop: space.xl },
   btnCancel: {
     flex: 1,
-    padding: space.s14,
+    padding: space.lg,
     alignItems: 'center',
     borderRadius: radius.md,
     backgroundColor: colors.surfaceMuted,
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   },
   btnSave: {
     flex: 1,
-    padding: space.s14,
+    padding: space.lg,
     alignItems: 'center',
     borderRadius: radius.md,
     backgroundColor: colors.primary,
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
   },
   btnDiscard: {
     marginTop: space.sm,
-    padding: space.s14,
+    padding: space.lg,
     alignItems: 'center',
     borderRadius: radius.md,
     minHeight: 44,

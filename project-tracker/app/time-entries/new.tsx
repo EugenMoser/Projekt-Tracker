@@ -335,7 +335,7 @@ const s = StyleSheet.create({
   modeRow: { flexDirection: 'row', gap: space.sm },
   modeBtn: {
     flex: 1,
-    padding: space.s10,
+    padding: space.md,
     borderRadius: radius.md,
     backgroundColor: colors.background,
     alignItems: 'center',
@@ -347,7 +347,7 @@ const s = StyleSheet.create({
   modeTextSelected: { color: colors.textInverse, fontWeight: fontWeight.semibold },
   btn: {
     backgroundColor: colors.primary,
-    padding: space.s14,
+    padding: space.lg,
     borderRadius: radius.md,
     alignItems: 'center',
     minHeight: 44,

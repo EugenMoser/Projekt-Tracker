@@ -134,9 +134,9 @@ const styles = StyleSheet.create({
     marginBottom: space.xs,
   },
   taskRow: {
-    padding: space.s14,
+    padding: space.lg,
     borderRadius: radius.md,
-    marginBottom: space.s6,
+    marginBottom: space.sm,
     backgroundColor: colors.background,
     minHeight: 44,
     justifyContent: 'center',
@@ -150,5 +150,5 @@ const styles = StyleSheet.create({
     marginTop: space.sm,
     minHeight: 44,
   },
-  emptyHint: { padding: space.s14, color: colors.textSecondary, fontStyle: 'italic' },
+  emptyHint: { padding: space.lg, color: colors.textSecondary, fontStyle: 'italic' },
 })

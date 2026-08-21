@@ -117,7 +117,7 @@ export function TaskAccordionCard({
 const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.surface,
-    borderRadius: radius.r10,
+    borderRadius: radius.lg,
     marginHorizontal: space.lg,
     marginBottom: space.sm,
     padding: space.md,
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
   },
   headerRight: {
     alignItems: 'flex-end',
-    marginRight: space.s6,
+    marginRight: space.sm,
   },
   taskTime: {
     fontWeight: fontWeight.bold,
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.sm,
   },
   entriesList: {
-    marginTop: space.s10,
+    marginTop: space.md,
     borderTopWidth: 1,
     borderTopColor: colors.borderSubtle,
     paddingTop: space.sm,
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
   entryRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: space.s6,
+    paddingVertical: space.sm,
     borderBottomWidth: 1,
     borderBottomColor: colors.background,
   },

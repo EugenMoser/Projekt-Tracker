@@ -82,8 +82,8 @@ const styles = StyleSheet.create({
   },
   sheet: {
     backgroundColor: colors.background,
-    borderTopLeftRadius: radius.r14,
-    borderTopRightRadius: radius.r14,
+    borderTopLeftRadius: radius.xl,
+    borderTopRightRadius: radius.xl,
     paddingBottom: space.sheetBottom,
     paddingHorizontal: space.lg,
   },
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   },
   action: {
     backgroundColor: colors.surface,
-    borderRadius: radius.r10,
+    borderRadius: radius.lg,
     padding: space.lg,
     marginBottom: space.sm,
     minHeight: 44,
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   },
   cancel: {
     backgroundColor: colors.surface,
-    borderRadius: radius.r10,
+    borderRadius: radius.lg,
     padding: space.lg,
     marginTop: space.sm,
     minHeight: 44,

@@ -39,7 +39,7 @@ export function SyncIndicator() {
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', gap: space.s6, paddingVertical: space.xs },
+  row: { flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingVertical: space.xs },
   dot: { fontSize: fontSize.micro, color: colors.textPlaceholder },
   okDot: { color: colors.success },
   errorDot: { color: colors.danger },

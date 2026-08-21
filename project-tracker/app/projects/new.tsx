@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     borderRadius: radius.md,
     paddingHorizontal: space.xl,
-    paddingVertical: space.s14,
+    paddingVertical: space.lg,
     minHeight: 44,
     alignItems: 'center',
     justifyContent: 'center',

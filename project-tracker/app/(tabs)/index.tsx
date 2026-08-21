@@ -157,7 +157,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   scroll: { flex: 1 },
-  list: { padding: space.s6 },
+  list: { padding: space.sm },
   fab: {
     position: 'absolute',
     bottom: 24,

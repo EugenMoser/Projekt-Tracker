@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
   },
   cancelBtn: {
     flex: 1,
-    padding: space.s14,
+    padding: space.lg,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: radius.md,
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   },
   confirmBtn: {
     flex: 1,
-    padding: space.s14,
+    padding: space.lg,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: radius.md,

@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: space.s14,
+    padding: space.lg,
     backgroundColor: colors.surface,
     borderRadius: radius.md,
     marginBottom: space.sm,
@@ -83,6 +83,6 @@ const styles = StyleSheet.create({
   info: { flex: 1, marginRight: space.md },
   title: { fontSize: fontSize.bodyLarge, fontWeight: fontWeight.semibold },
   customerName: { fontSize: fontSize.label, color: colors.textSecondary, marginTop: space.xxs },
-  restoreBtn: { flexDirection: 'row', alignItems: 'center', minHeight: 44, gap: space.s6 },
+  restoreBtn: { flexDirection: 'row', alignItems: 'center', minHeight: 44, gap: space.sm },
   restoreBtnText: { color: colors.primary, fontWeight: fontWeight.semibold },
 })

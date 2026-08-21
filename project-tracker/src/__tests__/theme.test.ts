@@ -67,29 +67,26 @@ describe('spacing', () => {
     expect(offenders).toEqual([])
   })
 
-  it('keeps the sixteen space values the migration was value-true to', () => {
-    // Spec E2: the migration renamed spacings, it did not change any. Pinning
-    // the set is what makes that promise fail loudly instead of on a device —
-    // a layout shift is invisible to every other test in this suite.
+  it('pins every space value on the scale', () => {
+    // A layout shift is invisible to every other test in this suite —
+    // pinning the set is what makes an accidental change fail loudly.
     expect([...Object.values(space)].sort((a, b) => a - b)).toEqual([
-      1, 2, 4, 6, 8, 10, 12, 14, 16, 20, 24, 32, 34, 40, 48, 96,
+      1, 2, 4, 8, 12, 16, 24, 32, 34, 40, 48, 96,
     ])
   })
 
   it('pins every radius value, including the 999 that stands for a circle', () => {
-    // Eight values are value-true carry-overs. 999 is the exception the spec
-    // allows (E4): React Native clamps borderRadius to half the shorter edge,
-    // so it renders identically to the 22 / 28 / 40 it replaces on the seven
-    // circles and pills it stands for.
-    expect([...Object.values(radius)].sort((a, b) => a - b)).toEqual([
-      2, 4, 5, 6, 8, 10, 12, 14, 999,
-    ])
+    // 999 is the exception (spec E4): React Native clamps borderRadius to
+    // half the shorter edge, so it renders identically to the value it
+    // replaces on the circles and pills it stands for.
+    expect([...Object.values(radius)].sort((a, b) => a - b)).toEqual([2, 4, 8, 12, 16, 999])
   })
 
-  it('names off-scale values after their number, so the debt stays visible', () => {
-    // Spec E5: these eight disappear when the scale is cleaned up. A t-shirt
-    // name (mdPlus) would let them pass as scale members, which they are not.
+  it('has no off-scale values left', () => {
+    // A t-shirt name (mdPlus) would let an off-scale value pass as a scale
+    // member, which is why debt used to be named after its number instead
+    // (s6, r14, ...). None should remain now that the scale absorbed them.
     const offScale = Object.keys({ ...space, ...radius }).filter((name) => /^[sr]\d+$/.test(name))
-    expect(offScale.sort()).toEqual(['r10', 'r14', 'r5', 'r6', 's10', 's14', 's20', 's6'])
+    expect(offScale).toEqual([])
   })
 })

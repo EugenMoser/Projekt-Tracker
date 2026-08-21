@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
   archiveBtn: {
     margin: space.lg,
     marginTop: space.xl,
-    padding: space.s14,
+    padding: space.lg,
     borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.danger,

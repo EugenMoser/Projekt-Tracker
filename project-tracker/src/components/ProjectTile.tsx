@@ -64,7 +64,7 @@ export function ProjectTile({ title, customerName, color, isActive, onPress, onE
 }
 
 const styles = StyleSheet.create({
-  tile: { borderRadius: radius.lg, padding: space.s14, flex: 1, margin: space.s6, height: 128 },
+  tile: { borderRadius: radius.lg, padding: space.lg, flex: 1, margin: space.sm, height: 128 },
   body: { flex: 1 },
   title: { fontWeight: fontWeight.bold, fontSize: fontSize.body, marginBottom: space.xs },
   customer: { fontSize: fontSize.captionLarge },

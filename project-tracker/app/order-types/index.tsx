@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: space.lg },
   addBtn: {
     backgroundColor: colors.primary,
-    padding: space.s14,
+    padding: space.lg,
     borderRadius: radius.md,
     alignItems: 'center',
     marginBottom: space.lg,
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: space.s14,
+    padding: space.lg,
     backgroundColor: colors.surface,
     borderRadius: radius.md,
     marginBottom: space.sm,
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
   },
   saveBtn: {
     backgroundColor: colors.primary,
-    padding: space.s14,
+    padding: space.lg,
     borderRadius: radius.md,
     alignItems: 'center',
   },

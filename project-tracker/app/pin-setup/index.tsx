@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: space.xxl },
   title: { fontSize: fontSize.titleLarge, fontWeight: fontWeight.semibold, marginBottom: space.xs },
-  subtitle: { fontSize: fontSize.bodySmall, color: colors.textMuted, marginBottom: space.s20 },
+  subtitle: { fontSize: fontSize.bodySmall, color: colors.textMuted, marginBottom: space.xl },
   dots: { fontSize: fontSize.display, letterSpacing: 12, marginBottom: space.xl },
   grid: { flexDirection: 'row', flexWrap: 'wrap', width: 264, marginBottom: space.xl },
   key: {
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     borderRadius: radius.lg,
     paddingHorizontal: space.huge,
-    paddingVertical: space.s14,
+    paddingVertical: space.lg,
   },
   confirmDisabled: { backgroundColor: colors.buttonDisabled },
   confirmText: {
