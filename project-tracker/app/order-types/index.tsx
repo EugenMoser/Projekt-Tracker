@@ -143,7 +143,7 @@ export default function OrderTypesScreen() {
               accessibilityLabel="Ziffer der Auftragsart"
             />
             <Pressable style={styles.saveBtn} onPress={editItem ? handleEdit : handleAdd}>
-              <Text style={{ color: colors.textOnPrimary, fontWeight: fontWeight.semibold }}>
+              <Text style={{ color: colors.textInverse, fontWeight: fontWeight.semibold }}>
                 Speichern
               </Text>
             </Pressable>
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: space.lg,
   },
-  addBtnText: { color: colors.textOnPrimary, fontWeight: fontWeight.semibold },
+  addBtnText: { color: colors.textInverse, fontWeight: fontWeight.semibold },
   row: {
     flexDirection: 'row',
     alignItems: 'center',

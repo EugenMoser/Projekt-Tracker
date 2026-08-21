@@ -12,8 +12,9 @@ const noHardcodedDesignValues = [
     message: 'Farbliteral: Rolle aus src/theme verwenden (colors.*).',
   },
   {
-    selector: 'Literal[value=/^rgba?\\(/]',
-    message: 'Transparente Farbe: colors.overlay aus src/theme verwenden.',
+    selector: 'Literal[value=/^(rgba?|hsla?)\\(/]',
+    message:
+      'Transparente oder hsl-Farbe: Rolle aus src/theme verwenden (colors.overlay für Overlays).',
   },
   {
     selector: 'Property[key.name="fontSize"] > Literal',
@@ -34,6 +35,11 @@ const noHardcodedDesignValues = [
   {
     selector: 'Property[key.name="borderRadius"] > Literal',
     message: 'Eckenrundung: radius.* aus src/theme verwenden.',
+  },
+  {
+    selector: 'Property[key.name=/[Cc]olor$/] > Literal[value!="transparent"]',
+    message:
+      "Farbe: Rolle aus src/theme verwenden (colors.*). Nur 'transparent' ist als Literal erlaubt.",
   },
 ]
 

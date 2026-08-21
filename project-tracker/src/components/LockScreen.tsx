@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
   },
   confirmDisabled: { backgroundColor: colors.buttonDisabled },
   confirmText: {
-    color: colors.textOnPrimary,
+    color: colors.textInverse,
     fontSize: fontSize.bodyXl,
     fontWeight: fontWeight.semibold,
   },

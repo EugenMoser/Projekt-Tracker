@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     minHeight: 44,
   },
   confirmBtnText: {
-    color: colors.textOnPrimary,
+    color: colors.textInverse,
     fontWeight: fontWeight.semibold,
     fontSize: fontSize.bodySmall,
   },

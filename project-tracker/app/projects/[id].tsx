@@ -270,5 +270,5 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 4,
   },
-  fabText: { color: colors.textOnPrimary, fontSize: fontSize.display, lineHeight: 32 },
+  fabText: { color: colors.textInverse, fontSize: fontSize.display, lineHeight: 32 },
 })

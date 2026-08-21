@@ -107,7 +107,7 @@ export function StopModal({ visible, projectId, onDone, onCancel, onDiscard }: P
                   : 'Timer speichern und stoppen'
               }
             >
-              <Text style={{ color: colors.textOnPrimary, fontWeight: fontWeight.semibold }}>
+              <Text style={{ color: colors.textInverse, fontWeight: fontWeight.semibold }}>
                 {saveLabel}
               </Text>
             </Pressable>

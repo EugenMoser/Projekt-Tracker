@@ -181,7 +181,7 @@ export default function TasksScreen() {
               autoFocus
             />
             <Pressable style={styles.saveBtn} onPress={handleAddTask}>
-              <Text style={{ color: colors.textOnPrimary, fontWeight: fontWeight.semibold }}>
+              <Text style={{ color: colors.textInverse, fontWeight: fontWeight.semibold }}>
                 Anlegen
               </Text>
             </Pressable>
@@ -209,7 +209,7 @@ export default function TasksScreen() {
               autoFocus
             />
             <Pressable style={styles.saveBtn} onPress={handleSaveEdit}>
-              <Text style={{ color: colors.textOnPrimary, fontWeight: fontWeight.semibold }}>
+              <Text style={{ color: colors.textInverse, fontWeight: fontWeight.semibold }}>
                 Speichern
               </Text>
             </Pressable>
@@ -261,7 +261,7 @@ export default function TasksScreen() {
                 handleAddTag(editingTagsFor!, taskBeingTagged?.tags.map((t) => t.id) ?? [])
               }
             >
-              <Text style={{ color: colors.textOnPrimary, fontWeight: fontWeight.semibold }}>
+              <Text style={{ color: colors.textInverse, fontWeight: fontWeight.semibold }}>
                 Stichwort hinzufügen
               </Text>
             </Pressable>
@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: space.lg,
   },
-  addBtnText: { color: colors.textOnPrimary, fontWeight: fontWeight.semibold },
+  addBtnText: { color: colors.textInverse, fontWeight: fontWeight.semibold },
   taskRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',

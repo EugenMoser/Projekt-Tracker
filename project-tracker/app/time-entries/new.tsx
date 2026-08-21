@@ -303,7 +303,7 @@ export default function NewTimeEntryScreen() {
         accessibilityRole="button"
         accessibilityLabel="Zeiteintrag speichern"
       >
-        <Text style={{ color: colors.textOnPrimary, fontWeight: fontWeight.semibold }}>
+        <Text style={{ color: colors.textInverse, fontWeight: fontWeight.semibold }}>
           Speichern
         </Text>
       </Pressable>
@@ -344,7 +344,7 @@ const s = StyleSheet.create({
   },
   modeBtnSelected: { backgroundColor: colors.primary },
   modeText: { color: colors.textPrimary, fontWeight: fontWeight.medium },
-  modeTextSelected: { color: colors.textOnPrimary, fontWeight: fontWeight.semibold },
+  modeTextSelected: { color: colors.textInverse, fontWeight: fontWeight.semibold },
   btn: {
     backgroundColor: colors.primary,
     padding: space.s14,

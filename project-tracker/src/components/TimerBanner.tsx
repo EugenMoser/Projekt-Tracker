@@ -50,6 +50,6 @@ const styles = StyleSheet.create({
     minHeight: 44,
   },
   icon: { color: colors.success, fontSize: fontSize.bodySmall },
-  title: { flex: 1, color: colors.textOnPrimary, fontWeight: fontWeight.semibold },
-  time: { color: colors.textOnPrimary, fontFamily: 'monospace', fontSize: fontSize.bodyLarge },
+  title: { flex: 1, color: colors.textInverse, fontWeight: fontWeight.semibold },
+  time: { color: colors.textInverse, fontFamily: 'monospace', fontSize: fontSize.bodyLarge },
 })

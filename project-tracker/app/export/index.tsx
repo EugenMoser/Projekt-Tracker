@@ -162,7 +162,7 @@ export default function ExportScreen() {
         accessibilityLabel="Export erstellen"
       >
         {loading ? (
-          <ActivityIndicator color={colors.textOnPrimary} />
+          <ActivityIndicator color={colors.textInverse} />
         ) : (
           <Text style={styles.btnText}>Export erstellen</Text>
         )}
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
   },
   btnDisabled: { opacity: 0.6 },
   btnText: {
-    color: colors.textOnPrimary,
+    color: colors.textInverse,
     fontSize: fontSize.bodyLarge,
     fontWeight: fontWeight.semibold,
   },

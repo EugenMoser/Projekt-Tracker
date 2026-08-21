@@ -191,7 +191,7 @@ export default function NewProjectScreen() {
             accessibilityState={{ checked: pricingMode === mode }}
             accessibilityLabel={mode === 'hourly' ? 'Stundensatz' : 'Festpreis'}
           >
-            <Text style={pricingMode === mode ? { color: colors.textOnPrimary } : undefined}>
+            <Text style={pricingMode === mode ? { color: colors.textInverse } : undefined}>
               {mode === 'hourly' ? 'Stundensatz' : 'Festpreis'}
             </Text>
           </Pressable>
@@ -250,7 +250,7 @@ export default function NewProjectScreen() {
       >
         <Text
           style={{
-            color: colors.textOnPrimary,
+            color: colors.textInverse,
             fontWeight: fontWeight.semibold,
             fontSize: fontSize.bodyLarge,
           }}
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   emptyBtnText: {
-    color: colors.textOnPrimary,
+    color: colors.textInverse,
     fontWeight: fontWeight.semibold,
     fontSize: fontSize.body,
   },

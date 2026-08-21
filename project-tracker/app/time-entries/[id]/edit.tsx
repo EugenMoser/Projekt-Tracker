@@ -211,7 +211,7 @@ export default function EditTimeEntryScreen() {
         accessibilityRole="button"
         accessibilityLabel="Zeiteintrag speichern"
       >
-        <Text style={{ color: colors.textOnPrimary, fontWeight: fontWeight.semibold }}>
+        <Text style={{ color: colors.textInverse, fontWeight: fontWeight.semibold }}>
           Speichern
         </Text>
       </Pressable>

@@ -116,5 +116,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  fabText: { color: colors.textOnPrimary, fontSize: fontSize.display, lineHeight: 32 },
+  fabText: { color: colors.textInverse, fontSize: fontSize.display, lineHeight: 32 },
 })

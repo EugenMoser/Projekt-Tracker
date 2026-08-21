@@ -28,8 +28,13 @@ describe('colors', () => {
 
     // Each pair is coincidence, not a shared role — which is exactly why they
     // are separate tokens. Making text a softer black must not soften shadows,
-    // and tinting the card surface must not tint the text on primary buttons.
-    expect(duplicates).toEqual(['#000000: shadow, textPrimary', '#FFFFFF: surface, textOnPrimary'])
+    // tinting the card surface must not tint the text on primary buttons, and
+    // a lighter grab handle must not lighten every disabled button with it.
+    expect(duplicates).toEqual([
+      '#000000: shadow, textPrimary',
+      '#C7C7CC: buttonDisabled, sheetHandle',
+      '#FFFFFF: surface, textInverse',
+    ])
   })
 })
 

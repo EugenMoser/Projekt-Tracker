@@ -20,7 +20,7 @@ export const colors = {
   textMuted: '#888888',
   textPlaceholder: '#999999',
   textDisabled: '#AAAAAA',
-  textOnPrimary: '#FFFFFF',
+  textInverse: '#FFFFFF',
 
   // Flächen und Ränder
   surface: '#FFFFFF',
@@ -41,4 +41,6 @@ export const colors = {
   warningAccent: '#F0D070',
   warningText: '#7A6000',
   buttonDisabled: '#C7C7CC',
+  /** Griff oben an einem Bottom-Sheet. Teilt den Wert mit `buttonDisabled`, aber nicht die Rolle. */
+  sheetHandle: '#C7C7CC',
 } as const

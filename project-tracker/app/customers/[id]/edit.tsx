@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
   },
   saveBtnDisabled: { backgroundColor: colors.primaryDisabled },
   saveBtnText: {
-    color: colors.textOnPrimary,
+    color: colors.textInverse,
     fontWeight: fontWeight.bold,
     fontSize: fontSize.bodyLarge,
   },

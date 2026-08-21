@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   wrapper: { overflow: 'hidden' },
   stopBg: { backgroundColor: colors.danger, justifyContent: 'center', paddingLeft: space.xl },
   stopText: {
-    color: colors.textOnPrimary,
+    color: colors.textInverse,
     fontWeight: fontWeight.bold,
     fontSize: fontSize.bodyLarge,
   },

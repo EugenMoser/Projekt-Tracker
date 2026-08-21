@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
   handle: {
     width: 36,
     height: 4,
-    backgroundColor: colors.buttonDisabled,
+    backgroundColor: colors.sheetHandle,
     borderRadius: radius.xs,
     alignSelf: 'center',
     marginTop: space.sm,

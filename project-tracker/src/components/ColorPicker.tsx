@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   applyBtnText: {
-    color: colors.textOnPrimary,
+    color: colors.textInverse,
     fontSize: fontSize.body,
     fontWeight: fontWeight.bold,
   },
