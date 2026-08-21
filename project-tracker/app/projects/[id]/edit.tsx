@@ -21,7 +21,7 @@ import {
   listTasksForProject,
   removeTaskFromProject,
 } from '../../../src/repositories/tasks'
-import { colors, fontSize, fontWeight } from '../../../src/theme'
+import { colors, fontSize, fontWeight, radius, space } from '../../../src/theme'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -180,7 +180,7 @@ export default function EditProjectScreen() {
   return (
     <KeyboardAwareScrollView
       style={styles.container}
-      contentContainerStyle={{ gap: 12, paddingBottom: 40 }}
+      contentContainerStyle={{ gap: space.md, paddingBottom: space.xxxl }}
     >
       <Text style={styles.label}>Titel *</Text>
       <TextInput
@@ -227,7 +227,7 @@ export default function EditProjectScreen() {
       <Text style={styles.label}>Farbe</Text>
       <ColorPicker value={color} onChange={setColor} />
 
-      <Text style={[styles.label, { marginTop: 8 }]}>Abrechnung</Text>
+      <Text style={[styles.label, { marginTop: space.sm }]}>Abrechnung</Text>
       <View style={styles.pricingRow}>
         {(['hourly', 'fixed'] as const).map((mode) => (
           <Pressable
@@ -310,14 +310,14 @@ export default function EditProjectScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-  empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
+  container: { flex: 1, padding: space.lg },
+  empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: space.xl },
   label: { fontSize: fontSize.label, color: colors.textSecondary },
   input: {
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 8,
-    padding: 12,
+    borderRadius: radius.md,
+    padding: space.md,
     backgroundColor: colors.surface,
     color: colors.textPrimary,
   },
@@ -327,18 +327,22 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 8,
-    paddingHorizontal: 12,
+    borderRadius: radius.md,
+    paddingHorizontal: space.md,
     backgroundColor: colors.surface,
     minHeight: 44,
   },
   dropdownText: { fontSize: fontSize.body, color: colors.textPrimary, flexShrink: 1 },
-  dropdownChevron: { fontSize: fontSize.bodySmall, color: colors.textSecondary, marginLeft: 8 },
-  pricingRow: { flexDirection: 'row', gap: 8 },
+  dropdownChevron: {
+    fontSize: fontSize.bodySmall,
+    color: colors.textSecondary,
+    marginLeft: space.sm,
+  },
+  pricingRow: { flexDirection: 'row', gap: space.sm },
   pricingBtn: {
     flex: 1,
-    padding: 12,
-    borderRadius: 8,
+    padding: space.md,
+    borderRadius: radius.md,
     backgroundColor: colors.surfaceMuted,
     alignItems: 'center',
     minHeight: 44,
@@ -347,10 +351,10 @@ const styles = StyleSheet.create({
   pricingBtnActive: { backgroundColor: colors.primary },
   btn: {
     backgroundColor: colors.primary,
-    padding: 16,
-    borderRadius: 8,
+    padding: space.lg,
+    borderRadius: radius.md,
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: space.sm,
     minHeight: 52,
   },
 })

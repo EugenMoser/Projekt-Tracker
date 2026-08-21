@@ -11,7 +11,7 @@ import {
   listOrderTypes,
   updateOrderType,
 } from '../../src/repositories/orderTypes'
-import { colors, fontSize, fontWeight } from '../../src/theme'
+import { colors, fontSize, fontWeight, radius, space } from '../../src/theme'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 type OrderType = { id: string; name: string; digit: number }
@@ -150,7 +150,7 @@ export default function OrderTypesScreen() {
             <Pressable
               onPress={closeModal}
               style={{
-                marginTop: 12,
+                marginTop: space.md,
                 alignItems: 'center',
                 minHeight: 44,
                 justifyContent: 'center',
@@ -166,22 +166,22 @@ export default function OrderTypesScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
+  container: { flex: 1, padding: space.lg },
   addBtn: {
     backgroundColor: colors.primary,
-    padding: 14,
-    borderRadius: 8,
+    padding: space.s14,
+    borderRadius: radius.md,
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: space.lg,
   },
   addBtnText: { color: colors.textOnPrimary, fontWeight: fontWeight.semibold },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 14,
+    padding: space.s14,
     backgroundColor: colors.surface,
-    borderRadius: 8,
-    marginBottom: 8,
+    borderRadius: radius.md,
+    marginBottom: space.sm,
   },
   digit: {
     width: 32,
@@ -190,16 +190,25 @@ const styles = StyleSheet.create({
     color: colors.primary,
   },
   name: { flex: 1, fontSize: fontSize.body },
-  modal: { flex: 1, padding: 24, backgroundColor: colors.surface },
-  modalTitle: { fontSize: fontSize.titleLarge, fontWeight: fontWeight.bold, marginBottom: 16 },
+  modal: { flex: 1, padding: space.xl, backgroundColor: colors.surface },
+  modalTitle: {
+    fontSize: fontSize.titleLarge,
+    fontWeight: fontWeight.bold,
+    marginBottom: space.lg,
+  },
   input: {
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 12,
+    borderRadius: radius.md,
+    padding: space.md,
+    marginBottom: space.md,
     backgroundColor: colors.surface,
     color: colors.textPrimary,
   },
-  saveBtn: { backgroundColor: colors.primary, padding: 14, borderRadius: 8, alignItems: 'center' },
+  saveBtn: {
+    backgroundColor: colors.primary,
+    padding: space.s14,
+    borderRadius: radius.md,
+    alignItems: 'center',
+  },
 })

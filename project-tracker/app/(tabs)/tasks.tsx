@@ -14,7 +14,7 @@ import {
   updateTask,
   upsertTag,
 } from '../../src/repositories/tasks'
-import { colors, fontSize, fontWeight } from '../../src/theme'
+import { colors, fontSize, fontWeight, radius, space } from '../../src/theme'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -187,7 +187,7 @@ export default function TasksScreen() {
             </Pressable>
             <Pressable
               onPress={() => setShowAdd(false)}
-              style={{ marginTop: 12, alignItems: 'center' }}
+              style={{ marginTop: space.md, alignItems: 'center' }}
             >
               <Text>Abbrechen</Text>
             </Pressable>
@@ -218,7 +218,7 @@ export default function TasksScreen() {
                 setEditingTask(null)
                 setEditDesc('')
               }}
-              style={{ marginTop: 12, alignItems: 'center' }}
+              style={{ marginTop: space.md, alignItems: 'center' }}
             >
               <Text>Abbrechen</Text>
             </Pressable>
@@ -249,14 +249,14 @@ export default function TasksScreen() {
               ))}
             </View>
             <TextInput
-              style={[styles.input, { marginTop: 12 }]}
+              style={[styles.input, { marginTop: space.md }]}
               placeholder="Neues Stichwort"
               placeholderTextColor={colors.textPlaceholder}
               value={newTagText}
               onChangeText={setNewTagText}
             />
             <Pressable
-              style={[styles.saveBtn, { marginTop: 8 }]}
+              style={[styles.saveBtn, { marginTop: space.sm }]}
               onPress={() =>
                 handleAddTag(editingTagsFor!, taskBeingTagged?.tags.map((t) => t.id) ?? [])
               }
@@ -270,7 +270,7 @@ export default function TasksScreen() {
                 setEditingTagsFor(null)
                 setNewTagText('')
               }}
-              style={{ marginTop: 12, alignItems: 'center' }}
+              style={{ marginTop: space.md, alignItems: 'center' }}
             >
               <Text>Fertig</Text>
             </Pressable>
@@ -282,13 +282,13 @@ export default function TasksScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
+  container: { flex: 1, padding: space.lg },
   addBtn: {
     backgroundColor: colors.primary,
-    padding: 14,
-    borderRadius: 8,
+    padding: space.s14,
+    borderRadius: radius.md,
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: space.lg,
   },
   addBtnText: { color: colors.textOnPrimary, fontWeight: fontWeight.semibold },
   taskRow: {
@@ -296,36 +296,36 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'space-between',
     backgroundColor: colors.surface,
-    borderRadius: 8,
-    padding: 14,
-    marginBottom: 8,
+    borderRadius: radius.md,
+    padding: space.s14,
+    marginBottom: space.sm,
   },
-  taskRowContent: { flex: 1, marginRight: 8 },
-  taskDesc: { fontSize: fontSize.body, fontWeight: fontWeight.semibold, marginBottom: 6 },
-  tagRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  taskRowContent: { flex: 1, marginRight: space.sm },
+  taskDesc: { fontSize: fontSize.body, fontWeight: fontWeight.semibold, marginBottom: space.s6 },
+  tagRow: { flexDirection: 'row', flexWrap: 'wrap', gap: space.s6 },
   tag: {
     backgroundColor: colors.primarySubtle,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: space.s10,
+    paddingVertical: space.xs,
+    borderRadius: radius.lg,
   },
   tagAdd: { backgroundColor: colors.surfaceMuted },
   tagText: { fontSize: fontSize.captionLarge, color: colors.primary },
-  modal: { flex: 1, padding: 24, backgroundColor: colors.surface },
-  modalTitle: { fontSize: fontSize.title, fontWeight: fontWeight.bold, marginBottom: 16 },
+  modal: { flex: 1, padding: space.xl, backgroundColor: colors.surface },
+  modalTitle: { fontSize: fontSize.title, fontWeight: fontWeight.bold, marginBottom: space.lg },
   input: {
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 8,
-    padding: 12,
+    borderRadius: radius.md,
+    padding: space.md,
     backgroundColor: colors.surface,
     color: colors.textPrimary,
   },
   saveBtn: {
     backgroundColor: colors.primary,
-    padding: 14,
-    borderRadius: 8,
+    padding: space.s14,
+    borderRadius: radius.md,
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: space.sm,
   },
 })

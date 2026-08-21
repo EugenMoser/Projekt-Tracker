@@ -19,7 +19,7 @@ import {
   updateTimeEntry,
 } from '../../../src/repositories/timeEntries'
 import { useSettingsStore } from '../../../src/store/settingsStore'
-import { colors, fontSize, fontWeight } from '../../../src/theme'
+import { colors, fontSize, fontWeight, radius, space } from '../../../src/theme'
 import {
   formatHoursMinutes,
   parseDateTimeLocal,
@@ -115,7 +115,10 @@ export default function EditTimeEntryScreen() {
   }
 
   return (
-    <KeyboardAwareScrollView style={s.c} contentContainerStyle={{ gap: 12, paddingBottom: 40 }}>
+    <KeyboardAwareScrollView
+      style={s.c}
+      contentContainerStyle={{ gap: space.md, paddingBottom: space.xxxl }}
+    >
       <Text style={s.label}>Datum (YYYY-MM-DD)</Text>
       <TextInput
         style={s.input}
@@ -227,13 +230,13 @@ export default function EditTimeEntryScreen() {
 }
 
 const s = StyleSheet.create({
-  c: { flex: 1, padding: 16 },
+  c: { flex: 1, padding: space.lg },
   label: { fontSize: fontSize.label, color: colors.textSecondary },
   input: {
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 8,
-    padding: 12,
+    borderRadius: radius.md,
+    padding: space.md,
   },
   dropdown: {
     flexDirection: 'row',
@@ -241,32 +244,36 @@ const s = StyleSheet.create({
     justifyContent: 'space-between',
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 8,
-    paddingHorizontal: 12,
+    borderRadius: radius.md,
+    paddingHorizontal: space.md,
     backgroundColor: colors.surface,
     minHeight: 44,
   },
   dropdownText: { fontSize: fontSize.body, color: colors.textPrimary, flexShrink: 1 },
-  dropdownChevron: { fontSize: fontSize.bodySmall, color: colors.textSecondary, marginLeft: 8 },
+  dropdownChevron: {
+    fontSize: fontSize.bodySmall,
+    color: colors.textSecondary,
+    marginLeft: space.sm,
+  },
   taskRow: {
-    padding: 10,
-    borderRadius: 6,
+    padding: space.s10,
+    borderRadius: radius.r6,
     backgroundColor: colors.background,
     minHeight: 44,
   },
   taskSelected: { backgroundColor: colors.primarySelected },
   btn: {
     backgroundColor: colors.primary,
-    padding: 14,
-    borderRadius: 8,
+    padding: space.s14,
+    borderRadius: radius.md,
     alignItems: 'center',
     minHeight: 44,
   },
   deleteBtn: {
     borderWidth: 1,
     borderColor: colors.danger,
-    padding: 14,
-    borderRadius: 8,
+    padding: space.s14,
+    borderRadius: radius.md,
     alignItems: 'center',
     minHeight: 44,
   },

@@ -9,7 +9,7 @@ import { getCustomer } from '../../src/repositories/customers'
 import { archiveProject, getProject, getProjectTotalSeconds } from '../../src/repositories/projects'
 import { listTasksByIds } from '../../src/repositories/tasks'
 import { listTimeEntriesForProject, softDeleteTimeEntry } from '../../src/repositories/timeEntries'
-import { colors, fontSize, fontWeight } from '../../src/theme'
+import { colors, fontSize, fontWeight, radius, space } from '../../src/theme'
 import { taskAmountCents } from '../../src/utils/money'
 import { formatDuration } from '../../src/utils/time'
 
@@ -209,42 +209,47 @@ export default function ProjectDetailScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   c: { flex: 1 },
-  content: { paddingBottom: 96 },
+  content: { paddingBottom: space.fabClearance },
   header: {
-    padding: 16,
+    padding: space.lg,
     borderLeftWidth: 5,
-    margin: 16,
+    margin: space.lg,
     backgroundColor: colors.surface,
-    borderRadius: 8,
+    borderRadius: radius.md,
   },
   headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  headerTitleGroup: { flex: 1, marginRight: 8 },
+  headerTitleGroup: { flex: 1, marginRight: space.sm },
   editBtn: { minHeight: 44, minWidth: 44, justifyContent: 'center', alignItems: 'flex-end' },
-  customerName: { fontSize: fontSize.label, color: colors.textSecondary, marginBottom: 2 },
+  customerName: { fontSize: fontSize.label, color: colors.textSecondary, marginBottom: space.xxs },
   title: { fontSize: fontSize.titleLarge, fontWeight: fontWeight.bold },
-  meta: { color: colors.textSecondary, marginTop: 4 },
-  stats: { flexDirection: 'row', paddingHorizontal: 16, paddingBottom: 8, gap: 16 },
+  meta: { color: colors.textSecondary, marginTop: space.xs },
+  stats: {
+    flexDirection: 'row',
+    paddingHorizontal: space.lg,
+    paddingBottom: space.sm,
+    gap: space.lg,
+  },
   stat: {
     flex: 1,
     backgroundColor: colors.surface,
-    borderRadius: 8,
-    padding: 12,
+    borderRadius: radius.md,
+    padding: space.md,
     alignItems: 'center',
   },
   statVal: { fontSize: fontSize.title, fontWeight: fontWeight.bold, color: colors.primary },
   statLabel: {
     fontSize: fontSize.caption,
     color: colors.textSecondary,
-    marginTop: 4,
+    marginTop: space.xs,
     textAlign: 'center',
   },
-  empty: { padding: 32, alignItems: 'center' },
+  empty: { padding: space.xxl, alignItems: 'center' },
   emptyText: { color: colors.textMuted, fontSize: fontSize.bodySmall },
   archiveBtn: {
-    margin: 16,
-    marginTop: 24,
-    padding: 14,
-    borderRadius: 8,
+    margin: space.lg,
+    marginTop: space.xl,
+    padding: space.s14,
+    borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.danger,
     alignItems: 'center',
@@ -256,7 +261,7 @@ const styles = StyleSheet.create({
     right: 24,
     width: 56,
     height: 56,
-    borderRadius: 28,
+    borderRadius: radius.full,
     backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',

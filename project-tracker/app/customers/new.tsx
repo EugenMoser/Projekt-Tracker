@@ -6,7 +6,7 @@ import { Alert, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'r
 import { KeyboardAwareScrollView } from '../../src/components/KeyboardAwareView'
 import { createCustomer } from '../../src/repositories/customers'
 import { listOrderTypes } from '../../src/repositories/orderTypes'
-import { colors, fontSize, fontWeight } from '../../src/theme'
+import { colors, fontSize, fontWeight, radius, space } from '../../src/theme'
 
 const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -167,33 +167,33 @@ export default function NewCustomerScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  container: { padding: 16, paddingBottom: 40 },
+  container: { padding: space.lg, paddingBottom: space.xxxl },
   label: {
     fontSize: fontSize.label,
     fontWeight: fontWeight.semibold,
     color: colors.textSecondary,
-    marginBottom: 6,
-    marginTop: 16,
+    marginBottom: space.s6,
+    marginTop: space.lg,
   },
   required: { color: colors.danger },
-  sectionGap: { marginTop: 24 },
+  sectionGap: { marginTop: space.xl },
   input: {
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 8,
-    padding: 12,
+    borderRadius: radius.md,
+    padding: space.md,
     fontSize: fontSize.body,
     backgroundColor: colors.surface,
     color: colors.textPrimary,
-    marginBottom: 4,
+    marginBottom: space.xs,
   },
-  row: { flexDirection: 'row', gap: 8 },
+  row: { flexDirection: 'row', gap: space.sm },
   zipInput: { width: 100 },
   cityInput: { flex: 1 },
   emptyHint: {
     backgroundColor: colors.warningSurface,
-    borderRadius: 8,
-    padding: 14,
+    borderRadius: radius.md,
+    padding: space.s14,
     borderWidth: 1,
     borderColor: colors.warningAccent,
   },
@@ -201,12 +201,12 @@ const styles = StyleSheet.create({
     fontSize: fontSize.bodySmall,
     color: colors.warningText,
     lineHeight: 20,
-    marginBottom: 10,
+    marginBottom: space.s10,
   },
   emptyHintBtn: {
     backgroundColor: colors.warningAccent,
-    borderRadius: 8,
-    padding: 12,
+    borderRadius: radius.md,
+    padding: space.md,
     alignItems: 'center',
     minHeight: 44,
     justifyContent: 'center',
@@ -219,10 +219,10 @@ const styles = StyleSheet.create({
   orderTypeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 14,
+    padding: space.s14,
     backgroundColor: colors.surface,
-    borderRadius: 8,
-    marginBottom: 6,
+    borderRadius: radius.md,
+    marginBottom: space.s6,
     borderWidth: 1,
     borderColor: colors.border,
     minHeight: 44,
@@ -234,28 +234,28 @@ const styles = StyleSheet.create({
   radioCircle: {
     width: 20,
     height: 20,
-    borderRadius: 10,
+    borderRadius: radius.r10,
     borderWidth: 2,
     borderColor: colors.borderStrong,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: space.md,
   },
   radioCircleSelected: { borderColor: colors.primary },
   radioDot: {
     width: 10,
     height: 10,
-    borderRadius: 5,
+    borderRadius: radius.r5,
     backgroundColor: colors.primary,
   },
   orderTypeName: { fontSize: fontSize.body, color: colors.textPrimary },
   orderTypeNameSelected: { color: colors.primaryDark, fontWeight: fontWeight.semibold },
   saveBtn: {
     backgroundColor: colors.primary,
-    padding: 16,
-    borderRadius: 8,
+    padding: space.lg,
+    borderRadius: radius.md,
     alignItems: 'center',
-    marginTop: 32,
+    marginTop: space.xxl,
     minHeight: 52,
   },
   saveBtnDisabled: { backgroundColor: colors.primaryDisabled },
@@ -264,6 +264,11 @@ const styles = StyleSheet.create({
     fontWeight: fontWeight.bold,
     fontSize: fontSize.bodyLarge,
   },
-  cancelBtn: { alignItems: 'center', marginTop: 12, minHeight: 44, justifyContent: 'center' },
+  cancelBtn: {
+    alignItems: 'center',
+    marginTop: space.md,
+    minHeight: 44,
+    justifyContent: 'center',
+  },
   cancelBtnText: { color: colors.textSecondary, fontSize: fontSize.body },
 })
