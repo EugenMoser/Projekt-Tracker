@@ -6,6 +6,9 @@ const expoConfig = require('eslint-config-expo/flat')
 // .claude/.superpowers/specs/2026-08-20-design-tokens-design.md).
 // Die Selektoren greifen nur auf Literale: ein Token-Zugriff ist im AST
 // eine MemberExpression und läuft deshalb nicht in die Regel.
+// Bekannte Lücken (aktuell nicht getriggert, aber auch nicht erkannt): negative
+// Literale (UnaryExpression liegt zwischen Property und Literal), JSX-Attribute
+// (kein Property-Node) und String-literal-Keys (kein key.name).
 const noHardcodedDesignValues = [
   {
     selector: 'Literal[value=/^#[0-9a-fA-F]{3,8}$/]',
@@ -33,7 +36,7 @@ const noHardcodedDesignValues = [
     message: 'Abstand: space.* aus src/theme verwenden.',
   },
   {
-    selector: 'Property[key.name="borderRadius"] > Literal',
+    selector: 'Property[key.name=/^border[A-Za-z]*Radius$/] > Literal',
     message: 'Eckenrundung: radius.* aus src/theme verwenden.',
   },
   {
