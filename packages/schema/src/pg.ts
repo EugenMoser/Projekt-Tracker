@@ -200,6 +200,7 @@ export const timeEntries = pgTable(
     rateSnapshotCents: integer('rate_snapshot_cents'),
     pricingModeSnapshot: text('pricing_mode_snapshot').notNull(),
     notes: text('notes'),
+    billable: boolean('billable').notNull().default(true),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
     deletedAt: timestamp('deleted_at', { withTimezone: true }),
