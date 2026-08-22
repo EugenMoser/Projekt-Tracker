@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { router } from 'expo-router'
+import { router, useLocalSearchParams } from 'expo-router'
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
 
 import { ColorPicker } from '../../src/components/ColorPicker'
@@ -9,6 +9,7 @@ import { RowActionMenu, type RowAction } from '../../src/components/RowActionMen
 import { TaskPickerSheet } from '../../src/components/TaskPickerSheet'
 import { listCustomers } from '../../src/repositories/customers'
 import { createProject } from '../../src/repositories/projects'
+import { getTemplate } from '../../src/repositories/projectTemplates'
 import { listTasks } from '../../src/repositories/tasks'
 import { colors, fontSize, fontWeight, radius, space } from '../../src/theme'
 
@@ -18,20 +19,29 @@ const OWNER_ID = '00000000-0000-0000-0000-000000000001'
 // eslint-disable-next-line no-restricted-syntax
 const DEFAULT_COLOR = '#4A90D9'
 
+function centsToInput(cents: number | null | undefined): string {
+  if (cents == null) return ''
+  return (cents / 100).toFixed(2).replace('.', ',')
+}
+
 export default function NewProjectScreen() {
+  const { templateId } = useLocalSearchParams<{ templateId?: string }>()
+  const template = templateId ? getTemplate(OWNER_ID, templateId) : undefined
   const customers = listCustomers(OWNER_ID)
   const allTasks = listTasks(OWNER_ID)
 
-  const [title, setTitle] = React.useState('')
+  const [title, setTitle] = React.useState(template?.name ?? '')
   const [customerId, setCustomerId] = React.useState(customers[0]?.id ?? '')
   const [customerMenuVisible, setCustomerMenuVisible] = React.useState(false)
   const [taskMenuVisible, setTaskMenuVisible] = React.useState(false)
   const [description, setDescription] = React.useState('')
   const [color, setColor] = React.useState(DEFAULT_COLOR)
-  const [pricingMode, setPricingMode] = React.useState<'hourly' | 'fixed'>('hourly')
-  const [hourlyRate, setHourlyRate] = React.useState('')
-  const [fixedPrice, setFixedPrice] = React.useState('')
-  const [selectedTaskIds, setSelectedTaskIds] = React.useState<string[]>([])
+  const [pricingMode, setPricingMode] = React.useState<'hourly' | 'fixed'>(
+    template?.pricingMode === 'fixed' ? 'fixed' : 'hourly',
+  )
+  const [hourlyRate, setHourlyRate] = React.useState(centsToInput(template?.hourlyRateCents))
+  const [fixedPrice, setFixedPrice] = React.useState(centsToInput(template?.fixedPriceCents))
+  const [selectedTaskIds, setSelectedTaskIds] = React.useState<string[]>(template?.taskIds ?? [])
 
   const toggleTask = (id: string) =>
     setSelectedTaskIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
