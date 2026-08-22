@@ -20,6 +20,7 @@ const cust2Id = 'eeeeeeee-0000-0000-0000-000000000007'
 const proj2Id = 'eeeeeeee-0000-0000-0000-000000000008'
 const task2Id = 'eeeeeeee-0000-0000-0000-000000000009'
 const te2Id = 'eeeeeeee-0000-0000-0000-000000000010'
+const te3Id = 'eeeeeeee-0000-0000-0000-000000000011'
 
 describe.skipIf(skipIf)('queryExportData', () => {
   let client: ReturnType<typeof postgres>
@@ -122,6 +123,28 @@ describe.skipIf(skipIf)('queryExportData', () => {
       new Date('2026-06-01Z'),
     )
     expect(Object.keys(tagMap)).toHaveLength(0)
+  })
+
+  it('splits a task into two rows when it has both billable and non-billable entries', async () => {
+    await client`INSERT INTO time_entries (id, user_id, project_id, task_id, started_at, ended_at, rate_snapshot_cents, pricing_mode_snapshot, billable, created_at, updated_at) VALUES (${te3Id}, ${userId}, ${projId}, ${taskId}, '2026-05-12 09:00:00Z', '2026-05-12 10:00:00Z', 8000, 'hourly', false, now(), now()) ON CONFLICT (id) DO NOTHING`
+
+    const { rows } = await queryExportData(
+      db,
+      userId,
+      new Date('2026-05-01Z'),
+      new Date('2026-06-01Z'),
+    )
+
+    const taskRows = rows.filter((r) => r.taskId === taskId)
+    expect(taskRows).toHaveLength(2)
+
+    const billableRow = taskRows.find((r) => r.billable)!
+    expect(billableRow.totalSeconds).toBe(7200)
+    expect(billableRow.totalAmountCents).toBe(16000)
+
+    const nonBillableRow = taskRows.find((r) => !r.billable)!
+    expect(nonBillableRow.totalSeconds).toBe(3600)
+    expect(nonBillableRow.totalAmountCents).toBe(0)
   })
 })
 

@@ -17,6 +17,7 @@ const hourlyRow: ExportRow = {
   fixedPriceCents: null,
   taskId: 'task-1',
   taskDescription: 'Bildbearbeitung',
+  billable: true,
   totalSeconds: 7200,
   totalAmountCents: 16000,
 }
@@ -34,6 +35,7 @@ const fixedRow1: ExportRow = {
   fixedPriceCents: 50000,
   taskId: 'task-2',
   taskDescription: 'Konzeption',
+  billable: true,
   totalSeconds: 3600,
   totalAmountCents: 0,
 }
@@ -43,6 +45,15 @@ const fixedRow2: ExportRow = {
   taskId: 'task-3',
   taskDescription: 'Design',
   totalSeconds: 5400,
+}
+
+const nonBillableRow: ExportRow = {
+  ...hourlyRow,
+  taskId: 'task-4',
+  taskDescription: 'Kulanz',
+  billable: false,
+  totalSeconds: 3600,
+  totalAmountCents: 0,
 }
 
 async function readWorkbook(buf: Buffer<ArrayBufferLike>): Promise<ExcelJS.Workbook> {
@@ -114,5 +125,31 @@ describe('renderExcel', () => {
     const buf = await renderExcel([], {})
     const wb = await readWorkbook(buf)
     expect(wb.worksheets[0].rowCount).toBe(1)
+  })
+
+  it('header row contains the Fakturierbar column', async () => {
+    const buf = await renderExcel([hourlyRow], {})
+    const wb = await readWorkbook(buf)
+    const sheet = wb.worksheets[0]
+    const header = sheet.getRow(1).values as (string | undefined)[]
+    expect(header).toContain('Fakturierbar')
+  })
+
+  it('non-billable row shows Nein and blank Stundensatz/Betrag', async () => {
+    const buf = await renderExcel([nonBillableRow], {})
+    const wb = await readWorkbook(buf)
+    const sheet = wb.worksheets[0]
+    const row = (sheet.getRow(2).values as (string | undefined)[]).join('|')
+    expect(row).toContain('Nein')
+    expect(row).not.toContain('80,00')
+    expect(row).not.toContain('€/h')
+  })
+
+  it('billable row shows Ja', async () => {
+    const buf = await renderExcel([hourlyRow], {})
+    const wb = await readWorkbook(buf)
+    const sheet = wb.worksheets[0]
+    const row = (sheet.getRow(2).values as (string | undefined)[]).join('|')
+    expect(row).toContain('Ja')
   })
 })

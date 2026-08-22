@@ -27,6 +27,7 @@ export async function renderExcel(rows: ExportRow[], tagMap: TagMap): Promise<Bu
     { header: 'Aufgabe', key: 'taskDescription', width: 25 },
     { header: 'Stichworte', key: 'tags', width: 25 },
     { header: 'Zeit', key: 'time', width: 12 },
+    { header: 'Fakturierbar', key: 'billable', width: 12 },
     { header: 'Stundensatz', key: 'rate', width: 15 },
     { header: 'Betrag', key: 'amount', width: 15 },
   ]
@@ -41,8 +42,10 @@ export async function renderExcel(rows: ExportRow[], tagMap: TagMap): Promise<Bu
     let amount = ''
 
     if (row.pricingMode === 'hourly') {
-      rate = centsToEuroStr(row.hourlyRateCents ?? 0).replace(' €', ' €/h')
-      amount = centsToEuroStr(row.totalAmountCents)
+      if (row.billable) {
+        rate = centsToEuroStr(row.hourlyRateCents ?? 0).replace(' €', ' €/h')
+        amount = centsToEuroStr(row.totalAmountCents)
+      }
     } else {
       if (!fixedPriceShown.has(row.projectId)) {
         amount = centsToEuroStr(row.fixedPriceCents ?? 0)
@@ -60,6 +63,7 @@ export async function renderExcel(rows: ExportRow[], tagMap: TagMap): Promise<Bu
       taskDescription: row.taskDescription,
       tags,
       time,
+      billable: row.billable ? 'Ja' : 'Nein',
       rate,
       amount,
     })

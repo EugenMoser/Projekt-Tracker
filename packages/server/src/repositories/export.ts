@@ -1,5 +1,5 @@
 import * as schema from '@projekt-tracker/schema/pg'
-import { and, eq, gte, inArray, isNull, lt, sql } from 'drizzle-orm'
+import { and, desc, eq, gte, inArray, isNull, lt, sql } from 'drizzle-orm'
 
 import type { Db } from '../db.js'
 
@@ -16,6 +16,7 @@ export interface ExportRow {
   fixedPriceCents: number | null
   taskId: string
   taskDescription: string
+  billable: boolean
   totalSeconds: number
   totalAmountCents: number
 }
@@ -55,6 +56,7 @@ export async function queryExportData(
       fixedPriceCents: schema.projects.fixedPriceCents,
       taskId: schema.tasks.id,
       taskDescription: schema.tasks.description,
+      billable: schema.timeEntries.billable,
       totalSeconds: sql<number>`SUM(${schema.timeEntries.durationSeconds})`,
       totalAmountCents: sql<number>`ROUND(SUM(COALESCE(${schema.timeEntries.rateSnapshotCents}, 0)::numeric * ${schema.timeEntries.durationSeconds}) / 3600.0)`,
     })
@@ -63,8 +65,13 @@ export async function queryExportData(
     .innerJoin(schema.customers, eq(schema.projects.customerId, schema.customers.id))
     .innerJoin(schema.tasks, eq(schema.timeEntries.taskId, schema.tasks.id))
     .where(and(...conditions))
-    .groupBy(schema.customers.id, schema.projects.id, schema.tasks.id)
-    .orderBy(schema.customers.customerNumber, schema.projects.title, schema.tasks.description)
+    .groupBy(schema.customers.id, schema.projects.id, schema.tasks.id, schema.timeEntries.billable)
+    .orderBy(
+      schema.customers.customerNumber,
+      schema.projects.title,
+      schema.tasks.description,
+      desc(schema.timeEntries.billable),
+    )
 
   const rows: ExportRow[] = rawRows.map((r) => ({
     customerNumber: r.customerNumber,
@@ -79,8 +86,9 @@ export async function queryExportData(
     fixedPriceCents: r.fixedPriceCents,
     taskId: r.taskId,
     taskDescription: r.taskDescription,
+    billable: r.billable,
     totalSeconds: Number(r.totalSeconds),
-    totalAmountCents: Number(r.totalAmountCents),
+    totalAmountCents: r.billable ? Number(r.totalAmountCents) : 0,
   }))
 
   const taskIds = [...new Set(rows.map((r) => r.taskId))]
