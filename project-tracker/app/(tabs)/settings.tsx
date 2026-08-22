@@ -148,6 +148,10 @@ export default function SettingsScreen() {
           <Text style={styles.label}>Archivierte Projekte</Text>
           <Text>›</Text>
         </Pressable>
+        <Pressable style={styles.row} onPress={() => router.push('/project-templates')}>
+          <Text style={styles.label}>Projekt-Vorlagen</Text>
+          <Text>›</Text>
+        </Pressable>
       </View>
     </View>
   )
