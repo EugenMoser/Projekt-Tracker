@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { router, useLocalSearchParams } from 'expo-router'
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
+import { Alert, Pressable, StyleSheet, Switch, Text, TextInput, View } from 'react-native'
 import { TimerPickerModal } from 'react-native-timer-picker'
 
 import { KeyboardAwareScrollView } from '../../../src/components/KeyboardAwareView'
@@ -194,16 +194,16 @@ export default function EditTimeEntryScreen() {
         onChangeText={setNotes}
         multiline
       />
-      <Pressable
-        style={s.checkboxRow}
-        onPress={() => setNonBillable((v) => !v)}
-        accessibilityRole="checkbox"
-        accessibilityState={{ checked: nonBillable }}
-        accessibilityLabel="Nicht fakturierbar"
-      >
-        <Text style={s.checkboxGlyph}>{nonBillable ? '☑' : '☐'}</Text>
-        <Text style={s.checkboxLabel}>Nicht fakturierbar</Text>
-      </Pressable>
+      <View style={s.toggleRow}>
+        <Text style={s.toggleLabel}>Nicht fakturierbar</Text>
+        <Switch
+          value={nonBillable}
+          onValueChange={setNonBillable}
+          trackColor={{ false: colors.border, true: colors.primary }}
+          thumbColor={colors.surface}
+          accessibilityLabel="Nicht fakturierbar"
+        />
+      </View>
       {isHourly && (
         <>
           <Text style={s.label}>Stundensatz (€/h)</Text>
@@ -274,9 +274,13 @@ const s = StyleSheet.create({
     minHeight: 44,
   },
   taskSelected: { backgroundColor: colors.primarySelected },
-  checkboxRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm, minHeight: 44 },
-  checkboxGlyph: { fontSize: fontSize.body, color: colors.textPrimary },
-  checkboxLabel: { fontSize: fontSize.body, color: colors.textPrimary },
+  toggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    minHeight: 44,
+  },
+  toggleLabel: { fontSize: fontSize.body, color: colors.textPrimary },
   btn: {
     backgroundColor: colors.primary,
     padding: space.lg,

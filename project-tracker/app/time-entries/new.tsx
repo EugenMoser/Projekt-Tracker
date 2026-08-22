@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { router, useLocalSearchParams } from 'expo-router'
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
+import { Alert, Pressable, StyleSheet, Switch, Text, TextInput, View } from 'react-native'
 import { TimerPickerModal } from 'react-native-timer-picker'
 
 import { KeyboardAwareScrollView } from '../../src/components/KeyboardAwareView'
@@ -285,16 +285,16 @@ export default function NewTimeEntryScreen() {
         multiline
       />
 
-      <Pressable
-        style={s.checkboxRow}
-        onPress={() => setNonBillable((v) => !v)}
-        accessibilityRole="checkbox"
-        accessibilityState={{ checked: nonBillable }}
-        accessibilityLabel="Nicht fakturierbar"
-      >
-        <Text style={s.checkboxGlyph}>{nonBillable ? '☑' : '☐'}</Text>
-        <Text style={s.checkboxLabel}>Nicht fakturierbar</Text>
-      </Pressable>
+      <View style={s.toggleRow}>
+        <Text style={s.toggleLabel}>Nicht fakturierbar</Text>
+        <Switch
+          value={nonBillable}
+          onValueChange={setNonBillable}
+          trackColor={{ false: colors.border, true: colors.primary }}
+          thumbColor={colors.surface}
+          accessibilityLabel="Nicht fakturierbar"
+        />
+      </View>
 
       {isHourly && (
         <>
@@ -358,9 +358,13 @@ const s = StyleSheet.create({
   modeBtnSelected: { backgroundColor: colors.primary },
   modeText: { color: colors.textPrimary, fontWeight: fontWeight.medium },
   modeTextSelected: { color: colors.textInverse, fontWeight: fontWeight.semibold },
-  checkboxRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm, minHeight: 44 },
-  checkboxGlyph: { fontSize: fontSize.body, color: colors.textPrimary },
-  checkboxLabel: { fontSize: fontSize.body, color: colors.textPrimary },
+  toggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    minHeight: 44,
+  },
+  toggleLabel: { fontSize: fontSize.body, color: colors.textPrimary },
   btn: {
     backgroundColor: colors.primary,
     padding: space.lg,
