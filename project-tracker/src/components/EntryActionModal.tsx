@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { colors, fontSize, fontWeight, radius, space } from '../theme'
 import { formatDuration } from '../utils/time'
@@ -20,6 +21,8 @@ interface Props {
 }
 
 export function EntryActionModal({ visible, taskName, entry, onEdit, onDelete, onClose }: Props) {
+  const insets = useSafeAreaInsets()
+
   if (!entry) return null
 
   const date = new Date(entry.startedAt).toLocaleDateString('de-DE')
@@ -35,7 +38,7 @@ export function EntryActionModal({ visible, taskName, entry, onEdit, onDelete, o
     >
       <Pressable style={styles.backdrop} onPress={onClose}>
         <Pressable
-          style={styles.sheet}
+          style={[styles.sheet, { paddingBottom: Math.max(space.sheetBottom, insets.bottom) }]}
           onPress={() => {
             /* stop propagation */
           }}
@@ -84,7 +87,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     borderTopLeftRadius: radius.xl,
     borderTopRightRadius: radius.xl,
-    paddingBottom: space.sheetBottom,
     paddingHorizontal: space.lg,
   },
   handle: {

@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { Modal, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { colors, fontSize, fontWeight, radius, space } from '../theme'
 import { TaskPicker } from './TaskPicker'
@@ -32,6 +33,7 @@ export function TaskPickerModal({
   onClose,
 }: Props) {
   const { height: windowHeight } = useWindowDimensions()
+  const insets = useSafeAreaInsets()
 
   return (
     <Modal
@@ -43,7 +45,7 @@ export function TaskPickerModal({
     >
       <Pressable style={styles.backdrop} onPress={onClose}>
         <Pressable
-          style={styles.sheet}
+          style={[styles.sheet, { paddingBottom: Math.max(space.sheetBottom, insets.bottom) }]}
           onPress={() => {
             /* stop propagation */
           }}
@@ -84,7 +86,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     borderTopLeftRadius: radius.xl,
     borderTopRightRadius: radius.xl,
-    paddingBottom: space.sheetBottom,
     paddingHorizontal: space.lg,
   },
   handle: {
