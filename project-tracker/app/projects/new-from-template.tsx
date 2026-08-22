@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { router } from 'expo-router'
+import { router, useFocusEffect } from 'expo-router'
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
 
 import { listTemplates } from '../../src/repositories/projectTemplates'
@@ -17,13 +17,19 @@ function pricingSummary(t: Template) {
 }
 
 export default function NewFromTemplateScreen() {
-  const templates = listTemplates(OWNER_ID)
+  const [templates, setTemplates] = React.useState<Template[]>([])
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setTemplates(listTemplates(OWNER_ID))
+    }, []),
+  )
 
   return (
     <View style={styles.container}>
       <Pressable
         style={styles.blankBtn}
-        onPress={() => router.push('/projects/new')}
+        onPress={() => router.replace('/projects/new')}
         accessibilityRole="button"
         accessibilityLabel="Leeres Projekt anlegen"
       >
@@ -39,7 +45,7 @@ export default function NewFromTemplateScreen() {
             renderItem={({ item }) => (
               <Pressable
                 style={styles.row}
-                onPress={() => router.push(`/projects/new?templateId=${item.id}`)}
+                onPress={() => router.replace(`/projects/new?templateId=${item.id}`)}
                 accessibilityRole="button"
                 accessibilityLabel={`Projekt aus Vorlage ${item.name} anlegen`}
               >

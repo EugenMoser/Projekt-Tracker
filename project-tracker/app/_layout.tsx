@@ -121,6 +121,7 @@ export default function RootLayout() {
       ) : (
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="projects/new-from-template" options={{ title: 'Neues Projekt' }} />
           <Stack.Screen
             name="projects/new"
             options={{ title: 'Neues Projekt', presentation: 'modal' }}
@@ -139,6 +140,15 @@ export default function RootLayout() {
           <Stack.Screen
             name="archived-projects/index"
             options={{ title: 'Archivierte Projekte' }}
+          />
+          <Stack.Screen name="project-templates/index" options={{ title: 'Projekt-Vorlagen' }} />
+          <Stack.Screen
+            name="project-templates/new"
+            options={{ title: 'Neue Vorlage', presentation: 'modal' }}
+          />
+          <Stack.Screen
+            name="project-templates/[id]/edit"
+            options={{ title: 'Vorlage bearbeiten', presentation: 'modal' }}
           />
           <Stack.Screen
             name="time-entries/new"

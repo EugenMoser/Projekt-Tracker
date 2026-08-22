@@ -1,5 +1,5 @@
 import * as schema from '@projekt-tracker/schema'
-import { and, eq, isNull } from 'drizzle-orm'
+import { and, asc, eq, isNull } from 'drizzle-orm'
 
 import { db } from '../db/client'
 import { newId } from '../utils/uuid'
@@ -27,6 +27,7 @@ export function listTemplates(userId: string) {
     .where(
       and(eq(schema.projectTemplates.userId, userId), isNull(schema.projectTemplates.deletedAt)),
     )
+    .orderBy(asc(schema.projectTemplates.name))
     .all()
 }
 
