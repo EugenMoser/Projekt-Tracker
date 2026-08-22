@@ -470,3 +470,48 @@ describe('sortOrder round-trip', () => {
     expect(row?.sortOrder).toBe(4000)
   })
 })
+
+describe('billable round-trip', () => {
+  it('carries billable into the push payload', () => {
+    const db = makeDb()
+    seedBase(db)
+    db.update(schema.timeEntries)
+      .set({ billable: false })
+      .where(eq(schema.timeEntries.id, TE))
+      .run()
+
+    const payload = collectPushPayload(db, U, null)
+
+    expect(payload.timeEntries).toHaveLength(1)
+    expect(payload.timeEntries[0].billable).toBe(false)
+  })
+
+  it('applies an incoming billable value from the server', () => {
+    const db = makeDb()
+    seedBase(db)
+    // seedBase writes the time entry with updatedAt = T1; the server row is newer.
+    applyPull(db, {
+      ...baseResponse(),
+      timeEntries: [
+        {
+          id: TE,
+          projectId: PR,
+          taskId: TA,
+          startedAt: T0.toISOString(),
+          endedAt: T1.toISOString(),
+          durationSeconds: 3600,
+          rateSnapshotCents: 8000,
+          pricingModeSnapshot: 'hourly',
+          billable: false,
+          notes: null,
+          createdAt: T0.toISOString(),
+          updatedAt: T2.toISOString(),
+          deletedAt: null,
+        },
+      ],
+    })
+
+    const row = db.select().from(schema.timeEntries).where(eq(schema.timeEntries.id, TE)).get()
+    expect(row?.billable).toBe(false)
+  })
+})

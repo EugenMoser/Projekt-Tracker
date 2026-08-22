@@ -61,6 +61,7 @@ export interface SyncTimeEntry {
   durationSeconds: number
   rateSnapshotCents: number | null
   pricingModeSnapshot: 'hourly' | 'fixed'
+  billable: boolean
   notes: string | null
   createdAt: string
   updatedAt: string
