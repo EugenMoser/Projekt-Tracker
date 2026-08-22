@@ -63,7 +63,7 @@ describe('runMigrations', () => {
     const didMigrate = await runMigrations(fakeExpoDb(sqlite))
 
     expect(didMigrate).toBe(true)
-    expect(schemaVersion(sqlite)).toBe('3')
+    expect(schemaVersion(sqlite)).toBe('4')
 
     const columns = sqlite.prepare(`PRAGMA table_info(projects)`).all() as { name: string }[]
     expect(columns.map((c) => c.name)).toContain('sort_order')
@@ -81,7 +81,7 @@ describe('runMigrations', () => {
     const didMigrate = await runMigrations(fakeExpoDb(sqlite))
 
     expect(didMigrate).toBe(false)
-    expect(schemaVersion(sqlite)).toBe('3')
+    expect(schemaVersion(sqlite)).toBe('4')
 
     // The v2 backfill must not have re-run over the existing row.
     const row = sqlite.prepare(`SELECT sort_order FROM projects WHERE id = 'p1'`).get() as {
@@ -93,14 +93,14 @@ describe('runMigrations', () => {
     expect(users.n).toBe(1)
   })
 
-  it('leaves the version at 3 even if the runner dies before its own bump', async () => {
+  it('leaves the version at 4 even if the runner dies before its own bump', async () => {
     // Simulates the crash window: the migration SQL committed (including its
     // own version bump), the runner's follow-up write never happened. The next
     // launch must not replay v2.
     const sqlite = new BetterSQLite(':memory:')
     for (const m of migrations) sqlite.exec(m.sql)
 
-    expect(schemaVersion(sqlite)).toBe('3')
+    expect(schemaVersion(sqlite)).toBe('4')
 
     const didMigrate = await runMigrations(fakeExpoDb(sqlite))
     expect(didMigrate).toBe(false)
