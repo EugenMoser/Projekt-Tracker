@@ -178,6 +178,7 @@ export const timeEntries = sqliteTable(
     rateSnapshotCents: integer('rate_snapshot_cents'),
     pricingModeSnapshot: text('pricing_mode_snapshot').notNull(),
     notes: text('notes'),
+    billable: integer('billable', { mode: 'boolean' }).notNull().default(true),
     createdAt: tsMs('created_at').notNull(),
     updatedAt: tsMs('updated_at').notNull(),
     deletedAt: tsMs('deleted_at'),

@@ -184,4 +184,16 @@ INSERT OR REPLACE INTO _meta (key, value) VALUES ('schema_version', '2');
 COMMIT;
 `,
   },
+  {
+    version: 3,
+    sql: `
+BEGIN;
+
+ALTER TABLE time_entries ADD COLUMN billable INTEGER NOT NULL DEFAULT 1;
+
+INSERT OR REPLACE INTO _meta (key, value) VALUES ('schema_version', '3');
+
+COMMIT;
+`,
+  },
 ]

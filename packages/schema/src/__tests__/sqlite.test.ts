@@ -208,6 +208,31 @@ describe('time_entries', () => {
     const rows = db.select().from(schema.timeEntries).where(eq(schema.timeEntries.id, TE)).all()
     expect(rows[0].durationSeconds).toBe(5400)
     expect(rows[0].rateSnapshotCents).toBe(8000)
+    expect(rows[0].billable).toBe(true)
+  })
+
+  it('stores billable = false when explicitly set', () => {
+    const db = makeTestDb()
+    seedBase(db)
+    const TE = '00000000-0000-0000-0000-000000000099'
+    db.insert(schema.timeEntries)
+      .values({
+        id: TE,
+        userId: U,
+        projectId: PR,
+        taskId: TA,
+        startedAt: NOW,
+        endedAt: NOW,
+        durationSeconds: 3600,
+        rateSnapshotCents: 8000,
+        pricingModeSnapshot: 'hourly',
+        billable: false,
+        createdAt: NOW,
+        updatedAt: NOW,
+      })
+      .run()
+    const rows = db.select().from(schema.timeEntries).where(eq(schema.timeEntries.id, TE)).all()
+    expect(rows[0].billable).toBe(false)
   })
 })
 
