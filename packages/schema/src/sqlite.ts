@@ -159,6 +159,46 @@ export const projectTasks = sqliteTable(
   }),
 )
 
+export const projectTemplates = sqliteTable(
+  'project_templates',
+  {
+    id: uuid('id').primaryKey(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id),
+    name: text('name').notNull(),
+    pricingMode: text('pricing_mode').notNull(),
+    hourlyRateCents: integer('hourly_rate_cents'),
+    fixedPriceCents: integer('fixed_price_cents'),
+    createdAt: tsMs('created_at').notNull(),
+    updatedAt: tsMs('updated_at').notNull(),
+    deletedAt: tsMs('deleted_at'),
+  },
+  (t) => ({
+    userIdx: index('project_templates_user_idx').on(t.userId),
+    uniqueUserName: uniqueIndex('project_templates_user_name_uq').on(t.userId, t.name),
+  }),
+)
+
+export const templateTasks = sqliteTable(
+  'template_tasks',
+  {
+    templateId: uuid('template_id')
+      .notNull()
+      .references(() => projectTemplates.id, { onDelete: 'cascade' }),
+    taskId: uuid('task_id')
+      .notNull()
+      .references(() => tasks.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.templateId, t.taskId] }),
+    userIdx: index('template_tasks_user_idx').on(t.userId),
+  }),
+)
+
 export const timeEntries = sqliteTable(
   'time_entries',
   {

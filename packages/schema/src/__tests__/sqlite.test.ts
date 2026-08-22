@@ -183,6 +183,120 @@ describe('projects', () => {
   })
 })
 
+describe('project_templates', () => {
+  it('stores hourly pricing', () => {
+    const db = makeTestDb()
+    db.insert(schema.users)
+      .values({ id: U, displayName: 'Owner', tier: 'pro', createdAt: NOW, updatedAt: NOW })
+      .run()
+    const TPL = '00000000-0000-0000-0000-000000000010'
+    db.insert(schema.projectTemplates)
+      .values({
+        id: TPL,
+        userId: U,
+        name: 'Hochzeit',
+        pricingMode: 'hourly',
+        hourlyRateCents: 8000,
+        createdAt: NOW,
+        updatedAt: NOW,
+      })
+      .run()
+    const rows = db
+      .select()
+      .from(schema.projectTemplates)
+      .where(eq(schema.projectTemplates.id, TPL))
+      .all()
+    expect(rows[0].pricingMode).toBe('hourly')
+    expect(rows[0].hourlyRateCents).toBe(8000)
+    expect(rows[0].fixedPriceCents).toBeNull()
+  })
+
+  it('stores fixed pricing', () => {
+    const db = makeTestDb()
+    db.insert(schema.users)
+      .values({ id: U, displayName: 'Owner', tier: 'pro', createdAt: NOW, updatedAt: NOW })
+      .run()
+    const TPL = '00000000-0000-0000-0000-000000000011'
+    db.insert(schema.projectTemplates)
+      .values({
+        id: TPL,
+        userId: U,
+        name: 'Logo-Design',
+        pricingMode: 'fixed',
+        fixedPriceCents: 150000,
+        createdAt: NOW,
+        updatedAt: NOW,
+      })
+      .run()
+    const rows = db
+      .select()
+      .from(schema.projectTemplates)
+      .where(eq(schema.projectTemplates.id, TPL))
+      .all()
+    expect(rows[0].fixedPriceCents).toBe(150000)
+    expect(rows[0].hourlyRateCents).toBeNull()
+  })
+
+  it('rejects duplicate name per user', () => {
+    const db = makeTestDb()
+    db.insert(schema.users)
+      .values({ id: U, displayName: 'Owner', tier: 'pro', createdAt: NOW, updatedAt: NOW })
+      .run()
+    db.insert(schema.projectTemplates)
+      .values({
+        id: '00000000-0000-0000-0000-000000000012',
+        userId: U,
+        name: 'Hochzeit',
+        pricingMode: 'hourly',
+        hourlyRateCents: 8000,
+        createdAt: NOW,
+        updatedAt: NOW,
+      })
+      .run()
+    expect(() =>
+      db
+        .insert(schema.projectTemplates)
+        .values({
+          id: '00000000-0000-0000-0000-000000000013',
+          userId: U,
+          name: 'Hochzeit',
+          pricingMode: 'fixed',
+          fixedPriceCents: 150000,
+          createdAt: NOW,
+          updatedAt: NOW,
+        })
+        .run(),
+    ).toThrow()
+  })
+})
+
+describe('template_tasks', () => {
+  it('links a template to a task', () => {
+    const db = makeTestDb()
+    seedBase(db)
+    const TPL = '00000000-0000-0000-0000-000000000014'
+    db.insert(schema.projectTemplates)
+      .values({
+        id: TPL,
+        userId: U,
+        name: 'Hochzeit',
+        pricingMode: 'hourly',
+        hourlyRateCents: 8000,
+        createdAt: NOW,
+        updatedAt: NOW,
+      })
+      .run()
+    db.insert(schema.templateTasks).values({ templateId: TPL, taskId: TA, userId: U }).run()
+    const rows = db
+      .select()
+      .from(schema.templateTasks)
+      .where(eq(schema.templateTasks.templateId, TPL))
+      .all()
+    expect(rows).toHaveLength(1)
+    expect(rows[0].taskId).toBe(TA)
+  })
+})
+
 describe('time_entries', () => {
   it('stores duration_seconds and rate_snapshot_cents', () => {
     const db = makeTestDb()

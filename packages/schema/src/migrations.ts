@@ -196,4 +196,41 @@ INSERT OR REPLACE INTO _meta (key, value) VALUES ('schema_version', '3');
 COMMIT;
 `,
   },
+  {
+    version: 4,
+    sql: `
+BEGIN;
+
+CREATE TABLE IF NOT EXISTS project_templates (
+  id TEXT PRIMARY KEY NOT NULL,
+  user_id TEXT NOT NULL REFERENCES users(id),
+  name TEXT NOT NULL,
+  pricing_mode TEXT NOT NULL,
+  hourly_rate_cents INTEGER,
+  fixed_price_cents INTEGER,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL,
+  deleted_at INTEGER,
+  CHECK (pricing_mode IN ('hourly', 'fixed')),
+  CHECK (
+    (pricing_mode = 'hourly' AND hourly_rate_cents IS NOT NULL AND fixed_price_cents IS NULL) OR
+    (pricing_mode = 'fixed' AND fixed_price_cents IS NOT NULL AND hourly_rate_cents IS NULL)
+  )
+);
+CREATE INDEX IF NOT EXISTS project_templates_user_idx ON project_templates(user_id);
+CREATE UNIQUE INDEX IF NOT EXISTS project_templates_user_name_uq ON project_templates(user_id, name);
+
+CREATE TABLE IF NOT EXISTS template_tasks (
+  template_id TEXT NOT NULL REFERENCES project_templates(id) ON DELETE CASCADE,
+  task_id TEXT NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+  user_id TEXT NOT NULL REFERENCES users(id),
+  PRIMARY KEY (template_id, task_id)
+);
+CREATE INDEX IF NOT EXISTS template_tasks_user_idx ON template_tasks(user_id);
+
+INSERT OR REPLACE INTO _meta (key, value) VALUES ('schema_version', '4');
+
+COMMIT;
+`,
+  },
 ]
