@@ -85,6 +85,7 @@ const timeEntrySchema = z
     endedAt: isoDatetime,
     rateSnapshotCents: z.number().int().nullable(),
     pricingModeSnapshot: z.enum(['hourly', 'fixed']),
+    billable: z.boolean(),
     notes: z.string().nullable(),
     createdAt: isoDatetime,
     updatedAt: isoDatetime,

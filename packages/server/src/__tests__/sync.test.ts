@@ -163,6 +163,7 @@ describe('pushBodySchema — unit', () => {
           endedAt: '2026-01-01T09:00:00.000Z',
           rateSnapshotCents: null,
           pricingModeSnapshot: 'unknown',
+          billable: true,
           notes: null,
           createdAt: '2026-01-01T08:00:00.000Z',
           updatedAt: '2026-01-01T08:00:00.000Z',
@@ -184,6 +185,7 @@ describe('pushBodySchema — unit', () => {
           endedAt: '2026-01-01T08:00:00.000Z',
           rateSnapshotCents: null,
           pricingModeSnapshot: 'hourly',
+          billable: true,
           notes: null,
           createdAt: '2026-01-01T08:00:00.000Z',
           updatedAt: '2026-01-01T08:00:00.000Z',
@@ -205,6 +207,7 @@ describe('pushBodySchema — unit', () => {
           endedAt: '2026-01-01T08:00:00.000Z',
           rateSnapshotCents: null,
           pricingModeSnapshot: 'hourly',
+          billable: true,
           notes: null,
           createdAt: '2026-01-01T08:00:00.000Z',
           updatedAt: '2026-01-01T08:00:00.000Z',
@@ -226,6 +229,50 @@ describe('pushBodySchema — unit', () => {
           endedAt: '2026-01-01T09:00:00.000Z',
           rateSnapshotCents: null,
           pricingModeSnapshot: 'hourly',
+          billable: true,
+          notes: null,
+          createdAt: '2026-01-01T08:00:00.000Z',
+          updatedAt: '2026-01-01T08:00:00.000Z',
+          deletedAt: null,
+        },
+      ],
+    })
+    expect(r.success).toBe(true)
+  })
+
+  it('rejects a timeEntry missing billable', () => {
+    const r = pushBodySchema.safeParse({
+      timeEntries: [
+        {
+          id: '01930000-0000-7000-8000-000000000004',
+          projectId: '01930000-0000-7000-8000-000000000005',
+          taskId: '01930000-0000-7000-8000-000000000006',
+          startedAt: '2026-01-01T08:00:00.000Z',
+          endedAt: '2026-01-01T09:00:00.000Z',
+          rateSnapshotCents: null,
+          pricingModeSnapshot: 'hourly',
+          notes: null,
+          createdAt: '2026-01-01T08:00:00.000Z',
+          updatedAt: '2026-01-01T08:00:00.000Z',
+          deletedAt: null,
+        },
+      ],
+    })
+    expect(r.success).toBe(false)
+  })
+
+  it('accepts a timeEntry with billable: false', () => {
+    const r = pushBodySchema.safeParse({
+      timeEntries: [
+        {
+          id: '01930000-0000-7000-8000-000000000004',
+          projectId: '01930000-0000-7000-8000-000000000005',
+          taskId: '01930000-0000-7000-8000-000000000006',
+          startedAt: '2026-01-01T08:00:00.000Z',
+          endedAt: '2026-01-01T09:00:00.000Z',
+          rateSnapshotCents: null,
+          pricingModeSnapshot: 'hourly',
+          billable: false,
           notes: null,
           createdAt: '2026-01-01T08:00:00.000Z',
           updatedAt: '2026-01-01T08:00:00.000Z',
@@ -524,5 +571,95 @@ describe.skipIf(!DB_URL)('Sync endpoints (integration)', () => {
     })
     const bodyEmpty = (await resEmpty.json()) as { orderTypes: { id: string }[] }
     expect(bodyEmpty.orderTypes.some((o) => o.id === otId)).toBe(false)
+  })
+
+  it('push/pull round-trips billable: false for a time entry', async () => {
+    const otId = '01930005-0000-7000-8000-000000000001'
+    const custId = '01930005-0000-7000-8000-000000000002'
+    const projId = '01930005-0000-7000-8000-000000000003'
+    const taskId = '01930005-0000-7000-8000-000000000004'
+    const teId = '01930005-0000-7000-8000-000000000005'
+    const now = new Date().toISOString()
+
+    await app.request('/v1/sync/push', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        orderTypes: [
+          {
+            id: otId,
+            name: 'Billable Test Art',
+            digit: 7,
+            createdAt: now,
+            updatedAt: now,
+            deletedAt: null,
+          },
+        ],
+        customers: [
+          {
+            id: custId,
+            customerNumber: '26600A01',
+            orderTypeId: otId,
+            name: 'Billable Test Kunde',
+            street: null,
+            zip: null,
+            city: null,
+            createdAt: now,
+            updatedAt: now,
+            deletedAt: null,
+          },
+        ],
+        projects: [
+          {
+            id: projId,
+            customerId: custId,
+            title: 'Billable Test Projekt',
+            description: null,
+            color: '#FF0000',
+            pricingMode: 'hourly',
+            hourlyRateCents: 8000,
+            fixedPriceCents: null,
+            status: 'active',
+            sortOrder: 1000,
+            createdAt: now,
+            updatedAt: now,
+            deletedAt: null,
+          },
+        ],
+        tasks: [
+          {
+            id: taskId,
+            description: 'Billable Test Aufgabe',
+            createdAt: now,
+            updatedAt: now,
+            deletedAt: null,
+          },
+        ],
+        timeEntries: [
+          {
+            id: teId,
+            projectId: projId,
+            taskId,
+            startedAt: now,
+            endedAt: new Date(Date.now() + 3600_000).toISOString(),
+            rateSnapshotCents: 8000,
+            pricingModeSnapshot: 'hourly',
+            billable: false,
+            notes: null,
+            createdAt: now,
+            updatedAt: now,
+            deletedAt: null,
+          },
+        ],
+      }),
+    })
+
+    const pullRes = await app.request('/v1/sync/pull', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    const pullBody = (await pullRes.json()) as { timeEntries: { id: string; billable: boolean }[] }
+    const found = pullBody.timeEntries.find((t) => t.id === teId)
+    expect(found).toBeDefined()
+    expect(found?.billable).toBe(false)
   })
 })
