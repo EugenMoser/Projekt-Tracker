@@ -29,6 +29,7 @@ type Entry = {
   startedAt: Date
   notes: string | null
   rateSnapshotCents: number | null
+  billable: boolean
 }
 
 export default function ProjectDetailScreen() {

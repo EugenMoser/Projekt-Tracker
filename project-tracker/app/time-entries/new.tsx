@@ -51,6 +51,7 @@ export default function NewTimeEntryScreen() {
   const [searchText, setSearchText] = React.useState('')
   const [taskPickerVisible, setTaskPickerVisible] = React.useState(false)
   const [notes, setNotes] = React.useState('')
+  const [nonBillable, setNonBillable] = React.useState(false)
 
   const isHourly = project?.pricingMode === 'hourly'
   const [rateStr, setRateStr] = React.useState('')
@@ -133,6 +134,7 @@ export default function NewTimeEntryScreen() {
       endedAt,
       notes: notes.trim() || undefined,
       rateOverrideCents,
+      billable: !nonBillable,
     })
 
     router.back()
@@ -283,6 +285,17 @@ export default function NewTimeEntryScreen() {
         multiline
       />
 
+      <Pressable
+        style={s.checkboxRow}
+        onPress={() => setNonBillable((v) => !v)}
+        accessibilityRole="checkbox"
+        accessibilityState={{ checked: nonBillable }}
+        accessibilityLabel="Nicht fakturierbar"
+      >
+        <Text style={s.checkboxGlyph}>{nonBillable ? '☑' : '☐'}</Text>
+        <Text style={s.checkboxLabel}>Nicht fakturierbar</Text>
+      </Pressable>
+
       {isHourly && (
         <>
           <Text style={s.label}>Stundensatz (€/h)</Text>
@@ -345,6 +358,9 @@ const s = StyleSheet.create({
   modeBtnSelected: { backgroundColor: colors.primary },
   modeText: { color: colors.textPrimary, fontWeight: fontWeight.medium },
   modeTextSelected: { color: colors.textInverse, fontWeight: fontWeight.semibold },
+  checkboxRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm, minHeight: 44 },
+  checkboxGlyph: { fontSize: fontSize.body, color: colors.textPrimary },
+  checkboxLabel: { fontSize: fontSize.body, color: colors.textPrimary },
   btn: {
     backgroundColor: colors.primary,
     padding: space.lg,

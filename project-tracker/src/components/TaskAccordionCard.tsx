@@ -16,6 +16,7 @@ type Entry = {
   startedAt: Date
   notes: string | null
   rateSnapshotCents: number | null
+  billable: boolean
 }
 
 interface Props {
@@ -91,6 +92,7 @@ export function TaskAccordionCard({
                 <Text style={styles.entryDate}>
                   {new Date(entry.startedAt).toLocaleDateString('de-DE')}
                   {entry.notes ? ` · ${entry.notes}` : ''}
+                  {!entry.billable ? ' · Nicht fakturierbar' : ''}
                 </Text>
               </View>
               <DotsButton

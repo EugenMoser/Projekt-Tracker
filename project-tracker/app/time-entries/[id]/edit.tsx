@@ -43,6 +43,7 @@ export default function EditTimeEntryScreen() {
   const [activePicker, setActivePicker] = React.useState<PickerTarget>(null)
   const [taskId, setTaskId] = React.useState(entry?.taskId ?? '')
   const [notes, setNotes] = React.useState(entry?.notes ?? '')
+  const [nonBillable, setNonBillable] = React.useState(entry ? !entry.billable : false)
 
   const isHourly = entry?.pricingModeSnapshot === 'hourly'
   const [rateStr, setRateStr] = React.useState(
@@ -91,6 +92,7 @@ export default function EditTimeEntryScreen() {
       endedAt,
       taskId,
       notes: notes.trim() || undefined,
+      billable: !nonBillable,
     })
 
     if (newRateCents !== null && newRateCents !== entry!.rateSnapshotCents) {
@@ -192,6 +194,16 @@ export default function EditTimeEntryScreen() {
         onChangeText={setNotes}
         multiline
       />
+      <Pressable
+        style={s.checkboxRow}
+        onPress={() => setNonBillable((v) => !v)}
+        accessibilityRole="checkbox"
+        accessibilityState={{ checked: nonBillable }}
+        accessibilityLabel="Nicht fakturierbar"
+      >
+        <Text style={s.checkboxGlyph}>{nonBillable ? '☑' : '☐'}</Text>
+        <Text style={s.checkboxLabel}>Nicht fakturierbar</Text>
+      </Pressable>
       {isHourly && (
         <>
           <Text style={s.label}>Stundensatz (€/h)</Text>
@@ -262,6 +274,9 @@ const s = StyleSheet.create({
     minHeight: 44,
   },
   taskSelected: { backgroundColor: colors.primarySelected },
+  checkboxRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm, minHeight: 44 },
+  checkboxGlyph: { fontSize: fontSize.body, color: colors.textPrimary },
+  checkboxLabel: { fontSize: fontSize.body, color: colors.textPrimary },
   btn: {
     backgroundColor: colors.primary,
     padding: space.lg,
