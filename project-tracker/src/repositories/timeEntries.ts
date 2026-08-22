@@ -33,7 +33,7 @@ export function listTimeEntriesForProject(userId: string, projectId: string) {
 export function updateTimeEntry(
   userId: string,
   id: string,
-  data: { startedAt: Date; endedAt: Date; taskId: string; notes?: string },
+  data: { startedAt: Date; endedAt: Date; taskId: string; notes?: string; billable: boolean },
 ) {
   const duration = Math.round((data.endedAt.getTime() - data.startedAt.getTime()) / 1000)
   return db
@@ -44,6 +44,7 @@ export function updateTimeEntry(
       durationSeconds: duration,
       taskId: data.taskId,
       notes: data.notes ?? null,
+      billable: data.billable,
       updatedAt: new Date(),
     })
     .where(and(eq(schema.timeEntries.id, id), eq(schema.timeEntries.userId, userId)))
@@ -67,9 +68,10 @@ export function createTimeEntry(
     endedAt: Date
     notes?: string
     rateOverrideCents?: number | null
+    billable?: boolean
   },
 ): string {
-  const { projectId, taskId, startedAt, endedAt, notes, rateOverrideCents } = data
+  const { projectId, taskId, startedAt, endedAt, notes, rateOverrideCents, billable } = data
 
   // Guard: endedAt must be strictly after startedAt
   if (endedAt <= startedAt) {
@@ -107,6 +109,7 @@ export function createTimeEntry(
       rateSnapshotCents,
       pricingModeSnapshot: snapshot.pricingModeSnapshot,
       notes: notes ?? null,
+      billable: billable ?? true,
       createdAt: now,
       updatedAt: now,
     })

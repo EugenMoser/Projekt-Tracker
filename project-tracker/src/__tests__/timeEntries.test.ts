@@ -3,7 +3,7 @@ import * as schema from '@projekt-tracker/schema'
 import { eq } from 'drizzle-orm'
 
 import { db as testDb } from '../db/client'
-import { createTimeEntry } from '../repositories/timeEntries'
+import { createTimeEntry, updateTimeEntry } from '../repositories/timeEntries'
 
 // `../repositories/timeEntries` imports the singleton `db` from
 // `../db/client`, which normally opens a native expo-sqlite database. In
@@ -238,5 +238,83 @@ describe('createTimeEntry', () => {
     // Override must be ignored for fixed-price projects
     expect(entry!.rateSnapshotCents).toBeNull()
     expect(entry!.pricingModeSnapshot).toBe('fixed')
+  })
+
+  it('defaults to billable = true when not provided', () => {
+    const startedAt = new Date('2026-07-01T10:00:00Z')
+    const endedAt = new Date('2026-07-01T11:00:00Z')
+
+    const id = createTimeEntry(U, {
+      projectId: P1,
+      taskId: TK,
+      startedAt,
+      endedAt,
+    })
+
+    const entry = getEntry(id)
+    expect(entry).not.toBeNull()
+    expect(entry!.billable).toBe(true)
+  })
+
+  it('stores billable = false when explicitly set', () => {
+    const startedAt = new Date('2026-07-01T10:00:00Z')
+    const endedAt = new Date('2026-07-01T11:00:00Z')
+
+    const id = createTimeEntry(U, {
+      projectId: P1,
+      taskId: TK,
+      startedAt,
+      endedAt,
+      billable: false,
+    })
+
+    const entry = getEntry(id)
+    expect(entry).not.toBeNull()
+    expect(entry!.billable).toBe(false)
+  })
+})
+
+describe('updateTimeEntry', () => {
+  beforeEach(() => {
+    seedBase()
+  })
+
+  it('sets billable to false', () => {
+    const id = createTimeEntry(U, {
+      projectId: P1,
+      taskId: TK,
+      startedAt: new Date('2026-07-01T10:00:00Z'),
+      endedAt: new Date('2026-07-01T11:00:00Z'),
+    })
+
+    updateTimeEntry(U, id, {
+      startedAt: new Date('2026-07-01T10:00:00Z'),
+      endedAt: new Date('2026-07-01T11:00:00Z'),
+      taskId: TK,
+      billable: false,
+    })
+
+    const entry = getEntry(id)
+    expect(entry!.billable).toBe(false)
+  })
+
+  it('sets billable back to true', () => {
+    const id = createTimeEntry(U, {
+      projectId: P1,
+      taskId: TK,
+      startedAt: new Date('2026-07-01T10:00:00Z'),
+      endedAt: new Date('2026-07-01T11:00:00Z'),
+      billable: false,
+    })
+
+    updateTimeEntry(U, id, {
+      startedAt: new Date('2026-07-01T10:00:00Z'),
+      endedAt: new Date('2026-07-01T11:00:00Z'),
+      taskId: TK,
+      billable: true,
+    })
+
+    const entry = getEntry(id)
+    expect(entry!.billable).toBe(true)
   })
 })

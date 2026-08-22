@@ -5,8 +5,8 @@ describe('taskAmountCents', () => {
     // two 1-min entries at 80,00 €/h -> ROUND(8000*120/3600) = 267 cents, not 266
     expect(
       taskAmountCents([
-        { durationSeconds: 60, rateSnapshotCents: 8000 },
-        { durationSeconds: 60, rateSnapshotCents: 8000 },
+        { durationSeconds: 60, rateSnapshotCents: 8000, billable: true },
+        { durationSeconds: 60, rateSnapshotCents: 8000, billable: true },
       ]),
     ).toBe(267)
   })
@@ -16,12 +16,27 @@ describe('taskAmountCents', () => {
   it('treats a null rate snapshot as 0 contribution', () => {
     expect(
       taskAmountCents([
-        { durationSeconds: 3600, rateSnapshotCents: null },
-        { durationSeconds: 3600, rateSnapshotCents: 5000 },
+        { durationSeconds: 3600, rateSnapshotCents: null, billable: true },
+        { durationSeconds: 3600, rateSnapshotCents: 5000, billable: true },
       ]),
     ).toBe(5000)
   })
   it('computes a full hour exactly', () => {
-    expect(taskAmountCents([{ durationSeconds: 3600, rateSnapshotCents: 8000 }])).toBe(8000)
+    expect(
+      taskAmountCents([{ durationSeconds: 3600, rateSnapshotCents: 8000, billable: true }]),
+    ).toBe(8000)
+  })
+  it('treats billable: false as 0 contribution even with a rate snapshot', () => {
+    expect(
+      taskAmountCents([{ durationSeconds: 3600, rateSnapshotCents: 8000, billable: false }]),
+    ).toBe(0)
+  })
+  it('sums only the billable entries in a mixed set', () => {
+    expect(
+      taskAmountCents([
+        { durationSeconds: 3600, rateSnapshotCents: 8000, billable: true },
+        { durationSeconds: 3600, rateSnapshotCents: 8000, billable: false },
+      ]),
+    ).toBe(8000)
   })
 })
