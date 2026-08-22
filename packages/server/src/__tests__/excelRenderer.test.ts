@@ -56,6 +56,20 @@ const nonBillableRow: ExportRow = {
   totalAmountCents: 0,
 }
 
+const fixedRowNonBillableFirst: ExportRow = {
+  ...fixedRow1,
+  taskId: 'task-4',
+  taskDescription: 'Aaa (non-billable, sorts first)',
+  billable: false,
+}
+
+const fixedRowBillableSecond: ExportRow = {
+  ...fixedRow1,
+  taskId: 'task-5',
+  taskDescription: 'Bbb (billable)',
+  billable: true,
+}
+
 async function readWorkbook(buf: Buffer<ArrayBufferLike>): Promise<ExcelJS.Workbook> {
   const wb = new ExcelJS.Workbook()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -112,6 +126,16 @@ describe('renderExcel', () => {
     expect(row3).not.toContain('500,00')
   })
 
+  it('fixed-price amount lands on the billable row, not a non-billable row that sorts first', async () => {
+    const buf = await renderExcel([fixedRowNonBillableFirst, fixedRowBillableSecond], {})
+    const wb = await readWorkbook(buf)
+    const sheet = wb.worksheets[0]
+    const row2 = (sheet.getRow(2).values as (string | undefined)[]).join('|')
+    const row3 = (sheet.getRow(3).values as (string | undefined)[]).join('|')
+    expect(row2).not.toContain('500,00')
+    expect(row3).toContain('500,00')
+  })
+
   it('renders comma-separated tags', async () => {
     const tagMap: TagMap = { 'task-1': ['Website', 'Hochzeit'] }
     const buf = await renderExcel([hourlyRow], tagMap)
@@ -143,6 +167,7 @@ describe('renderExcel', () => {
     expect(row).toContain('Nein')
     expect(row).not.toContain('80,00')
     expect(row).not.toContain('€/h')
+    expect(row).not.toContain('0,00')
   })
 
   it('billable row shows Ja', async () => {

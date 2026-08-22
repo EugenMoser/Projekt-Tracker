@@ -33,7 +33,19 @@ export async function renderExcel(rows: ExportRow[], tagMap: TagMap): Promise<Bu
   ]
   sheet.getRow(1).font = { bold: true }
 
-  const fixedPriceShown = new Set<string>()
+  // For a fixed-price project, the lump sum is shown once — but never on a
+  // row marked "nicht fakturierbar", since that would visually contradict
+  // itself on the invoice. Prefer the first billable row for that project;
+  // only if a project has no billable row at all (every tracked entry was
+  // marked non-billable) fall back to its first row overall.
+  const fixedPriceRowForProject = new Map<string, ExportRow>()
+  for (const row of rows) {
+    if (row.pricingMode !== 'fixed') continue
+    const current = fixedPriceRowForProject.get(row.projectId)
+    if (!current || (!current.billable && row.billable)) {
+      fixedPriceRowForProject.set(row.projectId, row)
+    }
+  }
 
   for (const row of rows) {
     const tags = (tagMap[row.taskId] ?? []).join(', ')
@@ -47,9 +59,8 @@ export async function renderExcel(rows: ExportRow[], tagMap: TagMap): Promise<Bu
         amount = centsToEuroStr(row.totalAmountCents)
       }
     } else {
-      if (!fixedPriceShown.has(row.projectId)) {
+      if (fixedPriceRowForProject.get(row.projectId) === row) {
         amount = centsToEuroStr(row.fixedPriceCents ?? 0)
-        fixedPriceShown.add(row.projectId)
       }
     }
 
